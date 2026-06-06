@@ -187,56 +187,64 @@ function OrderContent() {
 
       {/* Product List */}
       <div className="p-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filteredProducts.map((product) => (
-          <motion.div
-            layout
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            key={product.id}
-            className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
-          >
-            <div className="relative h-48 w-full">
-              <Image 
-                src={product.image} 
-                alt={product.name}
-                fill
-                className="object-cover"
-              />
-              {product.featured && (
-                <div className="absolute top-3 left-3 bg-yellow-400 text-xs font-black px-2 py-1 rounded-md flex items-center gap-1 shadow-sm">
-                  <Star className="w-3 h-3 fill-current" />
-                  FEATURED
-                </div>
-              )}
-              <button 
-                onClick={() => {
-                  toggleFavorite(product.id);
-                  toast.success(isFavorite(product.id) ? "Removed from favorites" : "Added to favorites");
-                }}
-                className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-md rounded-full shadow-sm hover:bg-white transition-all"
-              >
-                <Heart className={cn("w-5 h-5 transition-colors", isFavorite(product.id) ? "fill-red-600 text-red-600" : "text-gray-400")} />
-              </button>
-            </div>
-            <div className="p-4">
-              <div className="flex justify-between items-start mb-1">
-                <h3 className="font-bold text-gray-800 text-lg">{product.name}</h3>
-                <span className="font-bold text-red-600">Rs. {product.price.toLocaleString()}</span>
+        {filteredProducts.length === 0 ? (
+          <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
+            <Coffee className="w-16 h-16 mb-4 opacity-20" />
+            <p className="font-bold text-lg">Menu is being prepared...</p>
+            <p className="text-sm mt-1">Please check back in a moment.</p>
+          </div>
+        ) : (
+          filteredProducts.map((product) => (
+            <motion.div
+              layout
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              key={product.id}
+              className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div className="relative h-48 w-full">
+                <Image 
+                  src={product.image} 
+                  alt={product.name}
+                  fill
+                  className="object-cover"
+                />
+                {product.featured && (
+                  <div className="absolute top-3 left-3 bg-yellow-400 text-xs font-black px-2 py-1 rounded-md flex items-center gap-1 shadow-sm">
+                    <Star className="w-3 h-3 fill-current" />
+                    FEATURED
+                  </div>
+                )}
+                <button 
+                  onClick={() => {
+                    toggleFavorite(product.id);
+                    toast.success(isFavorite(product.id) ? "Removed from favorites" : "Added to favorites");
+                  }}
+                  className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-md rounded-full shadow-sm hover:bg-white transition-all"
+                >
+                  <Heart className={cn("w-5 h-5 transition-colors", isFavorite(product.id) ? "fill-red-600 text-red-600" : "text-gray-400")} />
+                </button>
               </div>
-              <p className="text-gray-500 text-xs line-clamp-2 mb-4">{product.description}</p>
-              <button
-                onClick={() => {
-                  addItem(product);
-                  toast.success(`Added ${product.name}`);
-                }}
-                className="w-full bg-red-600 text-white py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-red-700 transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                ADD TO CART
-              </button>
-            </div>
-          </motion.div>
-        ))}
+              <div className="p-4">
+                <div className="flex justify-between items-start mb-1">
+                  <h3 className="font-bold text-gray-800 text-lg">{product.name}</h3>
+                  <span className="font-bold text-red-600">Rs. {product.price.toLocaleString()}</span>
+                </div>
+                <p className="text-gray-500 text-xs line-clamp-2 mb-4">{product.description}</p>
+                <button
+                  onClick={() => {
+                    addItem(product);
+                    toast.success(`Added ${product.name}`);
+                  }}
+                  className="w-full bg-red-600 text-white py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-red-700 transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  ADD TO CART
+                </button>
+              </div>
+            </motion.div>
+          ))
+        )}
       </div>
 
       {/* History Drawer */}
