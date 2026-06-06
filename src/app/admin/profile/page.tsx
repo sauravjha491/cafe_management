@@ -75,7 +75,7 @@ export default function ProfilePage() {
   };
 
   const handleLogout = async () => {
-    await signOut(auth);
+    if (auth) await signOut(auth);
     setUser(null);
     router.push("/admin/login");
   };

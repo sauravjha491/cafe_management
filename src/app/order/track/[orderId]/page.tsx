@@ -69,6 +69,8 @@ export default function TrackOrder() {
         setLoading(false);
       });
 
+    if (!db) return;
+
     const unsub = onSnapshot(doc(db, "orders", orderId as string), (doc) => {
       if (doc.exists()) {
         const firebaseData = doc.data();

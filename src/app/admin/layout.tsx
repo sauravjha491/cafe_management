@@ -37,6 +37,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   });
 
   useEffect(() => {
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         // Fetch user role if not set

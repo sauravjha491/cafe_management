@@ -77,6 +77,11 @@ export default function MenuManagement() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (!storage) {
+      toast.error("Cloud storage is not configured. Please use Image URL instead.");
+      return;
+    }
+
     setIsUploading(true);
     try {
       const storageRef = ref(storage, `menu/${Date.now()}_${file.name}`);

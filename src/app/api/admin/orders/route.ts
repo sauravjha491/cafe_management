@@ -16,10 +16,14 @@ export async function PATCH(req: Request) {
 
     // 2. Update in Firebase for real-time tracking
     try {
-      await updateDoc(doc(db, "orders", orderId), {
-        status,
-        updatedAt: new Date().toISOString(),
-      });
+      if (db) {
+        await updateDoc(doc(db, "orders", orderId), {
+          status,
+          updatedAt: new Date().toISOString(),
+        });
+      } else {
+        console.warn("Firebase DB not initialized, skipping real-time update");
+      }
     } catch (firebaseError: any) {
       console.error("Firebase update error (non-fatal):", firebaseError);
       // We don't fail the request if Firebase fails, 

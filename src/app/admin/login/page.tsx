@@ -16,6 +16,10 @@ export default function AdminLoginPage() {
   const { setUser, setRole, setLoading } = useAuthStore();
 
   useEffect(() => {
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);

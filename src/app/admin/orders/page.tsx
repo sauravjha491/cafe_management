@@ -39,6 +39,8 @@ export default function AdminOrders() {
         setLoading(false);
       });
 
+    if (!db) return;
+
     // Real-time listener for new orders and status updates
     const q = query(collection(db, "orders"), orderBy("updatedAt", "desc"));
     const unsub = onSnapshot(q, (snapshot) => {

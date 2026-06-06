@@ -44,14 +44,18 @@ export async function POST(req: Request) {
     // 2. Create mirror record in Firebase for real-time tracking
     console.log("Creating mirror record in Firebase...");
     try {
-      await setDoc(doc(db, "orders", order.id), {
-        orderNumber: order.orderNumber,
-        status: order.status,
-        customerName: order.customerName,
-        tableNumber: order.tableNumber,
-        updatedAt: new Date().toISOString(),
-      });
-      console.log("Mirror record created in Firebase");
+      if (db) {
+        await setDoc(doc(db, "orders", order.id), {
+          orderNumber: order.orderNumber,
+          status: order.status,
+          customerName: order.customerName,
+          tableNumber: order.tableNumber,
+          updatedAt: new Date().toISOString(),
+        });
+        console.log("Mirror record created in Firebase");
+      } else {
+        console.warn("Firebase DB not initialized, skipping mirror record");
+      }
     } catch (firebaseError: any) {
       console.error("Firebase mirror error (non-fatal):", firebaseError);
       // We don't fail the whole request if Firebase fails, 
