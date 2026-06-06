@@ -18,24 +18,24 @@ async function main() {
 
   const products = [
     // Hot Coffee
-    { name: "Espresso", description: "Rich and intense shot of coffee", price: 3.5, category: "☕ Hot Coffee", featured: false },
-    { name: "Americano", description: "Espresso with hot water", price: 4.0, category: "☕ Hot Coffee", featured: false },
-    { name: "Cappuccino", description: "Espresso with steamed milk and foam", price: 4.5, category: "☕ Hot Coffee", featured: true },
-    { name: "Latte", description: "Espresso with plenty of steamed milk", price: 4.5, category: "☕ Hot Coffee", featured: false },
-    { name: "Mocha", description: "Espresso with chocolate and steamed milk", price: 5.0, category: "☕ Hot Coffee", featured: false },
+    { name: "Espresso", description: "Rich and intense shot of coffee", price: 150, category: "☕ Hot Coffee", featured: false },
+    { name: "Americano", description: "Espresso with hot water", price: 200, category: "☕ Hot Coffee", featured: false },
+    { name: "Cappuccino", description: "Espresso with steamed milk and foam", price: 250, category: "☕ Hot Coffee", featured: true },
+    { name: "Latte", description: "Espresso with plenty of steamed milk", price: 250, category: "☕ Hot Coffee", featured: false },
+    { name: "Mocha", description: "Espresso with chocolate and steamed milk", price: 300, category: "☕ Hot Coffee", featured: false },
     // Cold Coffee
-    { name: "Iced Americano", description: "Chilled espresso with water over ice", price: 4.5, category: "🧊 Cold Coffee", featured: false },
-    { name: "Iced Latte", description: "Chilled espresso with milk over ice", price: 5.0, category: "🧊 Cold Coffee", featured: false },
-    { name: "Cold Brew", description: "Slow-steeped cold coffee", price: 5.5, category: "🧊 Cold Coffee", featured: true },
+    { name: "Iced Americano", description: "Chilled espresso with water over ice", price: 250, category: "🧊 Cold Coffee", featured: false },
+    { name: "Iced Latte", description: "Chilled espresso with milk over ice", price: 300, category: "🧊 Cold Coffee", featured: false },
+    { name: "Cold Brew", description: "Slow-steeped cold coffee", price: 350, category: "🧊 Cold Coffee", featured: true },
     // Breakfast
-    { name: "Croissant", description: "Flaky and buttery French pastry", price: 3.5, category: "🥐 Breakfast", featured: true },
-    { name: "Pancakes", description: "Fluffy pancakes with syrup", price: 8.0, category: "🥐 Breakfast", featured: false },
+    { name: "Croissant", description: "Flaky and buttery French pastry", price: 200, category: "🥐 Breakfast", featured: true },
+    { name: "Pancakes", description: "Fluffy pancakes with syrup", price: 450, category: "🥐 Breakfast", featured: false },
     // Sandwiches & Burgers
-    { name: "Beef Burger", description: "Juicy beef patty with lettuce and cheese", price: 12.0, category: "🥪 Sandwiches & Burgers", featured: true },
-    { name: "Chicken Sandwich", description: "Grilled chicken with mayo and greens", price: 10.0, category: "🥪 Sandwiches & Burgers", featured: false },
+    { name: "Beef Burger", description: "Juicy beef patty with lettuce and cheese", price: 750, category: "🥪 Sandwiches & Burgers", featured: true },
+    { name: "Chicken Sandwich", description: "Grilled chicken with mayo and greens", price: 600, category: "🥪 Sandwiches & Burgers", featured: false },
     // Snacks
-    { name: "French Fries", description: "Crispy golden fries", price: 5.0, category: "🍕 Snacks & Fast Food", featured: false },
-    { name: "Chicken Wings", description: "Spicy and crispy wings", price: 9.0, category: "🍕 Snacks & Fast Food", featured: true },
+    { name: "French Fries", description: "Crispy golden fries", price: 300, category: "🍕 Snacks & Fast Food", featured: false },
+    { name: "Chicken Wings", description: "Spicy and crispy wings", price: 550, category: "🍕 Snacks & Fast Food", featured: true },
   ];
 
   console.log("Seeding categories...");

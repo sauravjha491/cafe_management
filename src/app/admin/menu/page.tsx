@@ -361,7 +361,7 @@ export default function MenuManagement() {
                       <span className="px-2 py-0.5 bg-gray-100 rounded-full text-[10px] font-black text-gray-500 uppercase">
                         {product.category.name}
                       </span>
-                      <span className="font-black text-gray-900 text-sm">${product.price.toFixed(2)}</span>
+                      <span className="font-black text-gray-900 text-sm">Rs. {product.price.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
@@ -510,11 +510,11 @@ export default function MenuManagement() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Price ($)</label>
+                      <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Price (Rs.)</label>
                       <input
                         required
                         type="number"
-                        step="0.01"
+                        step="1"
                         className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-red-500/20 outline-none font-medium"
                         value={formData.price}
                         onChange={(e) => setFormData({ ...formData, price: e.target.value })}

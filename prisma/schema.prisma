@@ -76,7 +76,7 @@ model OrderItem {
 model Settings {
   id            String  @id @default("default")
   cafeName      String  @default("CafePro")
-  currency      String  @default("$")
+  currency      String  @default("Rs.")
   taxRate       Float   @default(5.0)
   serviceCharge Float   @default(2.0)
   logo          String?

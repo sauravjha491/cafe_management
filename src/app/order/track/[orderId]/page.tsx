@@ -300,7 +300,7 @@ export default function TrackOrder() {
                     )}
                   </div>
                 </div>
-                <p className="font-black text-gray-900 tracking-tighter text-lg pt-1">${(item.price * item.quantity).toFixed(2)}</p>
+                <p className="font-black text-gray-900 tracking-tighter text-lg pt-1">Rs. {(item.price * item.quantity).toLocaleString()}</p>
               </div>
             ))}
           </div>
@@ -308,16 +308,16 @@ export default function TrackOrder() {
           <div className="mt-10 pt-8 border-t-4 border-dotted border-gray-50 space-y-4">
             <div className="flex justify-between text-sm text-gray-400 font-black uppercase tracking-widest">
               <span>Subtotal</span>
-              <span className="text-gray-900">${(order.total / 1.07).toFixed(2)}</span>
+              <span className="text-gray-900">Rs. {(order.total / 1.07).toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-sm text-gray-400 font-black uppercase tracking-widest">
               <span>Tax & Svc (7%)</span>
-              <span className="text-gray-900">${(order.total - (order.total / 1.07)).toFixed(2)}</span>
+              <span className="text-gray-900">Rs. {(order.total - (order.total / 1.07)).toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-center pt-4">
               <div>
                 <span className="text-xs font-black text-gray-400 uppercase tracking-widest block mb-1">Total Amount</span>
-                <span className="text-3xl font-black text-red-600 tracking-tighter">${order.total?.toFixed(2)}</span>
+                <span className="text-3xl font-black text-red-600 tracking-tighter">Rs. {order.total?.toLocaleString()}</span>
               </div>
               <div className="text-right">
                 <span className="text-[10px] font-black text-green-600 bg-green-50 px-3 py-1 rounded-full uppercase tracking-widest">Paid via QR</span>

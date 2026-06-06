@@ -221,7 +221,7 @@ function OrderContent() {
             <div className="p-4">
               <div className="flex justify-between items-start mb-1">
                 <h3 className="font-bold text-gray-800 text-lg">{product.name}</h3>
-                <span className="font-bold text-red-600">${product.price.toFixed(2)}</span>
+                <span className="font-bold text-red-600">Rs. {product.price.toLocaleString()}</span>
               </div>
               <p className="text-gray-500 text-xs line-clamp-2 mb-4">{product.description}</p>
               <button
@@ -286,7 +286,7 @@ function OrderContent() {
                       </div>
                       <div className="flex justify-between items-center text-sm">
                         <span className="text-gray-500 font-medium">{new Date(order.createdAt).toLocaleDateString()}</span>
-                        <span className="font-black text-gray-900">${order.total.toFixed(2)}</span>
+                        <span className="font-black text-gray-900">Rs. {order.total.toLocaleString()}</span>
                       </div>
                     </div>
                   ))
@@ -343,7 +343,7 @@ function OrderContent() {
                               <X className="w-5 h-5" />
                             </button>
                           </div>
-                          <p className="text-red-600 font-bold text-sm">${item.price.toFixed(2)}</p>
+                          <p className="text-red-600 font-bold text-sm">Rs. {item.price.toLocaleString()}</p>
                         </div>
                       </div>
                       
@@ -387,19 +387,19 @@ function OrderContent() {
                 <div className="space-y-3 bg-gray-50 p-4 rounded-2xl border border-gray-100">
                   <div className="flex justify-between text-sm text-gray-500">
                     <span>Subtotal</span>
-                    <span className="font-bold text-gray-900">${getTotal().toFixed(2)}</span>
+                    <span className="font-bold text-gray-900">Rs. {getTotal().toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-500">
                     <span>Tax (5%)</span>
-                    <span className="font-bold text-gray-900">${(getTotal() * 0.05).toFixed(2)}</span>
+                    <span className="font-bold text-gray-900">Rs. {(getTotal() * 0.05).toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-500">
                     <span>Service Charge (2%)</span>
-                    <span className="font-bold text-gray-900">${(getTotal() * 0.02).toFixed(2)}</span>
+                    <span className="font-bold text-gray-900">Rs. {(getTotal() * 0.02).toLocaleString()}</span>
                   </div>
                   <div className="pt-2 border-t flex justify-between items-center text-lg font-black text-gray-900">
                     <span>Total Amount</span>
-                    <span className="text-red-600 text-2xl">${(getTotal() * 1.07).toFixed(2)}</span>
+                    <span className="text-red-600 text-2xl">Rs. {(getTotal() * 1.07).toLocaleString()}</span>
                   </div>
                 </div>
 
@@ -459,7 +459,7 @@ function OrderContent() {
             </div>
             <div className="text-right">
               <p className="text-xs opacity-80 font-medium">Total</p>
-              <p className="font-bold text-lg">${getTotal().toFixed(2)}</p>
+              <p className="font-bold text-lg">Rs. {getTotal().toLocaleString()}</p>
             </div>
           </button>
         </motion.div>

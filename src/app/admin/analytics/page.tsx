@@ -77,7 +77,7 @@ export default function AnalyticsPage() {
   };
 
   const cards = [
-    { label: "Revenue", value: `$${stats.totalRevenue.toFixed(2)}`, icon: DollarSign, color: "text-green-600", bg: "bg-green-50", trend: "+12.5%" },
+    { label: "Revenue", value: `Rs. ${stats.totalRevenue.toLocaleString()}`, icon: DollarSign, color: "text-green-600", bg: "bg-green-50", trend: "+12.5%" },
     { label: "Orders", value: stats.totalOrders, icon: ShoppingBag, color: "text-blue-600", bg: "bg-blue-50", trend: "+8.2%" },
     { label: "Tables", value: stats.activeTables, icon: Users, color: "text-purple-600", bg: "bg-purple-50", trend: "-2.4%" },
     { label: "Pending", value: stats.pendingOrders, icon: TrendingUp, color: "text-orange-600", bg: "bg-orange-50", trend: "+4.1%" },
@@ -210,7 +210,7 @@ export default function AnalyticsPage() {
                     </div>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="font-black text-red-600 text-base md:text-lg tracking-tighter">${sale.total.toFixed(2)}</p>
+                    <p className="font-black text-red-600 text-base md:text-lg tracking-tighter">Rs. {sale.total.toLocaleString()}</p>
                     <span className="text-[8px] md:text-[9px] font-black text-green-600 bg-green-50 px-1.5 md:px-2 py-0.5 rounded-full uppercase tracking-tighter">Verified</span>
                   </div>
                 </div>

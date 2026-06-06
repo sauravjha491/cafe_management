@@ -14,7 +14,7 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     cafeName: "CafePro",
-    currency: "$",
+    currency: "Rs.",
     taxRate: 5.0,
     serviceCharge: 2.0,
     address: "",
@@ -27,7 +27,7 @@ export default function SettingsPage() {
       .then((data) => {
         setFormData({
           cafeName: data.cafeName || "CafePro",
-          currency: data.currency || "$",
+          currency: data.currency || "Rs.",
           taxRate: data.taxRate || 5.0,
           serviceCharge: data.serviceCharge || 2.0,
           address: data.address || "",
