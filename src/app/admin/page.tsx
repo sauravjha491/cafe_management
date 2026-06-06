@@ -8,9 +8,13 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function AdminDashboard() {
+  const router = useRouter();
+  const { role, loading: authLoading } = useAuthStore();
   const [stats, setStats] = useState({
     todayRevenue: 0,
     todayOrders: 0,
@@ -22,6 +26,13 @@ export default function AdminDashboard() {
   const [configWarning, setConfigWarning] = useState(false);
 
   useEffect(() => {
+    if (!authLoading && role === "STAFF") {
+      router.push("/admin/orders");
+    }
+  }, [role, authLoading, router]);
+
+  useEffect(() => {
+    if (role === "STAFF") return;
     async function fetchDashboardData() {
       try {
         const res = await fetch("/api/orders");
@@ -64,13 +75,13 @@ export default function AdminDashboard() {
   }, []);
 
   const cards = [
-    { label: "Today's Revenue", value: `$${stats.todayRevenue.toFixed(2)}`, icon: DollarSign, color: "text-green-600", bg: "bg-green-50" },
+    { label: "Today's Revenue", value: `Rs. ${stats.todayRevenue.toLocaleString()}`, icon: DollarSign, color: "text-green-600", bg: "bg-green-50" },
     { label: "Today's Orders", value: stats.todayOrders, icon: ShoppingBag, color: "text-blue-600", bg: "bg-blue-50" },
     { label: "Pending Orders", value: stats.pendingOrders, icon: Clock, color: "text-orange-600", bg: "bg-orange-50" },
     { label: "Active Tables", value: stats.activeTables, icon: Users, color: "text-purple-600", bg: "bg-purple-50" },
   ];
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center gap-4">
@@ -80,6 +91,8 @@ export default function AdminDashboard() {
       </div>
     );
   }
+
+  if (role === "STAFF") return null;
 
   return (
     <div className="space-y-8 pb-10">
@@ -165,7 +178,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="text-right">
-                      <p className="font-black text-gray-900">${order.total.toFixed(2)}</p>
+                      <p className="font-black text-gray-900">Rs. {order.total.toLocaleString()}</p>
                       <span className={cn(
                         "text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter",
                         order.status === "SERVED" ? "bg-gray-200 text-gray-600" : "bg-green-100 text-green-600"

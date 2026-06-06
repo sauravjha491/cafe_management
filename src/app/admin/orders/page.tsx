@@ -157,7 +157,7 @@ export default function AdminOrders() {
                             </span>
                           )}
                         </div>
-                        <span className="text-gray-400 font-medium">${(item.price * item.quantity).toFixed(2)}</span>
+                        <span className="text-gray-400 font-medium">Rs. {(item.price * item.quantity).toLocaleString()}</span>
                       </div>
                     ))}
                   </div>
@@ -167,7 +167,7 @@ export default function AdminOrders() {
                 <div className="p-4 bg-gray-50 border-t flex flex-col gap-3">
                   <div className="flex justify-between items-center">
                     <span className="text-xs font-bold text-gray-400 uppercase">Total Amount</span>
-                    <span className="font-black text-gray-900">${order.total.toFixed(2)}</span>
+                    <span className="font-black text-gray-900">Rs. {order.total.toLocaleString()}</span>
                   </div>
                   
                   {next ? (

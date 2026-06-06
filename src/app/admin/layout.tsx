@@ -32,8 +32,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // Filter nav items based on role
   const filteredNavItems = navItems.filter(item => {
     if (role === "OWNER") return true;
-    // Staff can only see Overview, Orders, Menu, and Tables
-    return ["Overview", "Orders", "Menu", "Tables"].includes(item.label);
+    // Staff can only see Orders, Menu, and Tables
+    return ["Orders", "Menu", "Tables"].includes(item.label);
   });
 
   useEffect(() => {
@@ -50,10 +50,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             console.error("Failed to fetch role", e);
           }
         }
+        setUser(firebaseUser);
       }
-      setUser(firebaseUser);
+      
       setLoading(false);
-      if (!firebaseUser && pathname !== "/admin/login") {
+
+      // Only redirect if there is no user in store AND no firebase user
+      const currentUser = useAuthStore.getState().user;
+      if (!firebaseUser && !currentUser && pathname !== "/admin/login") {
         router.push("/admin/login");
       }
     });

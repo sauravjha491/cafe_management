@@ -30,15 +30,45 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setIsLoggingIn(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      let user: any = null;
+      let role: any = "STAFF";
+
+      try {
+        // 1. Try Firebase Login first
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        user = userCredential.user;
+        
+        // Fetch user role from our database
+        const res = await fetch(`/api/admin/staff`);
+        const staffList = await res.json();
+        const staffMember = staffList.find((s: any) => s.email === email);
+        role = staffMember?.role || "STAFF";
+      } catch (firebaseError: any) {
+        console.log("Firebase login failed, trying local fallback...");
+        
+        // 2. Fallback to local login if Firebase fails
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          user = {
+            uid: data.user.id,
+            email: data.user.email,
+            displayName: data.user.name,
+          };
+          role = data.user.role;
+        } else {
+          // If both fail, throw the original firebase error or a custom one
+          throw firebaseError;
+        }
+      }
       
-      // Fetch user role from our database
-      const res = await fetch(`/api/admin/staff`);
-      const staffList = await res.json();
-      const staffMember = staffList.find((s: any) => s.email === email);
-      
-      setUser(userCredential.user);
-      setRole(staffMember?.role || "STAFF");
+      setUser(user);
+      setRole(role);
       
       toast.success("Welcome back!");
       router.push("/admin/orders");

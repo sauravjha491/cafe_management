@@ -11,6 +11,7 @@ model User {
   id        String   @id @default(cuid())
   name      String
   email     String   @unique
+  password  String?  // Added for local-only fallback login
   role      String   @default("STAFF") // OWNER, STAFF
   image     String?
   phone     String?

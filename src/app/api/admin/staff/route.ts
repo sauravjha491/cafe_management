@@ -2,14 +2,23 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { adminAuth, isFirebaseAdminConfigured } from "@/lib/firebase-admin";
 
+// Global helper to disable firebase if it fails
+const disableFirebase = () => {
+  // We can't easily modify the exported 'isFirebaseAdminConfigured' from here
+  // but we can at least log it and handle it in this route.
+};
+
 export async function GET() {
+  console.log("GET /api/admin/staff started");
   try {
     const users = await prisma.user.findMany({
       orderBy: { createdAt: "desc" },
     });
+    console.log(`GET /api/admin/staff success: found ${users.length} users`);
     return NextResponse.json(users);
-  } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch staff" }, { status: 500 });
+  } catch (error: any) {
+    console.error("GET /api/admin/staff error:", error);
+    return NextResponse.json({ error: "Failed to fetch staff", details: error.message }, { status: 500 });
   }
 }
 
@@ -31,12 +40,25 @@ export async function POST(req: Request) {
         firebaseUid = firebaseUser.uid;
       } catch (authError: any) {
         console.error("Firebase Auth Error:", authError);
-        return NextResponse.json({ 
-          error: "Auth Error", 
-          details: authError.code === "auth/email-already-exists" 
-            ? "This email is already registered in Firebase" 
-            : authError.message 
-        }, { status: 400 });
+        
+        // Handle "invalid credential" error or "default credentials" error
+        const isCredentialError = 
+          authError.message?.includes("fetch a valid Google OAuth2 access token") || 
+          authError.message?.includes("Could not load the default credentials") ||
+          authError.code === "app/invalid-credential";
+
+        if (isCredentialError) {
+          console.warn("⚠️ Firebase credentials failed at runtime. Falling back to local-only user.");
+          // firebaseUid stays as temp_...
+        } else {
+          // For other errors (like email already exists), return the error to user
+          return NextResponse.json({ 
+            error: "Auth Error", 
+            details: authError.code === "auth/email-already-exists" 
+              ? "This email is already registered in Firebase" 
+              : authError.message 
+          }, { status: 400 });
+        }
       }
     } else {
       console.warn("⚠️ Firebase Admin not configured. Creating local-only user.");
@@ -48,6 +70,7 @@ export async function POST(req: Request) {
         id: firebaseUid,
         name,
         email,
+        password, // Store password for local login fallback
         role: role || "STAFF",
       },
     });
@@ -75,15 +98,24 @@ export async function PATCH(req: Request) {
 
     // 1. Update Firebase Auth if configured
     if (isFirebaseAdminConfigured && adminAuth) {
-      const updateData: any = {};
-      if (otherData.name) updateData.displayName = otherData.name;
-      if (password) updateData.password = password;
-      if (otherData.email) updateData.email = otherData.email;
+      try {
+        const updateData: any = {};
+        if (otherData.name) updateData.displayName = otherData.name;
+        if (password) updateData.password = password;
+        if (otherData.email) updateData.email = otherData.email;
 
-      if (Object.keys(updateData).length > 0) {
-        const targetId = id || (await prisma.user.findUnique({ where: { email: email as string } }))?.id;
-        if (targetId && !targetId.startsWith("temp_")) {
-          await adminAuth.updateUser(targetId, updateData);
+        if (Object.keys(updateData).length > 0) {
+          const targetId = id || (await prisma.user.findUnique({ where: { email: email as string } }))?.id;
+          if (targetId && !targetId.startsWith("temp_")) {
+            await adminAuth.updateUser(targetId, updateData);
+          }
+        }
+      } catch (authError: any) {
+        console.error("Firebase Auth Sync Error (non-fatal):", authError);
+        // We don't fail the whole request here, just log the sync error
+        // unless it's a critical error like email already exists
+        if (authError.code === "auth/email-already-exists") {
+          return NextResponse.json({ error: "Email already registered in Firebase" }, { status: 400 });
         }
       }
     }

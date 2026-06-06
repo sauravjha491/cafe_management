@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import { 
   Plus, Search, Edit2, Trash2, 
-  Image as ImageIcon, Check, X, Star, Loader2 
+  Image as ImageIcon, Check, X, Star, Loader2, Link as LinkIcon, Upload 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { storage } from "@/lib/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default function MenuManagement() {
   const [categories, setCategories] = useState<any[]>([]);
@@ -23,6 +25,8 @@ export default function MenuManagement() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [imageSourceType, setImageSourceType] = useState<"url" | "upload">("url");
+  const [isUploading, setIsUploading] = useState(false);
 
   // ... (existing useEffect and fetchData)
 
@@ -68,6 +72,25 @@ export default function MenuManagement() {
     image: "",
     featured: false,
   });
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const storageRef = ref(storage, `menu/${Date.now()}_${file.name}`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      setFormData(prev => ({ ...prev, image: url }));
+      toast.success("Image uploaded successfully");
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload image");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   useEffect(() => {
     fetchData();
@@ -160,6 +183,8 @@ export default function MenuManagement() {
       featured: false,
     });
     setEditingProduct(null);
+    setImageSourceType("url");
+    setIsUploading(false);
   };
 
   const openEditModal = (product: any) => {
@@ -172,6 +197,8 @@ export default function MenuManagement() {
       image: product.image,
       featured: product.featured,
     });
+    setImageSourceType("url");
+    setIsUploading(false);
     setIsModalOpen(true);
   };
 
@@ -272,7 +299,7 @@ export default function MenuManagement() {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="font-black text-gray-900">${product.price.toFixed(2)}</span>
+                      <span className="font-black text-gray-900">Rs. {product.price.toLocaleString()}</span>
                     </td>
                     <td className="px-6 py-4">
                       <button 
@@ -507,15 +534,83 @@ export default function MenuManagement() {
                     </div>
                   </div>
 
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Image URL</label>
-                    <input
-                      type="text"
-                      placeholder="https://..."
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-red-500/20 outline-none font-medium"
-                      value={formData.image}
-                      onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                    />
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Product Image</label>
+                      <div className="flex bg-gray-100 p-1 rounded-xl">
+                        <button
+                          type="button"
+                          onClick={() => setImageSourceType("url")}
+                          className={cn(
+                            "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all flex items-center gap-1.5",
+                            imageSourceType === "url" ? "bg-white text-gray-900 shadow-sm" : "text-gray-400 hover:text-gray-600"
+                          )}
+                        >
+                          <LinkIcon className="w-3 h-3" />
+                          URL
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setImageSourceType("upload")}
+                          className={cn(
+                            "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all flex items-center gap-1.5",
+                            imageSourceType === "upload" ? "bg-white text-gray-900 shadow-sm" : "text-gray-400 hover:text-gray-600"
+                          )}
+                        >
+                          <Upload className="w-3 h-3" />
+                          Upload
+                        </button>
+                      </div>
+                    </div>
+
+                    {imageSourceType === "url" ? (
+                      <input
+                        type="text"
+                        placeholder="https://images.unsplash.com/..."
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-red-500/20 outline-none font-medium"
+                        value={formData.image}
+                        onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                      />
+                    ) : (
+                      <div className="relative group">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                          id="image-upload"
+                          disabled={isUploading}
+                        />
+                        <label
+                          htmlFor="image-upload"
+                          className={cn(
+                            "w-full flex flex-col items-center justify-center gap-2 p-6 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl cursor-pointer hover:border-red-200 hover:bg-red-50/30 transition-all",
+                            isUploading && "opacity-50 cursor-not-allowed"
+                          )}
+                        >
+                          {isUploading ? (
+                            <Loader2 className="w-8 h-8 text-red-600 animate-spin" />
+                          ) : formData.image ? (
+                            <div className="relative w-full h-32 rounded-xl overflow-hidden">
+                              <Image src={formData.image} alt="Preview" fill className="object-cover" />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <span className="text-white text-xs font-bold bg-black/50 px-3 py-1.5 rounded-lg backdrop-blur-sm">Change Image</span>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <div className="p-3 bg-white rounded-xl shadow-sm">
+                                <Upload className="w-6 h-6 text-red-600" />
+                              </div>
+                              <div className="text-center">
+                                <p className="text-sm font-bold text-gray-900">Click to upload</p>
+                                <p className="text-[10px] font-medium text-gray-400">PNG, JPG or WEBP (Max. 2MB)</p>
+                              </div>
+                            </>
+                          )}
+                        </label>
+                      </div>
+                    )}
                   </div>
 
                   <label className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl cursor-pointer">
@@ -530,10 +625,10 @@ export default function MenuManagement() {
                 </div>
 
                 <button
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isUploading}
                   className="w-full bg-red-600 text-white py-4 rounded-2xl font-black text-lg shadow-lg shadow-red-200 flex items-center justify-center gap-2 active:scale-95 disabled:bg-gray-300"
                 >
-                  {isSubmitting ? <Loader2 className="animate-spin" /> : editingProduct ? "Update Product" : "Create Product"}
+                  {isSubmitting ? <Loader2 className="animate-spin" /> : isUploading ? "Uploading Image..." : editingProduct ? "Update Product" : "Create Product"}
                 </button>
               </form>
             </motion.div>

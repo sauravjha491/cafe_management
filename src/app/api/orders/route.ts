@@ -66,20 +66,28 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: Request) {
+  console.log("GET /api/orders started");
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
 
-  if (id) {
-    const order = await prisma.order.findUnique({
-      where: { id },
+  try {
+    if (id) {
+      console.log(`GET /api/orders for id: ${id}`);
+      const order = await prisma.order.findUnique({
+        where: { id },
+        include: { items: { include: { product: true } } },
+      });
+      return NextResponse.json(order);
+    }
+
+    const orders = await prisma.order.findMany({
+      orderBy: { createdAt: "desc" },
       include: { items: { include: { product: true } } },
     });
-    return NextResponse.json(order);
+    console.log(`GET /api/orders success: found ${orders.length} orders`);
+    return NextResponse.json(orders);
+  } catch (error: any) {
+    console.error("GET /api/orders error:", error);
+    return NextResponse.json({ error: "Failed to fetch orders", details: error.message }, { status: 500 });
   }
-
-  const orders = await prisma.order.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { items: { include: { product: true } } },
-  });
-  return NextResponse.json(orders);
 }
