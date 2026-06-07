@@ -48,9 +48,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   };
 
   const playNotificationSound = () => {
-    if (isSoundEnabled && notificationAudio) {
-      notificationAudio.currentTime = 0;
-      notificationAudio.play().catch(e => console.error("Audio error:", e));
+    if (isSoundEnabled) {
+      // Create a fresh audio object for every notification to allow overlapping sounds
+      const audio = new Audio("/notification.mp3");
+      audio.play().catch(e => console.error("Audio error:", e));
     }
   };
 
@@ -129,17 +130,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           toast.custom((t) => (
             <div
               className={cn(
-                "bg-white rounded-3xl shadow-2xl border-2 border-red-500 overflow-hidden w-[380px] max-w-[calc(100vw-2rem)] animate-in slide-in-from-right-10 duration-500",
+                "bg-white rounded-3xl shadow-[0_20px_50px_rgba(220,38,38,0.3)] border-2 border-red-500 overflow-hidden w-[380px] max-w-[calc(100vw-2rem)] animate-in slide-in-from-right-10 duration-500",
                 t.visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
               )}
             >
               <div className="bg-red-600 p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="bg-white/20 p-2 rounded-xl backdrop-blur-md">
+                  <div className="bg-white/20 p-2 rounded-xl backdrop-blur-md animate-pulse">
                     <ShoppingBag className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-white font-black text-sm uppercase tracking-wider">New Order!</h3>
+                    <h3 className="text-white font-black text-sm uppercase tracking-wider">New Order Received!</h3>
                     <p className="text-white/80 text-[10px] font-bold">#{order.orderNumber} • {new Date(order.createdAt).toLocaleTimeString()}</p>
                   </div>
                 </div>
@@ -158,17 +159,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <p className="font-black text-gray-900 text-lg">{order.customerName}</p>
                     <p className="text-red-600 font-bold text-sm">Table No: {order.tableNumber}</p>
                   </div>
-                  <div className="bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
-                    <span className="text-[10px] font-black text-gray-500 uppercase">Pending</span>
+                  <div className="bg-red-50 px-3 py-1 rounded-full border border-red-100 animate-pulse">
+                    <span className="text-[10px] font-black text-red-600 uppercase">Action Required</span>
                   </div>
                 </div>
 
                 <div className="space-y-2 bg-gray-50 p-3 rounded-2xl border border-gray-100">
-                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Order Details</p>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Items to Prepare</p>
                   {order.items?.map((item: any, idx: number) => (
                     <div key={idx} className="flex justify-between items-center text-xs">
                       <div className="flex gap-2 items-center">
-                        <span className="font-black text-red-600 bg-red-50 w-5 h-5 flex items-center justify-center rounded-md">{item.quantity}</span>
+                        <span className="font-black text-red-600 bg-red-100 w-5 h-5 flex items-center justify-center rounded-md">{item.quantity}</span>
                         <span className="font-bold text-gray-800">{item.name}</span>
                       </div>
                       {item.note && <span className="text-[8px] text-orange-500 italic font-bold">"{item.note}"</span>}
@@ -183,21 +184,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       router.push("/admin/orders");
                       toast.dismiss(t.id);
                     }}
-                    className="bg-gray-900 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-black transition-all active:scale-95"
+                    className="bg-gray-900 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-black transition-all active:scale-95 shadow-lg shadow-gray-200"
                   >
-                    View Order
+                    View in Dashboard
                   </button>
                 </div>
               </div>
             </div>
           ), { 
-            duration: 10000,
+            duration: 15000,
             position: "top-right",
             id: `new-order-${change.doc.id}` 
           });
         }
       });
       isInitialLoad = false;
+    }, (error) => {
+      console.error("Firestore Orders error:", error);
+      toast.error("Real-time orders connection lost. Please refresh.");
     });
 
     return () => unsub();
@@ -220,7 +224,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           toast.custom((t) => (
             <div className={cn(
-              "bg-white rounded-3xl shadow-2xl border-2 border-orange-500 overflow-hidden w-[340px] max-w-[calc(100vw-2rem)] animate-in slide-in-from-right-10 duration-500",
+              "bg-white rounded-3xl shadow-[0_20px_50px_rgba(249,115,22,0.3)] border-2 border-orange-500 overflow-hidden w-[340px] max-w-[calc(100vw-2rem)] animate-in slide-in-from-right-10 duration-500",
               t.visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
             )}>
               <div className="bg-orange-500 p-4 flex items-center justify-between">
@@ -228,27 +232,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   <div className="bg-white/20 p-2 rounded-xl backdrop-blur-md">
                     <Bell className="w-5 h-5 text-white animate-ring" />
                   </div>
-                  <h3 className="text-white font-black text-sm uppercase tracking-wider">Waiter Called!</h3>
+                  <h3 className="text-white font-black text-sm uppercase tracking-wider">Waiter Requested!</h3>
                 </div>
                 <button onClick={() => toast.dismiss(t.id)}>
                   <X className="w-4 h-4 text-white" />
                 </button>
               </div>
               <div className="p-5">
-                <p className="text-gray-900 font-black text-xl mb-1">Table {call.tableNumber}</p>
-                <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">{call.customerName} is requesting assistance</p>
+                <p className="text-gray-900 font-black text-2xl mb-1">Table {call.tableNumber}</p>
+                <p className="text-gray-500 text-xs font-bold uppercase tracking-widest leading-relaxed">
+                  {call.customerName} needs assistance at their table.
+                </p>
                 <button 
                   onClick={() => toast.dismiss(t.id)}
-                  className="mt-4 w-full bg-gray-900 text-white py-2 rounded-xl text-xs font-bold hover:bg-black transition-all"
+                  className="mt-4 w-full bg-gray-900 text-white py-3 rounded-xl text-xs font-bold hover:bg-black transition-all shadow-lg shadow-gray-200 active:scale-95"
                 >
-                  I'm On It!
+                  Acknowledge Request
                 </button>
               </div>
             </div>
-          ), { duration: 8000, position: "top-right" });
+          ), { duration: 12000, position: "top-right" });
         }
       });
       isInitialLoad = false;
+    }, (error) => {
+      console.error("Firestore Waiter Calls error:", error);
+      toast.error("Real-time waiter connection lost. Please refresh.");
     });
 
     return () => unsub();
