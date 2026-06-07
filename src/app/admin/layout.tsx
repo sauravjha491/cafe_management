@@ -435,7 +435,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           {/* Nav Links */}
           <nav className="flex-1 px-6 space-y-1.5 overflow-y-auto custom-scrollbar py-4">
-            <p className="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">Main Menu</p>
             {filteredNavItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
