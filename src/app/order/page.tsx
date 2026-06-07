@@ -85,11 +85,10 @@ function OrderContent() {
 
   const filteredProducts = selectedCategory === "favorites" 
     ? categories.flatMap(c => c.products).filter(p => isFavorite(p.id))
-    : categories
-        .find((c) => c.id === selectedCategory)
-        ?.products.filter((p) =>
+    : (selectedCategory === "" && categories.length > 0 ? categories[0].products : categories.find((c) => c.id === selectedCategory)?.products || [])
+        .filter((p) =>
           p.name.toLowerCase().includes(searchQuery.toLowerCase())
-        ) || [];
+        );
 
   const taxAmount = (getTotal() * settings.taxRate) / 100;
   const serviceChargeAmount = (getTotal() * settings.serviceCharge) / 100;
@@ -227,9 +226,19 @@ function OrderContent() {
               >
                 <div className="relative h-40">
                   <Image src={product.image} alt={product.name} fill className="object-cover" />
-                  <div className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-md rounded-full shadow-sm">
+                  <div className="absolute top-3 left-3 bg-white/80 backdrop-blur-md p-2 rounded-full shadow-sm">
                     <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                   </div>
+                  <button 
+                    onClick={() => {
+                      const wasFavorite = isFavorite(product.id);
+                      toggleFavorite(product.id);
+                      toast.success(wasFavorite ? "Removed from favorites" : "Added to favorites");
+                    }}
+                    className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-md rounded-full shadow-sm hover:bg-white transition-all z-10"
+                  >
+                    <Heart className={cn("w-5 h-5 transition-colors", isFavorite(product.id) ? "fill-red-600 text-red-600" : "text-gray-400")} />
+                  </button>
                 </div>
                 <div className="p-4 flex flex-col flex-1">
                   <h3 className="font-bold text-gray-800 line-clamp-1 mb-1">{product.name}</h3>
@@ -285,10 +294,11 @@ function OrderContent() {
                 )}
                 <button 
                   onClick={() => {
+                    const wasFavorite = isFavorite(product.id);
                     toggleFavorite(product.id);
-                    toast.success(isFavorite(product.id) ? "Removed from favorites" : "Added to favorites");
+                    toast.success(wasFavorite ? "Removed from favorites" : "Added to favorites");
                   }}
-                  className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-md rounded-full shadow-sm hover:bg-white transition-all"
+                  className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-md rounded-full shadow-sm hover:bg-white transition-all z-10"
                 >
                   <Heart className={cn("w-5 h-5 transition-colors", isFavorite(product.id) ? "fill-red-600 text-red-600" : "text-gray-400")} />
                 </button>
