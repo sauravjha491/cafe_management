@@ -260,148 +260,99 @@ export default function MenuManagement() {
         </select>
       </div>
 
-      {/* Products Table / Cards */}
-      <div className="bg-white rounded-[2rem] md:rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-        {/* Desktop View */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="bg-gray-50 border-b">
-                <th className="px-6 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Product</th>
-                <th className="px-6 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Category</th>
-                <th className="px-6 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Price</th>
-                <th className="px-6 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Status</th>
-                <th className="px-6 py-4 text-xs font-black text-gray-400 uppercase tracking-widest">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {loading ? (
-                [1, 2, 3].map(i => <tr key={i} className="h-20 animate-pulse bg-gray-50/50" />)
-              ) : (
-                filteredProducts.map((product) => (
-                  <tr key={product.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-4">
-                        <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-gray-100 border border-gray-100">
-                          {product.image ? (
-                            <Image src={product.image} alt={product.name} fill className="object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center"><ImageIcon className="w-5 h-5 text-gray-300" /></div>
-                          )}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-gray-900">{product.name}</span>
-                            {product.featured && <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />}
-                          </div>
-                          <p className="text-xs text-gray-400 line-clamp-1 font-medium">{product.description}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="px-3 py-1 bg-gray-100 rounded-full text-xs font-black text-gray-500 uppercase">
-                        {product.category.name}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="font-black text-gray-900">Rs. {product.price.toLocaleString()}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <button 
-                        onClick={() => toggleAvailability(product.id, product.available)}
-                        className={cn(
-                          "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider transition-all",
-                          product.available 
-                            ? "bg-green-100 text-green-700" 
-                            : "bg-red-100 text-red-700"
-                        )}
-                      >
-                        {product.available ? "Available" : "Sold Out"}
-                      </button>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <button 
-                          onClick={() => openEditModal(product)}
-                          className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                        >
-                          <Edit2 className="w-5 h-5" />
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(product.id)}
-                          className="p-2 text-gray-400 hover:text-red-600 transition-colors"
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Mobile View */}
-        <div className="md:hidden divide-y divide-gray-100">
-          {loading ? (
-            [1, 2, 3].map(i => <div key={i} className="p-4 h-24 animate-pulse bg-gray-50/50" />)
-          ) : (
-            filteredProducts.map((product) => (
-              <div key={product.id} className="p-4 flex flex-col gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-gray-100 border border-gray-100">
-                    {product.image ? (
-                      <Image src={product.image} alt={product.name} fill className="object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center"><ImageIcon className="w-6 h-6 text-gray-300" /></div>
-                    )}
+      {/* Products Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+        {loading ? (
+          [1, 2, 3, 4, 5].map(i => (
+            <div key={i} className="bg-white rounded-[2rem] p-4 shadow-sm border border-gray-100 animate-pulse h-[320px]" />
+          ))
+        ) : (
+          filteredProducts.map((product) => (
+            <motion.div
+              layout
+              key={product.id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 flex flex-col group hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-500"
+            >
+              {/* Product Image */}
+              <div className="relative h-48 w-full bg-gray-100 overflow-hidden">
+                {product.image ? (
+                  <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <ImageIcon className="w-10 h-10 text-gray-300" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-gray-900 truncate">{product.name}</span>
-                      {product.featured && <Star className="w-3 h-3 text-yellow-400 fill-yellow-400 shrink-0" />}
-                    </div>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="px-2 py-0.5 bg-gray-100 rounded-full text-[10px] font-black text-gray-500 uppercase">
-                        {product.category.name}
-                      </span>
-                      <span className="font-black text-gray-900 text-sm">Rs. {product.price.toLocaleString()}</span>
-                    </div>
-                  </div>
-                </div>
+                )}
                 
-                <div className="flex items-center justify-between gap-2">
+                {/* Status Badge */}
+                <div className="absolute top-4 left-4">
+                  <span className={cn(
+                    "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm backdrop-blur-md",
+                    product.available 
+                      ? "bg-green-500/90 text-white" 
+                      : "bg-red-500/90 text-white"
+                  )}>
+                    {product.available ? "Available" : "Sold Out"}
+                  </span>
+                </div>
+
+                {/* Featured Star */}
+                {product.featured && (
+                  <div className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur-md rounded-full shadow-sm">
+                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  </div>
+                )}
+
+                {/* Quick Actions Overlay */}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                  <button 
+                    onClick={() => openEditModal(product)}
+                    className="p-3 bg-white text-gray-900 rounded-2xl hover:bg-red-600 hover:text-white transition-all transform translate-y-4 group-hover:translate-y-0 duration-300"
+                  >
+                    <Edit2 className="w-5 h-5" />
+                  </button>
+                  <button 
+                    onClick={() => handleDelete(product.id)}
+                    className="p-3 bg-white text-gray-900 rounded-2xl hover:bg-red-600 hover:text-white transition-all transform translate-y-4 group-hover:translate-y-0 duration-300 delay-75"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
                   <button 
                     onClick={() => toggleAvailability(product.id, product.available)}
-                    className={cn(
-                      "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all flex-1",
-                      product.available 
-                        ? "bg-green-100 text-green-700" 
-                        : "bg-red-100 text-red-700"
-                    )}
+                    className="p-3 bg-white text-gray-900 rounded-2xl hover:bg-red-600 hover:text-white transition-all transform translate-y-4 group-hover:translate-y-0 duration-300 delay-150"
                   >
-                    {product.available ? "Available" : "Sold Out"}
+                    {product.available ? <X className="w-5 h-5" /> : <Check className="w-5 h-5" />}
                   </button>
-                  <div className="flex items-center gap-2">
-                    <button 
-                      onClick={() => openEditModal(product)}
-                      className="p-2.5 bg-gray-50 text-gray-500 rounded-xl hover:text-blue-600 transition-colors border border-gray-100"
-                    >
-                      <Edit2 className="w-5 h-5" />
-                    </button>
-                    <button 
-                      onClick={() => handleDelete(product.id)}
-                      className="p-2.5 bg-gray-50 text-gray-500 rounded-xl hover:text-red-600 transition-colors border border-gray-100"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
+                </div>
+              </div>
+
+              {/* Product Info */}
+              <div className="p-5 flex flex-col flex-1">
+                <div className="flex justify-between items-start gap-2 mb-2">
+                  <h3 className="font-black text-gray-900 text-lg line-clamp-1">{product.name}</h3>
+                  <span className="px-2 py-0.5 bg-gray-100 rounded-lg text-[10px] font-black text-gray-500 uppercase shrink-0">
+                    {product.category.name}
+                  </span>
+                </div>
+                <p className="text-gray-400 text-xs font-medium line-clamp-2 mb-4 flex-1">
+                  {product.description}
+                </p>
+                <div className="flex items-center justify-between mt-auto">
+                  <span className="text-xl font-black text-red-600">
+                    Rs. {product.price.toLocaleString()}
+                  </span>
+                  <div className="flex gap-1">
+                    <div className={cn(
+                      "w-2 h-2 rounded-full",
+                      product.available ? "bg-green-500" : "bg-red-500"
+                    )} />
                   </div>
                 </div>
               </div>
-            ))
-          )}
-        </div>
+            </motion.div>
+          ))
+        )}
       </div>
 
       {/* Category Management Modal */}
