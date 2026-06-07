@@ -30,12 +30,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isSoundEnabled, setIsSoundEnabled] = useState(false);
   const { user, setUser, loading, setLoading, role } = useAuthStore();
+  const [notificationAudio, setNotificationAudio] = useState<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    setNotificationAudio(new Audio("/notification.mp3"));
+  }, []);
 
   const toggleSound = () => {
-    const audio = new Audio("/notification.mp3");
-    audio.play()
-      .then(() => setIsSoundEnabled(true))
-      .catch(() => toast.error("Sound file missing or blocked by browser"));
+    if (notificationAudio) {
+      notificationAudio.play()
+        .then(() => {
+          setIsSoundEnabled(true);
+          toast.success("Notifications sound enabled");
+        })
+        .catch(() => toast.error("Please allow sound in your browser settings"));
+    }
+  };
+
+  const playNotificationSound = () => {
+    if (isSoundEnabled && notificationAudio) {
+      notificationAudio.currentTime = 0;
+      notificationAudio.play().catch(e => console.error("Audio error:", e));
+    }
   };
 
   // Filter nav items based on role
@@ -107,15 +123,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           const order = change.doc.data();
           
           // Play "Fire Alarm" style sound
-          const audio = new Audio("/notification.mp3");
-          audio.loop = false;
-          audio.play().catch(e => console.error("Audio error:", e));
+          playNotificationSound();
 
           // Detailed Stacking Notification
           toast.custom((t) => (
             <div
               className={cn(
-                "bg-white rounded-3xl shadow-2xl border-2 border-red-500 overflow-hidden w-[380px] animate-in slide-in-from-right-10 duration-500",
+                "bg-white rounded-3xl shadow-2xl border-2 border-red-500 overflow-hidden w-[380px] max-w-[calc(100vw-2rem)] animate-in slide-in-from-right-10 duration-500",
                 t.visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
               )}
             >
@@ -202,12 +216,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           const call = change.doc.data();
           
           // Play "Fire Alarm" style sound
-          const audio = new Audio("/notification.mp3");
-          audio.play().catch(e => console.error("Audio error:", e));
+          playNotificationSound();
 
           toast.custom((t) => (
             <div className={cn(
-              "bg-white rounded-3xl shadow-2xl border-2 border-orange-500 overflow-hidden w-[340px] animate-in slide-in-from-right-10 duration-500",
+              "bg-white rounded-3xl shadow-2xl border-2 border-orange-500 overflow-hidden w-[340px] max-w-[calc(100vw-2rem)] animate-in slide-in-from-right-10 duration-500",
               t.visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
             )}>
               <div className="bg-orange-500 p-4 flex items-center justify-between">
@@ -255,8 +268,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!user) return null;
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50 overflow-x-hidden">
       <Toaster position="top-right" />
+      
+      {/* Sidebar Backdrop */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm transition-opacity"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
       
       {/* Sidebar */}
       <aside 
