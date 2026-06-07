@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 export async function POST(req: Request) {
   console.log("POST /api/orders started");
@@ -57,8 +57,8 @@ export async function POST(req: Request) {
             price: item.price,
             note: item.note || null,
           })),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
         });
         console.log("Mirror record created in Firebase");
       } else {

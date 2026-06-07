@@ -115,83 +115,105 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   useEffect(() => {
     if (!db || !user) return;
 
+    console.log("Starting real-time order listener...");
     const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
     let isInitialLoad = true;
 
     const unsub = onSnapshot(q, (snapshot) => {
+      console.log(`Order snapshot received: ${snapshot.size} docs, initial: ${isInitialLoad}`);
+      
       snapshot.docChanges().forEach((change) => {
-        if (change.type === "added" && !isInitialLoad) {
+        if (change.type === "added") {
+          if (isInitialLoad) {
+            console.log("Skipping initial order:", change.doc.id);
+            return;
+          }
+          
           const order = change.doc.data();
+          console.log("New order detected:", order);
           
           // Play "Fire Alarm" style sound
           playNotificationSound();
 
           // Detailed Stacking Notification
-          toast.custom((t) => (
-            <div
-              className={cn(
-                "bg-white rounded-3xl shadow-[0_20px_50px_rgba(220,38,38,0.3)] border-2 border-red-500 overflow-hidden w-[380px] max-w-[calc(100vw-2rem)] animate-in slide-in-from-right-10 duration-500",
-                t.visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
-              )}
-            >
-              <div className="bg-red-600 p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="bg-white/20 p-2 rounded-xl backdrop-blur-md animate-pulse">
-                    <ShoppingBag className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-white font-black text-sm uppercase tracking-wider">New Order Received!</h3>
-                    <p className="text-white/80 text-[10px] font-bold">#{order.orderNumber} • {new Date(order.createdAt).toLocaleTimeString()}</p>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => toast.dismiss(t.id)}
-                  className="p-1 hover:bg-white/10 rounded-lg transition-colors"
-                >
-                  <X className="w-4 h-4 text-white" />
-                </button>
-              </div>
-              
-              <div className="p-5 space-y-4">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Customer & Table</p>
-                    <p className="font-black text-gray-900 text-lg">{order.customerName}</p>
-                    <p className="text-red-600 font-bold text-sm">Table No: {order.tableNumber}</p>
-                  </div>
-                  <div className="bg-red-50 px-3 py-1 rounded-full border border-red-100 animate-pulse">
-                    <span className="text-[10px] font-black text-red-600 uppercase">Action Required</span>
-                  </div>
-                </div>
+          toast.custom((t) => {
+            // Robust date handling
+            let dateStr = "Just now";
+            try {
+              const date = order.createdAt?.toDate ? order.createdAt.toDate() : new Date(order.createdAt);
+              if (!isNaN(date.getTime())) {
+                dateStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+              }
+            } catch (e) {
+              console.error("Date parsing error:", e);
+            }
 
-                <div className="space-y-2 bg-gray-50 p-3 rounded-2xl border border-gray-100">
-                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Items to Prepare</p>
-                  {order.items?.map((item: any, idx: number) => (
-                    <div key={idx} className="flex justify-between items-center text-xs">
-                      <div className="flex gap-2 items-center">
-                        <span className="font-black text-red-600 bg-red-100 w-5 h-5 flex items-center justify-center rounded-md">{item.quantity}</span>
-                        <span className="font-bold text-gray-800">{item.name}</span>
-                      </div>
-                      {item.note && <span className="text-[8px] text-orange-500 italic font-bold">"{item.note}"</span>}
+            return (
+              <div
+                className={cn(
+                  "bg-white rounded-3xl shadow-[0_20px_50px_rgba(220,38,38,0.3)] border-2 border-red-500 overflow-hidden w-[380px] max-w-[calc(100vw-2rem)] animate-in slide-in-from-right-10 duration-500",
+                  t.visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+                )}
+              >
+                <div className="bg-red-600 p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-white/20 p-2 rounded-xl backdrop-blur-md animate-pulse">
+                      <ShoppingBag className="w-5 h-5 text-white" />
                     </div>
-                  ))}
-                </div>
-
-                <div className="flex items-center justify-between pt-2">
-                  <span className="text-lg font-black text-gray-900">Total: Rs. {order.total?.toLocaleString()}</span>
+                    <div>
+                      <h3 className="text-white font-black text-sm uppercase tracking-wider">New Order Received!</h3>
+                      <p className="text-white/80 text-[10px] font-bold">#{order.orderNumber} • {dateStr}</p>
+                    </div>
+                  </div>
                   <button 
-                    onClick={() => {
-                      router.push("/admin/orders");
-                      toast.dismiss(t.id);
-                    }}
-                    className="bg-gray-900 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-black transition-all active:scale-95 shadow-lg shadow-gray-200"
+                    onClick={() => toast.dismiss(t.id)}
+                    className="p-1 hover:bg-white/10 rounded-lg transition-colors"
                   >
-                    View in Dashboard
+                    <X className="w-4 h-4 text-white" />
                   </button>
                 </div>
+                
+                <div className="p-5 space-y-4">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Customer & Table</p>
+                      <p className="font-black text-gray-900 text-lg">{order.customerName}</p>
+                      <p className="text-red-600 font-bold text-sm">Table No: {order.tableNumber}</p>
+                    </div>
+                    <div className="bg-red-50 px-3 py-1 rounded-full border border-red-100 animate-pulse">
+                      <span className="text-[10px] font-black text-red-600 uppercase">Action Required</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 bg-gray-50 p-3 rounded-2xl border border-gray-100">
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Items to Prepare</p>
+                    {order.items?.map((item: any, idx: number) => (
+                      <div key={idx} className="flex justify-between items-center text-xs">
+                        <div className="flex gap-2 items-center">
+                          <span className="font-black text-red-600 bg-red-100 w-5 h-5 flex items-center justify-center rounded-md">{item.quantity}</span>
+                          <span className="font-bold text-gray-800">{item.name}</span>
+                        </div>
+                        {item.note && <span className="text-[8px] text-orange-500 italic font-bold">"{item.note}"</span>}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2">
+                    <span className="text-lg font-black text-gray-900">Total: Rs. {order.total?.toLocaleString()}</span>
+                    <button 
+                      onClick={() => {
+                        router.push("/admin/orders");
+                        toast.dismiss(t.id);
+                      }}
+                      className="bg-gray-900 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-black transition-all active:scale-95 shadow-lg shadow-gray-200"
+                    >
+                      View in Dashboard
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          ), { 
+            );
+          }, { 
             duration: 15000,
             position: "top-right",
             id: `new-order-${change.doc.id}` 
@@ -211,13 +233,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   useEffect(() => {
     if (!db || !user) return;
 
-    const q = query(collection(db, "waiter_calls"), orderBy("createdAt", "desc"), limit(1));
+    console.log("Starting waiter call listener...");
+    const q = query(collection(db, "waiter_calls"), orderBy("createdAt", "desc"));
     let isInitialLoad = true;
 
     const unsub = onSnapshot(q, (snapshot) => {
+      console.log(`Waiter call snapshot received: ${snapshot.size} docs, initial: ${isInitialLoad}`);
+      
       snapshot.docChanges().forEach((change) => {
-        if (change.type === "added" && !isInitialLoad) {
+        if (change.type === "added") {
+          if (isInitialLoad) {
+            console.log("Skipping initial waiter call:", change.doc.id);
+            return;
+          }
+
           const call = change.doc.data();
+          console.log("New waiter call detected:", call);
           
           // Play "Fire Alarm" style sound
           playNotificationSound();
@@ -251,7 +282,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </button>
               </div>
             </div>
-          ), { duration: 12000, position: "top-right" });
+          ), { duration: 12000, position: "top-right", id: `waiter-call-${change.doc.id}` });
         }
       });
       isInitialLoad = false;
