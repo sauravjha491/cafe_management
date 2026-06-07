@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, Search, Plus, Minus, X, ChevronRight, Star, Heart, HeartOff, History, Loader2, Coffee, Sparkles } from "lucide-react"; // Loader2 for status tracking
+import { ShoppingCart, Search, Plus, Minus, X, ChevronRight, Star, Heart, HeartOff, History, Loader2, Coffee, Sparkles, CheckCircle2 } from "lucide-react"; // Loader2 for status tracking
 import { useCartStore } from "@/store/useCartStore";
 import { useFavoritesStore } from "@/store/useFavoritesStore";
 import toast, { Toaster } from "react-hot-toast";
@@ -44,6 +44,7 @@ function OrderContent() {
   const [historyOrders, setHistoryOrders] = useState<any[]>([]);
   const [customerName, setCustomerName] = useState("");
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [placedOrder, setPlacedOrder] = useState<any>(null);
   const [settings, setSettings] = useState<Settings>({
     cafeName: "CAFÉ MENU",
     currency: "Rs.",
@@ -120,9 +121,9 @@ function OrderContent() {
       if (res.ok) {
         const order = await res.json();
         addOrderId(order.id);
-        toast.success("Order placed successfully!");
+        setPlacedOrder(order);
         clearCart();
-        window.location.href = `/order/track/${order.id}`;
+        // window.location.href = `/order/track/${order.id}`; // Removed for modal
       } else {
         throw new Error("Failed to place order");
       }
@@ -539,6 +540,74 @@ function OrderContent() {
           </button>
         </motion.div>
       )}
+
+      {/* Order Success Modal */}
+      <AnimatePresence>
+        {placedOrder && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 z-[60] backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="fixed inset-4 m-auto h-fit max-w-sm bg-white z-[70] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col"
+            >
+              <div className="bg-red-600 p-8 text-center relative overflow-hidden">
+                <motion.div 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 relative z-10"
+                >
+                  <CheckCircle2 className="w-10 h-10 text-white" />
+                </motion.div>
+                <h2 className="text-2xl font-black text-white relative z-10">Order Placed!</h2>
+                <p className="text-white/80 font-bold relative z-10">Order #{placedOrder.orderNumber}</p>
+                
+                {/* Decorative particles */}
+                <Sparkles className="absolute -top-2 -left-2 w-12 h-12 text-white/10" />
+                <Sparkles className="absolute -bottom-2 -right-2 w-16 h-16 text-white/10" />
+              </div>
+
+              <div className="p-6 space-y-6">
+                <div className="flex justify-between items-center text-sm font-bold text-gray-400 uppercase tracking-widest">
+                  <span>Order Details</span>
+                  <span className="text-gray-900">Table {placedOrder.tableNumber}</span>
+                </div>
+
+                <div className="space-y-3 max-h-40 overflow-y-auto pr-2 no-scrollbar">
+                  {placedOrder.items.map((item: any) => (
+                    <div key={item.id} className="flex justify-between items-start">
+                      <div className="flex gap-3">
+                        <span className="font-black text-red-600">{item.quantity}x</span>
+                        <span className="font-bold text-gray-800 text-sm">{item.product?.name || "Item"}</span>
+                      </div>
+                      <span className="font-bold text-gray-400 text-sm">{settings.currency} {(item.price * item.quantity).toLocaleString()}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-4 border-t border-dashed flex justify-between items-center">
+                  <span className="font-black text-gray-900">Total Paid</span>
+                  <span className="text-2xl font-black text-red-600">{settings.currency} {placedOrder.total.toLocaleString()}</span>
+                </div>
+
+                <button
+                  onClick={() => window.location.href = `/order/track/${placedOrder.id}`}
+                  className="w-full bg-gray-900 text-white py-4 rounded-2xl font-black text-lg shadow-xl shadow-gray-200 flex items-center justify-center gap-2 active:scale-95 transition-all"
+                >
+                  Track My Order
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
