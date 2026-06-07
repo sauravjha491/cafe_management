@@ -401,13 +401,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!user) return null;
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex min-h-screen bg-gray-50 overflow-x-hidden">
       <Toaster position="top-right" />
       
       {/* Sidebar Backdrop */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm transition-opacity"
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm transition-opacity duration-300"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
@@ -415,13 +415,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Sidebar */}
       <aside 
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-72 bg-[#0f172a] text-slate-300 border-r border-slate-800 shadow-2xl transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          "fixed inset-y-0 left-0 z-50 w-72 bg-[#0f172a] text-slate-300 border-r border-slate-800 shadow-2xl transition-transform duration-300 ease-in-out",
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
         <div className="h-full flex flex-col">
           {/* Logo Section */}
-          <div className="p-8 mb-4">
+          <div className="p-8 mb-2 shrink-0">
             <Link href="/admin/orders" className="flex items-center gap-3 group">
               <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-700 rounded-2xl flex items-center justify-center text-white font-black shadow-lg shadow-red-500/20 group-hover:scale-110 transition-transform">
                 C
@@ -434,7 +434,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           {/* Nav Links */}
-          <nav className="flex-1 px-6 space-y-1.5 pb-8">
+          <nav className="flex-1 px-6 space-y-1.5 overflow-y-auto custom-scrollbar py-4">
             <p className="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">Main Menu</p>
             {filteredNavItems.map((item) => {
               const Icon = item.icon;
@@ -443,6 +443,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <Link
                   key={item.href}
                   href={item.href}
+                  onClick={() => setIsSidebarOpen(false)}
                   className={cn(
                     "flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group",
                     isActive 
@@ -450,8 +451,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       : "text-slate-400 hover:text-white hover:bg-slate-800/50"
                   )}
                 >
-                  <Icon className={cn("w-4 h-4 transition-all duration-300", isActive ? "scale-110" : "group-hover:scale-110")} />
-                  {item.label}
+                  <Icon className={cn("w-5 h-5 transition-all duration-300", isActive ? "scale-110" : "group-hover:scale-110")} />
+                  <span className="text-sm">{item.label}</span>
                   {isActive && (
                     <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
                   )}
@@ -461,10 +462,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </nav>
 
           {/* Footer Actions */}
-          <div className="p-6 mt-auto bg-slate-900/50 border-t border-slate-800/50 space-y-4">
+          <div className="p-6 mt-auto bg-slate-900/50 border-t border-slate-800/50 space-y-4 shrink-0">
             <div className="space-y-1">
               <Link
                 href="/admin/profile"
+                onClick={() => setIsSidebarOpen(false)}
                 className={cn(
                   "flex items-center gap-4 px-4 py-3 rounded-xl font-bold transition-all",
                   pathname === "/admin/profile" 
@@ -478,6 +480,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               {role === "OWNER" && (
                 <Link
                   href="/admin/settings"
+                  onClick={() => setIsSidebarOpen(false)}
                   className={cn(
                     "flex items-center gap-4 px-4 py-3 rounded-xl font-bold transition-all",
                     pathname === "/admin/settings" 
@@ -526,8 +529,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        <header className="sticky top-0 z-40 bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between lg:hidden shadow-xl">
+      <div className="flex-1 flex flex-col min-w-0 lg:ml-72">
+        <header className="sticky top-0 z-40 bg-slate-900 border-b border-slate-800 px-4 md:px-6 py-4 flex items-center justify-between lg:hidden shadow-xl">
           <button 
             onClick={() => setIsSidebarOpen(true)}
             className="p-2.5 bg-slate-800 rounded-xl text-slate-400 active:scale-95 transition-all"
@@ -543,8 +546,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-[#f8fafc] p-4 lg:p-8 custom-scrollbar">
-          <div className="max-w-7xl mx-auto">
+        <main className="flex-1 bg-[#f8fafc] p-4 md:p-6 lg:p-10">
+          <div className="max-w-[1600px] mx-auto">
             {children}
           </div>
         </main>
