@@ -355,7 +355,7 @@ export default function TrackOrder() {
                     {item.quantity}x
                   </div>
                   <div className="pt-1">
-                    <p className="font-black text-gray-800 leading-tight text-lg">{item.product.name}</p>
+                    <p className="font-black text-gray-800 leading-tight text-lg">{item.product?.name || item.name}</p>
                     {item.note && (
                       <div className="flex items-center gap-1.5 mt-1.5 bg-red-50 px-3 py-1 rounded-full w-fit">
                         <Sparkles className="w-3 h-3 text-red-500" />
