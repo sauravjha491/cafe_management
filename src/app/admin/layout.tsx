@@ -6,14 +6,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { 
   LayoutDashboard, Coffee, Users, Table as TableIcon, 
   BarChart3, Settings, LogOut, Menu, X, Loader2, 
-  ShoppingBag, Clock 
+  ShoppingBag, Clock, Bell, Volume2, VolumeX 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Toaster, toast } from "react-hot-toast";
 import { useAuthStore } from "@/store/useAuthStore";
 import { auth, db } from "@/lib/firebase";
 import { signOut, onAuthStateChanged } from "firebase/auth";
-import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy, limit } from "firebase/firestore";
 
 const navItems = [
   { label: "Overview", href: "/admin", icon: LayoutDashboard },
@@ -28,7 +28,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSoundEnabled, setIsSoundEnabled] = useState(false);
   const { user, setUser, loading, setLoading, role } = useAuthStore();
+
+  const toggleSound = () => {
+    const audio = new Audio("/notification.mp3");
+    audio.play()
+      .then(() => setIsSoundEnabled(true))
+      .catch(() => toast.error("Sound file missing or blocked by browser"));
+  };
 
   // Filter nav items based on role
   const filteredNavItems = navItems.filter(item => {
@@ -181,6 +189,58 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return () => unsub();
   }, [user, router]);
 
+  // Waiter Call Listener
+  useEffect(() => {
+    if (!db || !user) return;
+
+    const q = query(collection(db, "waiter_calls"), orderBy("createdAt", "desc"), limit(1));
+    let isInitialLoad = true;
+
+    const unsub = onSnapshot(q, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === "added" && !isInitialLoad) {
+          const call = change.doc.data();
+          
+          // Play "Fire Alarm" style sound
+          const audio = new Audio("/notification.mp3");
+          audio.play().catch(e => console.error("Audio error:", e));
+
+          toast.custom((t) => (
+            <div className={cn(
+              "bg-white rounded-3xl shadow-2xl border-2 border-orange-500 overflow-hidden w-[340px] animate-in slide-in-from-right-10 duration-500",
+              t.visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+            )}>
+              <div className="bg-orange-500 p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="bg-white/20 p-2 rounded-xl backdrop-blur-md">
+                    <Bell className="w-5 h-5 text-white animate-ring" />
+                  </div>
+                  <h3 className="text-white font-black text-sm uppercase tracking-wider">Waiter Called!</h3>
+                </div>
+                <button onClick={() => toast.dismiss(t.id)}>
+                  <X className="w-4 h-4 text-white" />
+                </button>
+              </div>
+              <div className="p-5">
+                <p className="text-gray-900 font-black text-xl mb-1">Table {call.tableNumber}</p>
+                <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">{call.customerName} is requesting assistance</p>
+                <button 
+                  onClick={() => toast.dismiss(t.id)}
+                  className="mt-4 w-full bg-gray-900 text-white py-2 rounded-xl text-xs font-bold hover:bg-black transition-all"
+                >
+                  I'm On It!
+                </button>
+              </div>
+            </div>
+          ), { duration: 8000, position: "top-right" });
+        }
+      });
+      isInitialLoad = false;
+    });
+
+    return () => unsub();
+  }, [user]);
+
   if (pathname === "/admin/login") return <>{children}</>;
 
   if (loading) {
@@ -274,6 +334,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             >
               <LogOut className="w-5 h-5 text-gray-400" />
               Sign Out
+            </button>
+
+            {/* Sound Toggle */}
+            <button 
+              onClick={toggleSound}
+              className={cn(
+                "w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all",
+                isSoundEnabled ? "text-green-600 bg-green-50" : "text-gray-500 bg-gray-50"
+              )}
+            >
+              {isSoundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+              {isSoundEnabled ? "Sound Active" : "Enable Sound"}
             </button>
           </div>
         </div>

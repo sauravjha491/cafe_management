@@ -4,15 +4,16 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { db } from "@/lib/firebase";
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot, collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { 
   CheckCircle2, Clock, Coffee, Package, 
   Truck, User, ArrowLeft, Printer,
   Sparkles, Heart, UtensilsCrossed,
-  ChefHat, Bell
+  ChefHat, Bell, Home
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import toast, { Toaster } from "react-hot-toast";
 
 const statuses = [
   { id: "PENDING", label: "Ordered", icon: Clock, color: "text-blue-500", bg: "bg-blue-50", description: "Waiting for kitchen to accept...", particle: "🚀" },
@@ -72,6 +73,7 @@ export default function TrackOrder() {
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [isCallingWaiter, setIsCallingWaiter] = useState(false);
   const [settings, setSettings] = useState<any>({
     currency: "Rs.",
   });
@@ -83,6 +85,35 @@ export default function TrackOrder() {
         if (!data.error) setSettings(data);
       });
   }, []);
+
+  const handleCallWaiter = async () => {
+    if (!db || !order || isCallingWaiter) return;
+    
+    setIsCallingWaiter(true);
+    try {
+      await addDoc(collection(db, "waiter_calls"), {
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        tableNumber: order.tableNumber,
+        customerName: order.customerName,
+        createdAt: serverTimestamp(),
+        status: "PENDING"
+      });
+      toast.success("Waiter called! Someone will be with you shortly.", {
+        icon: "🔔",
+        style: {
+          borderRadius: '1rem',
+          background: '#333',
+          color: '#fff',
+        }
+      });
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to call waiter. Please try again.");
+    } finally {
+      setTimeout(() => setIsCallingWaiter(false), 5000); // Prevent spamming
+    }
+  };
 
   useEffect(() => {
     if (!orderId) return;
@@ -150,6 +181,7 @@ export default function TrackOrder() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20 overflow-x-hidden relative">
+      <Toaster position="top-center" />
       <FloatingParticles />
       
       {/* Decorative Background Elements */}
@@ -177,7 +209,7 @@ export default function TrackOrder() {
         {/* Navigation */}
         <div className="flex items-center justify-between text-white mb-8">
           <Link href="/order" className="p-3 bg-white/20 backdrop-blur-md rounded-2xl hover:bg-white/30 transition-all group">
-            <ArrowLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
+            <Home className="w-6 h-6 group-hover:scale-110 transition-transform" />
           </Link>
           <div className="text-center">
             <motion.h1 
@@ -355,18 +387,33 @@ export default function TrackOrder() {
 
         {/* Footer Support */}
         <div className="grid grid-cols-2 gap-4">
-          <button className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col items-center gap-3 hover:bg-gray-50 transition-all active:scale-95 group">
-            <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+          <button 
+            onClick={handleCallWaiter}
+            disabled={isCallingWaiter}
+            className={cn(
+              "bg-white p-6 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col items-center gap-3 hover:bg-gray-50 transition-all active:scale-95 group",
+              isCallingWaiter ? "opacity-50 cursor-not-allowed" : ""
+            )}
+          >
+            <div className={cn(
+              "w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform",
+              isCallingWaiter ? "animate-pulse" : ""
+            )}>
               <Bell className="w-6 h-6 text-red-600" />
             </div>
-            <span className="font-black text-xs text-gray-900 uppercase tracking-widest">Call Waiter</span>
+            <span className="font-black text-xs text-gray-900 uppercase tracking-widest">
+              {isCallingWaiter ? "Calling..." : "Call Waiter"}
+            </span>
           </button>
-          <button className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col items-center gap-3 hover:bg-gray-50 transition-all active:scale-95 group">
+          <Link 
+            href="/order?table=1&category=favorites"
+            className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col items-center gap-3 hover:bg-gray-50 transition-all active:scale-95 group"
+          >
             <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
               <Heart className="w-6 h-6 text-red-600" />
             </div>
             <span className="font-black text-xs text-gray-900 uppercase tracking-widest">Favorites</span>
-          </button>
+          </Link>
         </div>
 
         <div className="text-center pt-4">

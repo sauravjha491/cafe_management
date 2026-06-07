@@ -61,7 +61,12 @@ function OrderContent() {
       .then((res) => res.json())
       .then((data) => {
         setCategories(data);
-        if (data.length > 0) setSelectedCategory(data[0].id);
+        const catParam = searchParams.get("category");
+        if (catParam === "favorites") {
+          setSelectedCategory("favorites");
+        } else if (data.length > 0) {
+          setSelectedCategory(data[0].id);
+        }
       });
 
     fetch("/api/admin/settings")
