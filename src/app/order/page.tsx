@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, Search, Plus, Minus, X, ChevronRight, Star, Heart, HeartOff, History, Loader2, Coffee } from "lucide-react"; // Loader2 for status tracking
+import { ShoppingCart, Search, Plus, Minus, X, ChevronRight, Star, Heart, HeartOff, History, Loader2, Coffee, Sparkles } from "lucide-react"; // Loader2 for status tracking
 import { useCartStore } from "@/store/useCartStore";
 import { useFavoritesStore } from "@/store/useFavoritesStore";
 import toast, { Toaster } from "react-hot-toast";
@@ -26,6 +26,13 @@ interface Category {
   products: Product[];
 }
 
+interface Settings {
+  cafeName: string;
+  currency: string;
+  taxRate: number;
+  serviceCharge: number;
+}
+
 function OrderContent() {
   const searchParams = useSearchParams();
   const table = searchParams.get("table") || "0";
@@ -37,6 +44,12 @@ function OrderContent() {
   const [historyOrders, setHistoryOrders] = useState<any[]>([]);
   const [customerName, setCustomerName] = useState("");
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [settings, setSettings] = useState<Settings>({
+    cafeName: "CAFÉ MENU",
+    currency: "Rs.",
+    taxRate: 5.0,
+    serviceCharge: 2.0,
+  });
 
   const { items, addItem, removeItem, updateQuantity, getTotal, clearCart } = useCartStore();
   const { favoriteIds, toggleFavorite, isFavorite } = useFavoritesStore();
@@ -48,6 +61,12 @@ function OrderContent() {
       .then((data) => {
         setCategories(data);
         if (data.length > 0) setSelectedCategory(data[0].id);
+      });
+
+    fetch("/api/admin/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.error) setSettings(data);
       });
   }, []);
 
@@ -71,6 +90,10 @@ function OrderContent() {
           p.name.toLowerCase().includes(searchQuery.toLowerCase())
         ) || [];
 
+  const taxAmount = (getTotal() * settings.taxRate) / 100;
+  const serviceChargeAmount = (getTotal() * settings.serviceCharge) / 100;
+  const totalAmount = getTotal() + taxAmount + serviceChargeAmount;
+
   const handlePlaceOrder = async () => {
     if (!customerName) {
       toast.error("Please enter your name");
@@ -90,7 +113,7 @@ function OrderContent() {
           tableNumber: table,
           customerName,
           items,
-          total: getTotal() * 1.07,
+          total: totalAmount,
         }),
       });
 
@@ -117,7 +140,7 @@ function OrderContent() {
       {/* Header */}
       <header className="sticky top-0 z-30 bg-white border-b px-4 py-3 flex items-center justify-between">
         <div className="flex flex-col">
-          <h1 className="text-xl font-bold text-red-600">CAFÉ MENU</h1>
+          <h1 className="text-xl font-bold text-red-600 uppercase">{settings.cafeName}</h1>
           <span className="text-xs text-gray-500 font-medium">Table No: {table}</span>
         </div>
         <div className="flex items-center gap-2">
@@ -185,6 +208,50 @@ function OrderContent() {
         ))}
       </div>
 
+      {/* Featured Section */}
+      {selectedCategory !== "favorites" && searchQuery === "" && categories.flatMap(c => c.products).filter(p => p.featured).length > 0 && (
+        <div className="py-6">
+          <div className="px-4 mb-4 flex items-center justify-between">
+            <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+              Chef's Special
+            </h2>
+          </div>
+          <div className="overflow-x-auto no-scrollbar flex gap-4 px-4 pb-4">
+            {categories.flatMap(c => c.products).filter(p => p.featured).map((product) => (
+              <motion.div
+                key={`featured-${product.id}`}
+                whileTap={{ scale: 0.98 }}
+                className="min-w-[280px] bg-white rounded-3xl overflow-hidden shadow-xl shadow-gray-200/50 border border-gray-100 flex flex-col"
+              >
+                <div className="relative h-40">
+                  <Image src={product.image} alt={product.name} fill className="object-cover" />
+                  <div className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-md rounded-full shadow-sm">
+                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  </div>
+                </div>
+                <div className="p-4 flex flex-col flex-1">
+                  <h3 className="font-bold text-gray-800 line-clamp-1 mb-1">{product.name}</h3>
+                  <p className="text-gray-500 text-xs line-clamp-2 mb-3 flex-1">{product.description}</p>
+                  <div className="flex items-center justify-between mt-auto">
+                    <span className="font-black text-red-600">{settings.currency} {product.price.toLocaleString()}</span>
+                    <button 
+                      onClick={() => {
+                        addItem(product);
+                        toast.success(`Added ${product.name}`);
+                      }}
+                      className="bg-red-600 text-white p-2 rounded-xl shadow-lg shadow-red-100 active:scale-90 transition-all"
+                    >
+                      <Plus className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Product List */}
       <div className="p-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filteredProducts.length === 0 ? (
@@ -228,7 +295,7 @@ function OrderContent() {
               <div className="p-4">
                 <div className="flex justify-between items-start mb-1">
                   <h3 className="font-bold text-gray-800 text-lg">{product.name}</h3>
-                  <span className="font-bold text-red-600">Rs. {product.price.toLocaleString()}</span>
+                  <span className="font-bold text-red-600">{settings.currency} {product.price.toLocaleString()}</span>
                 </div>
                 <p className="text-gray-500 text-xs line-clamp-2 mb-4">{product.description}</p>
                 <button
@@ -294,7 +361,7 @@ function OrderContent() {
                       </div>
                       <div className="flex justify-between items-center text-sm">
                         <span className="text-gray-500 font-medium">{new Date(order.createdAt).toLocaleDateString()}</span>
-                        <span className="font-black text-gray-900">Rs. {order.total.toLocaleString()}</span>
+                        <span className="font-black text-gray-900">{settings.currency} {order.total.toLocaleString()}</span>
                       </div>
                     </div>
                   ))
@@ -351,7 +418,7 @@ function OrderContent() {
                               <X className="w-5 h-5" />
                             </button>
                           </div>
-                          <p className="text-red-600 font-bold text-sm">Rs. {item.price.toLocaleString()}</p>
+                          <p className="text-red-600 font-bold text-sm">{settings.currency} {item.price.toLocaleString()}</p>
                         </div>
                       </div>
                       
@@ -395,19 +462,19 @@ function OrderContent() {
                 <div className="space-y-3 bg-gray-50 p-4 rounded-2xl border border-gray-100">
                   <div className="flex justify-between text-sm text-gray-500">
                     <span>Subtotal</span>
-                    <span className="font-bold text-gray-900">Rs. {getTotal().toLocaleString()}</span>
+                    <span className="font-bold text-gray-900">{settings.currency} {getTotal().toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-500">
-                    <span>Tax (5%)</span>
-                    <span className="font-bold text-gray-900">Rs. {(getTotal() * 0.05).toLocaleString()}</span>
+                    <span>Tax ({settings.taxRate}%)</span>
+                    <span className="font-bold text-gray-900">{settings.currency} {taxAmount.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-500">
-                    <span>Service Charge (2%)</span>
-                    <span className="font-bold text-gray-900">Rs. {(getTotal() * 0.02).toLocaleString()}</span>
+                    <span>Service Charge ({settings.serviceCharge}%)</span>
+                    <span className="font-bold text-gray-900">{settings.currency} {serviceChargeAmount.toLocaleString()}</span>
                   </div>
                   <div className="pt-2 border-t flex justify-between items-center text-lg font-black text-gray-900">
                     <span>Total Amount</span>
-                    <span className="text-red-600 text-2xl">Rs. {(getTotal() * 1.07).toLocaleString()}</span>
+                    <span className="text-red-600 text-2xl">{settings.currency} {totalAmount.toLocaleString()}</span>
                   </div>
                 </div>
 
@@ -467,7 +534,7 @@ function OrderContent() {
             </div>
             <div className="text-right">
               <p className="text-xs opacity-80 font-medium">Total</p>
-              <p className="font-bold text-lg">Rs. {getTotal().toLocaleString()}</p>
+              <p className="font-bold text-lg">{settings.currency} {getTotal().toLocaleString()}</p>
             </div>
           </button>
         </motion.div>

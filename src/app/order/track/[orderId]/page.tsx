@@ -23,30 +23,44 @@ const statuses = [
 ];
 
 function FloatingParticles() {
+  const [particles, setParticles] = useState<any[]>([]);
+
+  useEffect(() => {
+    const icons = ["☕", "🥐", "🍕", "🍔", "🍰", "🥤"];
+    const newParticles = [...Array(20)].map(() => ({
+      x: Math.random() * 100 + "%",
+      xAnimate: (Math.random() * 100 - 50) + (Math.random() * 100) + "%",
+      duration: Math.random() * 10 + 10,
+      delay: Math.random() * 20,
+      icon: icons[Math.floor(Math.random() * icons.length)]
+    }));
+    setParticles(newParticles);
+  }, []);
+
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-      {[...Array(20)].map((_, i) => (
+      {particles.map((p, i) => (
         <motion.div
           key={i}
           initial={{ 
             opacity: 0, 
-            x: Math.random() * 100 + "%", 
+            x: p.x, 
             y: "110%" 
           }}
           animate={{ 
             opacity: [0, 0.5, 0],
             y: "-10%",
-            x: (Math.random() * 100 - 50) + (Math.random() * 100) + "%"
+            x: p.xAnimate
           }}
           transition={{ 
-            duration: Math.random() * 10 + 10,
+            duration: p.duration,
             repeat: Infinity,
             ease: "linear",
-            delay: Math.random() * 20
+            delay: p.delay
           }}
           className="absolute text-xl"
         >
-          {["☕", "🥐", "🍕", "🍔", "🍰", "🥤"][Math.floor(Math.random() * 6)]}
+          {p.icon}
         </motion.div>
       ))}
     </div>
@@ -58,6 +72,17 @@ export default function TrackOrder() {
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [settings, setSettings] = useState<any>({
+    currency: "Rs.",
+  });
+
+  useEffect(() => {
+    fetch("/api/admin/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.error) setSettings(data);
+      });
+  }, []);
 
   useEffect(() => {
     if (!orderId) return;
@@ -297,12 +322,12 @@ export default function TrackOrder() {
                     {item.note && (
                       <div className="flex items-center gap-1.5 mt-1.5 bg-red-50 px-3 py-1 rounded-full w-fit">
                         <Sparkles className="w-3 h-3 text-red-500" />
-                        <span className="text-[10px] text-red-600 font-bold italic">"{item.note}"</span>
+                        <span className="text-[10px] text-red-600 font-bold italic">&quot;{item.note}&quot;</span>
                       </div>
                     )}
                   </div>
                 </div>
-                <p className="font-black text-gray-900 tracking-tighter text-lg pt-1">Rs. {(item.price * item.quantity).toLocaleString()}</p>
+                <p className="font-black text-gray-900 tracking-tighter text-lg pt-1">{settings.currency} {(item.price * item.quantity).toLocaleString()}</p>
               </div>
             ))}
           </div>
@@ -310,16 +335,16 @@ export default function TrackOrder() {
           <div className="mt-10 pt-8 border-t-4 border-dotted border-gray-50 space-y-4">
             <div className="flex justify-between text-sm text-gray-400 font-black uppercase tracking-widest">
               <span>Subtotal</span>
-              <span className="text-gray-900">Rs. {(order.total / 1.07).toLocaleString()}</span>
+              <span className="text-gray-900">{settings.currency} {(order.total / 1.07).toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-sm text-gray-400 font-black uppercase tracking-widest">
               <span>Tax & Svc (7%)</span>
-              <span className="text-gray-900">Rs. {(order.total - (order.total / 1.07)).toLocaleString()}</span>
+              <span className="text-gray-900">{settings.currency} {(order.total - (order.total / 1.07)).toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-center pt-4">
               <div>
                 <span className="text-xs font-black text-gray-400 uppercase tracking-widest block mb-1">Total Amount</span>
-                <span className="text-3xl font-black text-red-600 tracking-tighter">Rs. {order.total?.toLocaleString()}</span>
+                <span className="text-3xl font-black text-red-600 tracking-tighter">{settings.currency} {order.total?.toLocaleString()}</span>
               </div>
               <div className="text-right">
                 <span className="text-[10px] font-black text-green-600 bg-green-50 px-3 py-1 rounded-full uppercase tracking-widest">Paid via QR</span>
