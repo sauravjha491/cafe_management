@@ -50,6 +50,14 @@ export async function POST(req: Request) {
           status: order.status,
           customerName: order.customerName,
           tableNumber: order.tableNumber,
+          total: order.total,
+          items: items.map((item: any) => ({
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price,
+            note: item.note || null,
+          })),
+          createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         });
         console.log("Mirror record created in Firebase");

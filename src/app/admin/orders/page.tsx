@@ -43,48 +43,9 @@ export default function AdminOrders() {
 
     // Real-time listener for new orders and status updates
     const q = query(collection(db, "orders"), orderBy("updatedAt", "desc"));
-    
-    // Track if it's the first load to avoid notification for existing orders
-    let isInitialLoad = true;
 
     const unsub = onSnapshot(q, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
-        if (change.type === "added") {
-          if (!isInitialLoad) {
-            const newOrder = change.doc.data();
-            // Trigger sound and toast
-            const audio = new Audio("/notification.mp3");
-            audio.play().catch(e => console.log("Audio play failed:", e));
-            
-            toast.custom((t) => (
-              <div className={cn(
-                "bg-white p-4 rounded-2xl shadow-2xl border-2 border-red-500 flex flex-col gap-2 max-w-sm w-full animate-in slide-in-from-right-10",
-                t.visible ? "opacity-100" : "opacity-0"
-              )}>
-                <div className="flex items-center gap-3">
-                  <div className="bg-red-500 p-2 rounded-full">
-                    <Package className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-black text-gray-900">New Order Received! 🚀</p>
-                    <p className="text-xs text-gray-500">Order #{newOrder.orderNumber} • Table {newOrder.tableNumber}</p>
-                  </div>
-                </div>
-                <div className="bg-gray-50 p-2 rounded-xl">
-                  <p className="text-xs font-bold text-gray-400 uppercase mb-1">Customer</p>
-                  <p className="font-bold text-gray-800">{newOrder.customerName}</p>
-                </div>
-                <button 
-                  onClick={() => toast.dismiss(t.id)}
-                  className="w-full bg-gray-900 text-white py-2 rounded-xl text-xs font-bold"
-                >
-                  Dismiss
-                </button>
-              </div>
-            ), { duration: 6000, position: "top-right" });
-          }
-        }
-
         if (change.type === "added" || change.type === "modified") {
           // Re-fetch to get full data from SQLite
           setTimeout(() => {
@@ -94,7 +55,6 @@ export default function AdminOrders() {
           }, 500);
         }
       });
-      isInitialLoad = false;
     });
 
     return () => unsub();

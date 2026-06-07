@@ -9,10 +9,11 @@ import {
   ShoppingBag, Clock 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Toaster } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
 import { useAuthStore } from "@/store/useAuthStore";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { signOut, onAuthStateChanged } from "firebase/auth";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 
 const navItems = [
   { label: "Overview", href: "/admin", icon: LayoutDashboard },
@@ -84,6 +85,101 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     setUser(null);
     router.push("/admin/login");
   };
+
+  // Real-time Order Listener for Notifications
+  useEffect(() => {
+    if (!db || !user) return;
+
+    const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+    let isInitialLoad = true;
+
+    const unsub = onSnapshot(q, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === "added" && !isInitialLoad) {
+          const order = change.doc.data();
+          
+          // Play "Fire Alarm" style sound
+          const audio = new Audio("/notification.mp3");
+          audio.loop = false;
+          audio.play().catch(e => console.error("Audio error:", e));
+
+          // Detailed Stacking Notification
+          toast.custom((t) => (
+            <div
+              className={cn(
+                "bg-white rounded-3xl shadow-2xl border-2 border-red-500 overflow-hidden w-[380px] animate-in slide-in-from-right-10 duration-500",
+                t.visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+              )}
+            >
+              <div className="bg-red-600 p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="bg-white/20 p-2 rounded-xl backdrop-blur-md">
+                    <ShoppingBag className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-white font-black text-sm uppercase tracking-wider">New Order!</h3>
+                    <p className="text-white/80 text-[10px] font-bold">#{order.orderNumber} • {new Date(order.createdAt).toLocaleTimeString()}</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => toast.dismiss(t.id)}
+                  className="p-1 hover:bg-white/10 rounded-lg transition-colors"
+                >
+                  <X className="w-4 h-4 text-white" />
+                </button>
+              </div>
+              
+              <div className="p-5 space-y-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Customer & Table</p>
+                    <p className="font-black text-gray-900 text-lg">{order.customerName}</p>
+                    <p className="text-red-600 font-bold text-sm">Table No: {order.tableNumber}</p>
+                  </div>
+                  <div className="bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
+                    <span className="text-[10px] font-black text-gray-500 uppercase">Pending</span>
+                  </div>
+                </div>
+
+                <div className="space-y-2 bg-gray-50 p-3 rounded-2xl border border-gray-100">
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Order Details</p>
+                  {order.items?.map((item: any, idx: number) => (
+                    <div key={idx} className="flex justify-between items-center text-xs">
+                      <div className="flex gap-2 items-center">
+                        <span className="font-black text-red-600 bg-red-50 w-5 h-5 flex items-center justify-center rounded-md">{item.quantity}</span>
+                        <span className="font-bold text-gray-800">{item.name}</span>
+                      </div>
+                      {item.note && <span className="text-[8px] text-orange-500 italic font-bold">"{item.note}"</span>}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-lg font-black text-gray-900">Total: Rs. {order.total?.toLocaleString()}</span>
+                  <button 
+                    onClick={() => {
+                      router.push("/admin/orders");
+                      toast.dismiss(t.id);
+                    }}
+                    className="bg-gray-900 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-black transition-all active:scale-95"
+                  >
+                    View Order
+                  </button>
+                </div>
+              </div>
+            </div>
+          ), { 
+            duration: 10000,
+            position: "top-right",
+            id: `new-order-${change.doc.id}` 
+          });
+        }
+      });
+      isInitialLoad = false;
+    });
+
+    return () => unsub();
+  }, [user, router]);
 
   if (pathname === "/admin/login") return <>{children}</>;
 
