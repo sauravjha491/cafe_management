@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, Search, Plus, Minus, X, ChevronRight, Star, Heart, HeartOff, History, Loader2 } from "lucide-react"; // Loader2 for status tracking
+import { ShoppingCart, Search, Plus, Minus, X, ChevronRight, Star, Heart, HeartOff, History, Loader2, Coffee } from "lucide-react"; // Loader2 for status tracking
 import { useCartStore } from "@/store/useCartStore";
 import { useFavoritesStore } from "@/store/useFavoritesStore";
 import toast, { Toaster } from "react-hot-toast";
