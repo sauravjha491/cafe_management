@@ -415,24 +415,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Sidebar */}
       <aside 
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 shadow-2xl shadow-gray-200/50 transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
+          "fixed inset-y-0 left-0 z-50 w-72 bg-[#0f172a] text-slate-300 border-r border-slate-800 shadow-2xl transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         <div className="h-full flex flex-col">
-          {/* Logo */}
-          <div className="p-8 border-b border-gray-50 flex items-center justify-between">
-            <Link href="/admin/orders" className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-red-600 rounded-2xl flex items-center justify-center text-white font-black shadow-lg shadow-red-200">C</div>
-              <span className="text-2xl font-black text-gray-900 tracking-tight">CAFE<span className="text-red-600">PRO</span></span>
+          {/* Logo Section */}
+          <div className="p-8 mb-4">
+            <Link href="/admin/orders" className="flex items-center gap-3 group">
+              <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-700 rounded-2xl flex items-center justify-center text-white font-black shadow-lg shadow-red-500/20 group-hover:scale-110 transition-transform">
+                C
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xl font-black text-white tracking-tight leading-none">CAFE<span className="text-red-500">PRO</span></span>
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-1">Management</span>
+              </div>
             </Link>
-            <button className="lg:hidden p-2 text-gray-400 hover:text-gray-900" onClick={() => setIsSidebarOpen(false)}>
-              <X className="w-6 h-6" />
-            </button>
           </div>
 
           {/* Nav Links */}
-          <nav className="flex-1 p-6 space-y-2 overflow-y-auto no-scrollbar">
+          <nav className="flex-1 px-6 space-y-1.5 overflow-y-auto custom-scrollbar pb-8">
+            <p className="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">Main Menu</p>
             {filteredNavItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
@@ -441,77 +444,82 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-4 px-4 py-4 rounded-2xl font-bold transition-all group",
+                    "flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group",
                     isActive 
-                      ? "bg-red-600 text-white shadow-xl shadow-red-100" 
-                      : "text-gray-400 hover:bg-gray-50 hover:text-gray-900"
+                      ? "bg-gradient-to-r from-red-600 to-red-500 text-white shadow-lg shadow-red-600/20 translate-x-1" 
+                      : "text-slate-400 hover:text-white hover:bg-slate-800/50"
                   )}
                 >
-                  <Icon className={cn("w-5 h-5 transition-transform group-hover:scale-110", isActive ? "text-white" : "text-gray-400")} />
+                  <Icon className={cn("w-5 h-5 transition-all duration-300", isActive ? "scale-110" : "group-hover:scale-110")} />
                   {item.label}
+                  {isActive && (
+                    <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+                  )}
                 </Link>
               );
             })}
           </nav>
 
           {/* Footer Actions */}
-          <div className="p-6 border-t border-gray-50 space-y-3 bg-white">
-            <Link
-              href="/admin/profile"
-              className={cn(
-                "flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all",
-                pathname === "/admin/profile" 
-                  ? "bg-red-50 text-red-600" 
-                  : "text-gray-400 hover:bg-gray-50 hover:text-gray-900"
-              )}
-            >
-              <Users className="w-5 h-5" />
-              My Profile
-            </Link>
-            {role === "OWNER" && (
+          <div className="p-6 mt-auto bg-slate-900/50 border-t border-slate-800/50 space-y-4">
+            <div className="space-y-1">
               <Link
-                href="/admin/settings"
+                href="/admin/profile"
                 className={cn(
-                  "flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all",
-                  pathname === "/admin/settings" 
-                    ? "bg-red-50 text-red-600" 
-                    : "text-gray-400 hover:bg-gray-50 hover:text-gray-900"
+                  "flex items-center gap-4 px-4 py-3 rounded-xl font-bold transition-all",
+                  pathname === "/admin/profile" 
+                    ? "text-red-400 bg-red-400/10" 
+                    : "text-slate-400 hover:text-white hover:bg-slate-800/50"
                 )}
               >
-                <Settings className="w-5 h-5" />
-                Settings
+                <Users className="w-4 h-4" />
+                <span className="text-sm">My Profile</span>
               </Link>
-            )}
+              {role === "OWNER" && (
+                <Link
+                  href="/admin/settings"
+                  className={cn(
+                    "flex items-center gap-4 px-4 py-3 rounded-xl font-bold transition-all",
+                    pathname === "/admin/settings" 
+                      ? "text-red-400 bg-red-400/10" 
+                      : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+                  )}
+                >
+                  <Settings className="w-4 h-4" />
+                  <span className="text-sm">Settings</span>
+                </Link>
+              )}
+            </div>
             
-            <div className="h-px bg-gray-50 my-2" />
-
             {/* Sound Toggle */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 p-1.5 bg-slate-800/50 rounded-2xl">
               <button 
                 onClick={toggleSound}
                 className={cn(
-                  "flex-1 flex items-center gap-3 px-4 py-3 rounded-2xl font-bold transition-all",
-                  isSoundEnabled ? "text-green-600 bg-green-50" : "text-gray-400 bg-gray-50"
+                  "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold transition-all text-[10px] uppercase tracking-wider",
+                  isSoundEnabled 
+                    ? "bg-green-500/10 text-green-400 shadow-sm" 
+                    : "bg-slate-700/50 text-slate-500"
                 )}
               >
-                {isSoundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
-                <span className="text-xs">{isSoundEnabled ? "Sound On" : "Sound Off"}</span>
+                {isSoundEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
+                {isSoundEnabled ? "Sound On" : "Sound Off"}
               </button>
               <button 
                 onClick={showTestNotification}
-                className="p-3 bg-gray-50 text-gray-400 rounded-2xl hover:bg-gray-100 transition-all"
+                className="p-2.5 bg-slate-700/50 text-slate-400 rounded-xl hover:text-white hover:bg-slate-700 transition-all"
                 title="Test Notification & Sound"
               >
-                <Bell className="w-5 h-5" />
+                <Bell className="w-4 h-4" />
               </button>
             </div>
 
             <button 
               onClick={handleLogout}
-              className="w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold text-gray-400 hover:bg-red-50 hover:text-red-600 transition-all group"
+              className="w-full flex items-center gap-4 px-4 py-3 rounded-xl font-bold text-slate-500 hover:text-red-400 hover:bg-red-400/10 transition-all group"
             >
-              <LogOut className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
-              Sign Out
+              <LogOut className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+              <span className="text-sm">Sign Out</span>
             </button>
           </div>
         </div>
@@ -519,18 +527,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-gray-100 px-6 py-4 flex items-center justify-between lg:hidden">
+        <header className="sticky top-0 z-40 bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between lg:hidden shadow-xl">
           <button 
             onClick={() => setIsSidebarOpen(true)}
-            className="p-2 bg-gray-50 rounded-xl text-gray-600"
+            className="p-2.5 bg-slate-800 rounded-xl text-slate-400 active:scale-95 transition-all"
           >
             <Menu className="w-6 h-6" />
           </button>
-          <span className="font-black text-gray-900 tracking-tight">CAFE<span className="text-red-600">PRO</span></span>
-          <div className="w-10 h-10" /> {/* Spacer */}
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-red-700 rounded-lg flex items-center justify-center text-white text-xs font-black shadow-lg shadow-red-500/20">C</div>
+            <span className="font-black text-white tracking-tight">CAFE<span className="text-red-500">PRO</span></span>
+          </div>
+          <div className="w-10 h-10 flex items-center justify-center">
+            <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-pulse" />
+          </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-gray-50/50 p-4 lg:p-8 no-scrollbar">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-[#f8fafc] p-4 lg:p-8 custom-scrollbar">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>
