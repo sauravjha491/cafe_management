@@ -434,7 +434,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           {/* Nav Links */}
-          <nav className="flex-1 px-6 space-y-1.5 overflow-y-auto custom-scrollbar pb-8">
+          <nav className="flex-1 px-6 space-y-1.5 pb-8">
             <p className="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">Main Menu</p>
             {filteredNavItems.map((item) => {
               const Icon = item.icon;
@@ -450,7 +450,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       : "text-slate-400 hover:text-white hover:bg-slate-800/50"
                   )}
                 >
-                  <Icon className={cn("w-5 h-5 transition-all duration-300", isActive ? "scale-110" : "group-hover:scale-110")} />
+                  <Icon className={cn("w-4 h-4 transition-all duration-300", isActive ? "scale-110" : "group-hover:scale-110")} />
                   {item.label}
                   {isActive && (
                     <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
