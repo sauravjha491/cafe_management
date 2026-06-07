@@ -1,13 +1,20 @@
-import { PrismaClient } from "./src/generated/client/client";
+import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
 import "dotenv/config";
 
 const connectionString = process.env.POSTGRES_PRISMA_URL;
-const pool = new pg.Pool({ connectionString });
-const adapter = new PrismaPg(pool);
 
-const prisma = new PrismaClient({ adapter });
+const createPrismaClient = () => {
+  if (connectionString) {
+    const pool = new pg.Pool({ connectionString });
+    const adapter = new PrismaPg(pool);
+    return new PrismaClient({ adapter });
+  }
+  return new PrismaClient();
+};
+
+const prisma = createPrismaClient();
 
 async function main() {
   const users = await prisma.user.findMany()
