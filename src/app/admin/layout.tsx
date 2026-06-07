@@ -32,6 +32,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { user, setUser, loading, setLoading, role } = useAuthStore();
   const [notificationAudio, setNotificationAudio] = useState<HTMLAudioElement | null>(null);
 
+  // Initialize sound state from localStorage
+  useEffect(() => {
+    const savedSound = localStorage.getItem("adminSoundEnabled");
+    if (savedSound === "true") {
+      setIsSoundEnabled(true);
+    }
+  }, []);
+
   useEffect(() => {
     setNotificationAudio(new Audio("/notification.mp3"));
   }, []);
@@ -40,19 +48,104 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (notificationAudio) {
       notificationAudio.play()
         .then(() => {
-          setIsSoundEnabled(true);
-          toast.success("Notifications sound enabled");
+          const newState = !isSoundEnabled;
+          setIsSoundEnabled(newState);
+          localStorage.setItem("adminSoundEnabled", newState.toString());
+          toast.success(newState ? "Notifications sound enabled" : "Notifications sound disabled");
         })
         .catch(() => toast.error("Please allow sound in your browser settings"));
     }
   };
 
   const playNotificationSound = () => {
+    // We always try to play if enabled
     if (isSoundEnabled) {
-      // Create a fresh audio object for every notification to allow overlapping sounds
+      console.log("Attempting to play notification sound...");
       const audio = new Audio("/notification.mp3");
-      audio.play().catch(e => console.error("Audio error:", e));
+      audio.play().catch(e => {
+        console.error("Audio playback failed:", e);
+      });
+    } else {
+      console.log("Sound is disabled, skipping playback.");
     }
+  };
+
+  const showTestNotification = () => {
+    playNotificationSound();
+    const mockOrder = {
+      orderNumber: 9999,
+      customerName: "Test Customer",
+      tableNumber: 7,
+      total: 1500,
+      createdAt: new Date().toISOString(),
+      items: [
+        { name: "Test Item 1", quantity: 2, note: "Extra spicy" },
+        { name: "Test Item 2", quantity: 1 }
+      ]
+    };
+
+    toast.custom((t) => (
+      <div
+        className={cn(
+          "bg-white rounded-3xl shadow-[0_20px_50px_rgba(220,38,38,0.3)] border-2 border-red-500 overflow-hidden w-[380px] max-w-[calc(100vw-2rem)] transition-all duration-500",
+          t.visible ? "opacity-100 scale-100 translate-x-0" : "opacity-0 scale-95 translate-x-10"
+        )}
+      >
+        <div className="bg-red-600 p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-white/20 p-2 rounded-xl backdrop-blur-md animate-pulse">
+              <ShoppingBag className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-white font-black text-sm uppercase tracking-wider">Test Notification</h3>
+              <p className="text-white/80 text-[10px] font-bold">#9999 • Just now</p>
+            </div>
+          </div>
+          <button 
+            onClick={() => toast.dismiss(t.id)}
+            className="p-1 hover:bg-white/10 rounded-lg transition-colors"
+          >
+            <X className="w-4 h-4 text-white" />
+          </button>
+        </div>
+        
+        <div className="p-5 space-y-4">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Customer & Table</p>
+              <p className="font-black text-gray-900 text-lg">{mockOrder.customerName}</p>
+              <p className="text-red-600 font-bold text-sm">Table No: {mockOrder.tableNumber}</p>
+            </div>
+            <div className="bg-red-50 px-3 py-1 rounded-full border border-red-100 animate-pulse">
+              <span className="text-[10px] font-black text-red-600 uppercase">Test Mode</span>
+            </div>
+          </div>
+
+          <div className="space-y-2 bg-gray-50 p-3 rounded-2xl border border-gray-100">
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Items to Prepare</p>
+            {mockOrder.items?.map((item: any, idx: number) => (
+              <div key={idx} className="flex justify-between items-center text-xs">
+                <div className="flex gap-2 items-center">
+                  <span className="font-black text-red-600 bg-red-100 w-5 h-5 flex items-center justify-center rounded-md">{item.quantity}</span>
+                  <span className="font-bold text-gray-800">{item.name}</span>
+                </div>
+                {item.note && <span className="text-[8px] text-orange-500 italic font-bold">"{item.note}"</span>}
+              </div>
+            ))}
+          </div>
+
+          <div className="flex items-center justify-between pt-2">
+            <span className="text-lg font-black text-gray-900">Total: Rs. {mockOrder.total?.toLocaleString()}</span>
+            <button 
+              onClick={() => toast.dismiss(t.id)}
+              className="bg-gray-900 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-black transition-all active:scale-95 shadow-lg shadow-gray-200"
+            >
+              Close Test
+            </button>
+          </div>
+        </div>
+      </div>
+    ), { duration: 5000, position: "top-right" });
   };
 
   // Filter nav items based on role
@@ -151,8 +244,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             return (
               <div
                 className={cn(
-                  "bg-white rounded-3xl shadow-[0_20px_50px_rgba(220,38,38,0.3)] border-2 border-red-500 overflow-hidden w-[380px] max-w-[calc(100vw-2rem)] animate-in slide-in-from-right-10 duration-500",
-                  t.visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+                  "bg-white rounded-3xl shadow-[0_20px_50px_rgba(220,38,38,0.3)] border-2 border-red-500 overflow-hidden w-[380px] max-w-[calc(100vw-2rem)] transition-all duration-500",
+                  t.visible ? "opacity-100 scale-100 translate-x-0" : "opacity-0 scale-95 translate-x-10"
                 )}
               >
                 <div className="bg-red-600 p-4 flex items-center justify-between">
@@ -255,8 +348,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           toast.custom((t) => (
             <div className={cn(
-              "bg-white rounded-3xl shadow-[0_20px_50px_rgba(249,115,22,0.3)] border-2 border-orange-500 overflow-hidden w-[340px] max-w-[calc(100vw-2rem)] animate-in slide-in-from-right-10 duration-500",
-              t.visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+              "bg-white rounded-3xl shadow-[0_20px_50px_rgba(249,115,22,0.3)] border-2 border-orange-500 overflow-hidden w-[340px] max-w-[calc(100vw-2rem)] transition-all duration-500",
+              t.visible ? "opacity-100 scale-100 translate-x-0" : "opacity-0 scale-95 translate-x-10"
             )}>
               <div className="bg-orange-500 p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -398,16 +491,25 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </button>
 
             {/* Sound Toggle */}
-            <button 
-              onClick={toggleSound}
-              className={cn(
-                "w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all",
-                isSoundEnabled ? "text-green-600 bg-green-50" : "text-gray-500 bg-gray-50"
-              )}
-            >
-              {isSoundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
-              {isSoundEnabled ? "Sound Active" : "Enable Sound"}
-            </button>
+            <div className="flex gap-1">
+              <button 
+                onClick={toggleSound}
+                className={cn(
+                  "flex-1 flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all",
+                  isSoundEnabled ? "text-green-600 bg-green-50" : "text-gray-500 bg-gray-50"
+                )}
+              >
+                {isSoundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+                {isSoundEnabled ? "Sound On" : "Sound Off"}
+              </button>
+              <button 
+                onClick={showTestNotification}
+                className="p-3 bg-gray-50 text-gray-400 rounded-xl hover:bg-gray-100 transition-all"
+                title="Test Notification & Sound"
+              >
+                <Bell className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </aside>
