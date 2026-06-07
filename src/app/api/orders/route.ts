@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { db } from "@/lib/firebase";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { adminDb } from "@/lib/firebase-admin";
 
 export async function POST(req: Request) {
   console.log("POST /api/orders started");
@@ -41,11 +40,11 @@ export async function POST(req: Request) {
     });
     console.log("Order created in Prisma:", order.id);
 
-    // 2. Create mirror record in Firebase for real-time tracking
-    console.log("Creating mirror record in Firebase...");
+    // 2. Create mirror record in Firebase for real-time tracking using Admin SDK
+    console.log("Creating mirror record in Firebase using Admin SDK...");
     try {
-      if (db) {
-        await setDoc(doc(db, "orders", order.id), {
+      if (adminDb) {
+        await adminDb.collection("orders").doc(order.id).set({
           orderNumber: order.orderNumber,
           status: order.status,
           customerName: order.customerName,
@@ -57,17 +56,15 @@ export async function POST(req: Request) {
             price: item.price,
             note: item.note || null,
           })),
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
+          createdAt: new Date(), // Admin SDK uses Date objects or FieldValue.serverTimestamp()
+          updatedAt: new Date(),
         });
-        console.log("Mirror record created in Firebase");
+        console.log("Mirror record created in Firebase successfully");
       } else {
-        console.warn("Firebase DB not initialized, skipping mirror record");
+        console.warn("Firebase Admin DB not initialized, skipping mirror record");
       }
     } catch (firebaseError: any) {
       console.error("Firebase mirror error (non-fatal):", firebaseError);
-      // We don't fail the whole request if Firebase fails, 
-      // but the customer won't get real-time updates.
     }
 
     return NextResponse.json(order);

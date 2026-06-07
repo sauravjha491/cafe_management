@@ -401,7 +401,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!user) return null;
 
   return (
-    <div className="flex min-h-screen bg-gray-50 overflow-x-hidden">
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
       <Toaster position="top-right" />
       
       {/* Sidebar Backdrop */}
@@ -415,24 +415,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Sidebar */}
       <aside 
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 bg-white border-r transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
+          "fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 shadow-2xl shadow-gray-200/50 transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         <div className="h-full flex flex-col">
           {/* Logo */}
-          <div className="p-6 border-b flex items-center justify-between">
-            <Link href="/admin/orders" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-white font-black">C</div>
-              <span className="text-xl font-black text-gray-900 tracking-tight">CAFE<span className="text-red-600">PRO</span></span>
+          <div className="p-8 border-b border-gray-50 flex items-center justify-between">
+            <Link href="/admin/orders" className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-red-600 rounded-2xl flex items-center justify-center text-white font-black shadow-lg shadow-red-200">C</div>
+              <span className="text-2xl font-black text-gray-900 tracking-tight">CAFE<span className="text-red-600">PRO</span></span>
             </Link>
-            <button className="lg:hidden p-2" onClick={() => setIsSidebarOpen(false)}>
-              <X className="w-5 h-5" />
+            <button className="lg:hidden p-2 text-gray-400 hover:text-gray-900" onClick={() => setIsSidebarOpen(false)}>
+              <X className="w-6 h-6" />
             </button>
           </div>
 
           {/* Nav Links */}
-          <nav className="flex-1 p-4 space-y-1">
+          <nav className="flex-1 p-6 space-y-2 overflow-y-auto no-scrollbar">
             {filteredNavItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
@@ -441,28 +441,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all",
+                    "flex items-center gap-4 px-4 py-4 rounded-2xl font-bold transition-all group",
                     isActive 
-                      ? "bg-red-50 text-red-600" 
-                      : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                      ? "bg-red-600 text-white shadow-xl shadow-red-100" 
+                      : "text-gray-400 hover:bg-gray-50 hover:text-gray-900"
                   )}
                 >
-                  <Icon className={cn("w-5 h-5", isActive ? "text-red-600" : "text-gray-400")} />
+                  <Icon className={cn("w-5 h-5 transition-transform group-hover:scale-110", isActive ? "text-white" : "text-gray-400")} />
                   {item.label}
                 </Link>
               );
             })}
           </nav>
 
-          {/* Footer */}
-          <div className="p-4 border-t space-y-1">
+          {/* Footer Actions */}
+          <div className="p-6 border-t border-gray-50 space-y-3 bg-white">
             <Link
               href="/admin/profile"
               className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all",
+                "flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all",
                 pathname === "/admin/profile" 
                   ? "bg-red-50 text-red-600" 
-                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                  : "text-gray-400 hover:bg-gray-50 hover:text-gray-900"
               )}
             >
               <Users className="w-5 h-5" />
@@ -472,61 +472,70 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Link
                 href="/admin/settings"
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all",
+                  "flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all",
                   pathname === "/admin/settings" 
                     ? "bg-red-50 text-red-600" 
-                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                    : "text-gray-400 hover:bg-gray-50 hover:text-gray-900"
                 )}
               >
                 <Settings className="w-5 h-5" />
                 Settings
               </Link>
             )}
-            <button 
-              onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-gray-500 hover:bg-red-50 hover:text-red-600 transition-all"
-            >
-              <LogOut className="w-5 h-5 text-gray-400" />
-              Sign Out
-            </button>
+            
+            <div className="h-px bg-gray-50 my-2" />
 
             {/* Sound Toggle */}
-            <div className="flex gap-1">
+            <div className="flex gap-2">
               <button 
                 onClick={toggleSound}
                 className={cn(
-                  "flex-1 flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all",
-                  isSoundEnabled ? "text-green-600 bg-green-50" : "text-gray-500 bg-gray-50"
+                  "flex-1 flex items-center gap-3 px-4 py-3 rounded-2xl font-bold transition-all",
+                  isSoundEnabled ? "text-green-600 bg-green-50" : "text-gray-400 bg-gray-50"
                 )}
               >
                 {isSoundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
-                {isSoundEnabled ? "Sound On" : "Sound Off"}
+                <span className="text-xs">{isSoundEnabled ? "Sound On" : "Sound Off"}</span>
               </button>
               <button 
                 onClick={showTestNotification}
-                className="p-3 bg-gray-50 text-gray-400 rounded-xl hover:bg-gray-100 transition-all"
+                className="p-3 bg-gray-50 text-gray-400 rounded-2xl hover:bg-gray-100 transition-all"
                 title="Test Notification & Sound"
               >
-                <Bell className="w-4 h-4" />
+                <Bell className="w-5 h-5" />
               </button>
             </div>
+
+            <button 
+              onClick={handleLogout}
+              className="w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold text-gray-400 hover:bg-red-50 hover:text-red-600 transition-all group"
+            >
+              <LogOut className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
+              Sign Out
+            </button>
           </div>
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b px-6 py-4 flex items-center justify-between lg:hidden">
-          <button onClick={() => setIsSidebarOpen(true)}>
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-gray-100 px-6 py-4 flex items-center justify-between lg:hidden">
+          <button 
+            onClick={() => setIsSidebarOpen(true)}
+            className="p-2 bg-gray-50 rounded-xl text-gray-600"
+          >
             <Menu className="w-6 h-6" />
           </button>
-          <span className="font-black text-gray-900">CAFEPRO ADMIN</span>
-          <div className="w-6 h-6" /> {/* Spacer */}
+          <span className="font-black text-gray-900 tracking-tight">CAFE<span className="text-red-600">PRO</span></span>
+          <div className="w-10 h-10" /> {/* Spacer */}
         </header>
-        <div className="p-4 lg:p-8">
-          {children}
-        </div>
-      </main>
+
+        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-gray-50/50 p-4 lg:p-8 no-scrollbar">
+          <div className="max-w-7xl mx-auto">
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

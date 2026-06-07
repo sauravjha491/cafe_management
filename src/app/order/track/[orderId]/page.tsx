@@ -87,18 +87,23 @@ export default function TrackOrder() {
   }, []);
 
   const handleCallWaiter = async () => {
-    if (!db || !order || isCallingWaiter) return;
+    if (!order || isCallingWaiter) return;
     
     setIsCallingWaiter(true);
     try {
-      await addDoc(collection(db, "waiter_calls"), {
-        orderId: order.id,
-        orderNumber: order.orderNumber,
-        tableNumber: order.tableNumber,
-        customerName: order.customerName,
-        createdAt: serverTimestamp(),
-        status: "PENDING"
+      const res = await fetch("/api/waiter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          tableNumber: order.tableNumber,
+          customerName: order.customerName,
+        }),
       });
+
+      if (!res.ok) throw new Error("Failed to call waiter");
+
       toast.success("Waiter called! Someone will be with you shortly.", {
         icon: "🔔",
         style: {
