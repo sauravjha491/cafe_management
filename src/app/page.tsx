@@ -1,75 +1,302 @@
-import Link from "next/link";
-import { Coffee, ArrowRight, ShieldCheck, Zap, Smartphone } from "lucide-react";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Coffee, ArrowRight, Utensils, 
+  MapPin, Phone, Instagram, 
+  Facebook, Twitter, Clock, 
+  Sparkles, Smartphone, Zap
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function Home() {
+  const router = useRouter();
+  const [tableNumber, setTableNumber] = useState("");
+  const [settings, setSettings] = useState({
+    cafeName: "CafePro",
+    address: "",
+    phone: "",
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/admin/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.error) {
+          setSettings({
+            cafeName: data.cafeName || "CafePro",
+            address: data.address || "123 Gourmet Street, Foodie City",
+            phone: data.phone || "+1 (555) 000-0000",
+          });
+        }
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  const handleStartOrdering = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (tableNumber) {
+      router.push(`/order?table=${tableNumber}`);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#fafafa] flex flex-col font-sans selection:bg-red-100 selection:text-red-600">
       {/* Hero Section */}
-      <main className="max-w-6xl mx-auto px-4 md:px-6 pt-12 md:pt-20 pb-20 md:pb-32">
-        <div className="flex flex-col items-center text-center space-y-6 md:space-y-8">
-          <div className="bg-red-50 p-3 md:p-4 rounded-3xl animate-bounce">
-            <Coffee className="w-10 h-10 md:w-12 md:h-12 text-red-600" />
-          </div>
-          <h1 className="text-4xl md:text-7xl font-black text-gray-900 tracking-tight leading-tight">
-            The Future of <br />
-            <span className="text-red-600">Café Ordering</span>
-          </h1>
-          <p className="text-lg md:text-xl text-gray-500 max-w-2xl font-medium px-4">
-            A modern, full-stack self-ordering system designed for speed, 
-            efficiency, and a premium customer experience.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 w-full sm:w-auto px-6">
-            <Link 
-              href="/order?table=1" 
-              className="px-8 py-4 bg-red-600 text-white rounded-2xl font-bold text-lg shadow-xl shadow-red-200 hover:bg-red-700 transition-all flex items-center justify-center gap-2 active:scale-95"
-            >
-              Try Customer Demo
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link 
-              href="/admin/orders" 
-              className="px-8 py-4 bg-gray-900 text-white rounded-2xl font-bold text-lg shadow-xl shadow-gray-200 hover:bg-black transition-all flex items-center justify-center gap-2 active:scale-95"
-            >
-              Admin Dashboard
-            </Link>
-          </div>
+      <div className="relative flex-1 flex flex-col">
+        {/* Background Patterns */}
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-red-50 rounded-full blur-3xl opacity-50" />
+          <div className="absolute top-[20%] -right-[5%] w-[30%] h-[30%] bg-orange-50 rounded-full blur-3xl opacity-50" />
         </div>
 
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mt-20 md:mt-32">
-          <div className="p-6 md:p-8 bg-gray-50 rounded-[2.5rem] space-y-4">
-            <div className="bg-white w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm">
-              <Zap className="w-6 h-6 text-red-600" />
+        {/* Navigation */}
+        <nav className="max-w-7xl mx-auto w-full px-6 py-8 flex items-center justify-between relative z-10">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-3"
+          >
+            <div className="w-12 h-12 bg-red-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-red-200">
+              <Coffee className="w-7 h-7" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900">Real-time Updates</h3>
-            <p className="text-gray-500 font-medium leading-relaxed text-sm md:text-base">
-              Powered by Firebase, customers track their order status live without refreshing.
-            </p>
+            <span className="text-2xl font-black text-gray-900 tracking-tighter uppercase">
+              {settings.cafeName.split(' ')[0]}<span className="text-red-600">{settings.cafeName.split(' ').slice(1).join(' ') || "PRO"}</span>
+            </span>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="hidden md:flex items-center gap-8 text-sm font-bold text-gray-500 uppercase tracking-widest"
+          >
+            <a href="#features" className="hover:text-red-600 transition-colors">Experience</a>
+            <a href="#about" className="hover:text-red-600 transition-colors">About Us</a>
+            <a href="#footer" className="hover:text-red-600 transition-colors">Contact</a>
+          </motion.div>
+        </nav>
+
+        {/* Main Content */}
+        <main className="max-w-7xl mx-auto w-full px-6 flex-1 flex flex-col lg:flex-row items-center gap-16 py-12 lg:py-24">
+          <div className="flex-1 space-y-10 text-center lg:text-left">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 rounded-full shadow-sm text-red-600 font-black text-xs uppercase tracking-widest"
+            >
+              <Sparkles className="w-4 h-4 fill-current" />
+              New Generation of Dining
+            </motion.div>
+
+            <motion.h1 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-5xl md:text-8xl font-black text-gray-900 leading-[0.9] tracking-tighter"
+            >
+              Scan. Order. <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-500">Enjoy.</span>
+            </motion.h1>
+
+            <motion.p 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-lg md:text-xl text-gray-500 max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed"
+            >
+              Welcome to <span className="text-gray-900 font-bold">{settings.cafeName}</span>. Skip the queue and experience the most seamless way to enjoy your favorite treats.
+            </motion.p>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="bg-white p-8 rounded-[3rem] shadow-2xl shadow-gray-200/50 border border-gray-50 max-w-md mx-auto lg:mx-0"
+            >
+              <form onSubmit={handleStartOrdering} className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-2">Where are you sitting?</label>
+                  <div className="relative">
+                    <input 
+                      required
+                      type="number"
+                      placeholder="Enter Table Number"
+                      className="w-full px-8 py-5 bg-gray-50 border border-gray-100 rounded-3xl focus:outline-none focus:ring-4 focus:ring-red-500/10 font-black text-2xl text-center placeholder:text-gray-300 placeholder:text-lg transition-all"
+                      value={tableNumber}
+                      onChange={(e) => setTableNumber(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <button 
+                  type="submit"
+                  className="w-full py-5 bg-red-600 text-white rounded-3xl font-black text-lg shadow-xl shadow-red-200 hover:bg-red-700 transition-all flex items-center justify-center gap-3 active:scale-95"
+                >
+                  Start My Order
+                  <ArrowRight className="w-6 h-6" />
+                </button>
+              </form>
+            </motion.div>
           </div>
-          <div className="p-6 md:p-8 bg-gray-50 rounded-[2.5rem] space-y-4">
-            <div className="bg-white w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm">
-              <Smartphone className="w-6 h-6 text-red-600" />
+
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="flex-1 relative hidden lg:block"
+          >
+            <div className="relative z-10 w-[450px] h-[600px] bg-gray-200 rounded-[4rem] overflow-hidden shadow-2xl border-[12px] border-white rotate-3">
+              <img 
+                src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&auto=format&fit=crop&q=80" 
+                alt="Cafe Interior"
+                className="w-full h-full object-cover"
+              />
             </div>
-            <h3 className="text-xl font-bold text-gray-900">QR Code Based</h3>
-            <p className="text-gray-500 font-medium leading-relaxed text-sm md:text-base">
-              Scan, order, and pay. No apps to download, just a seamless web experience.
-            </p>
+            {/* Floating UI Card */}
+            <motion.div 
+              animate={{ y: [0, -20, 0] }}
+              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+              className="absolute -left-12 top-1/4 z-20 bg-white p-6 rounded-[2rem] shadow-2xl border border-gray-100 flex items-center gap-4"
+            >
+              <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center">
+                <Utensils className="w-6 h-6 text-green-600" />
+              </div>
+              <div>
+                <p className="font-black text-gray-900">Freshly Brewed</p>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Prepared in 5-10 mins</p>
+              </div>
+            </motion.div>
+          </motion.div>
+        </main>
+      </div>
+
+      {/* Features Section */}
+      <section id="features" className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center space-y-4 mb-16">
+            <p className="text-red-600 font-black text-xs uppercase tracking-[0.3em]">How it works</p>
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight">The Modern Dining Way</h2>
           </div>
-          <div className="p-6 md:p-8 bg-gray-50 rounded-[2.5rem] space-y-4">
-            <div className="bg-white w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm">
-              <ShieldCheck className="w-6 h-6 text-red-600" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900">Admin Control</h3>
-            <p className="text-gray-500 font-medium leading-relaxed text-sm md:text-base">
-              Powerful dashboard for staff to manage orders, menu items, and analytics.
-            </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { 
+                icon: Smartphone, 
+                title: "Scan & Browse", 
+                desc: "No apps required. Just enter your table number and browse our beautiful digital menu.",
+                color: "bg-blue-50 text-blue-600"
+              },
+              { 
+                icon: Zap, 
+                title: "Instant Order", 
+                desc: "Your order goes straight to our kitchen screen. No more waiting for staff to take notes.",
+                color: "bg-orange-50 text-orange-600"
+              },
+              { 
+                icon: Clock, 
+                title: "Live Tracking", 
+                desc: "Watch your meal status change from preparing to ready in real-time on your phone.",
+                color: "bg-purple-50 text-purple-600"
+              }
+            ].map((f, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="p-10 bg-[#fafafa] rounded-[3rem] space-y-6 hover:bg-white hover:shadow-2xl hover:shadow-gray-200 transition-all group"
+              >
+                <div className={cn("w-16 h-16 rounded-[1.5rem] flex items-center justify-center transition-transform group-hover:scale-110 duration-300", f.color)}>
+                  <f.icon className="w-8 h-8" />
+                </div>
+                <h3 className="text-2xl font-black text-gray-900 tracking-tight">{f.title}</h3>
+                <p className="text-gray-500 font-medium leading-relaxed">
+                  {f.desc}
+                </p>
+              </motion.div>
+            ))}
           </div>
         </div>
-      </main>
+      </section>
 
       {/* Footer */}
-      <footer className="border-t py-12 text-center text-gray-400 font-medium">
-        <p>© 2026 CafePro System. Built with Next.js 15 & Prisma.</p>
+      <footer id="footer" className="bg-[#0f172a] text-slate-300 pt-24 pb-12 overflow-hidden relative">
+        {/* Background Decor */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-red-600/5 rounded-full blur-[100px] -mr-48 -mt-48" />
+
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-24 relative z-10">
+          <div className="space-y-8">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center text-white font-black shadow-lg shadow-red-500/20">C</div>
+              <span className="text-2xl font-black text-white tracking-tighter uppercase">{settings.cafeName}</span>
+            </div>
+            <p className="text-slate-400 font-medium leading-relaxed">
+              Redefining the café experience with technology that puts the customer first. Experience seamless ordering today.
+            </p>
+            <div className="flex gap-4">
+              <a href="#" className="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center hover:bg-red-600 transition-colors group">
+                <Instagram className="w-5 h-5 group-hover:scale-110 transition-transform" />
+              </a>
+              <a href="#" className="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center hover:bg-red-600 transition-colors group">
+                <Facebook className="w-5 h-5 group-hover:scale-110 transition-transform" />
+              </a>
+              <a href="#" className="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center hover:bg-red-600 transition-colors group">
+                <Twitter className="w-5 h-5 group-hover:scale-110 transition-transform" />
+              </a>
+            </div>
+          </div>
+
+          <div className="space-y-8">
+            <h4 className="text-white font-black uppercase tracking-widest text-sm">Quick Links</h4>
+            <ul className="space-y-4 font-bold text-slate-400">
+              <li><a href="#" className="hover:text-white transition-colors">Our Menu</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Track Order</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Special Offers</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Gift Cards</a></li>
+            </ul>
+          </div>
+
+          <div className="space-y-8">
+            <h4 className="text-white font-black uppercase tracking-widest text-sm">Working Hours</h4>
+            <ul className="space-y-4 font-bold text-slate-400">
+              <li className="flex justify-between">
+                <span>Mon - Fri</span>
+                <span className="text-white">08:00 - 22:00</span>
+              </li>
+              <li className="flex justify-between">
+                <span>Sat - Sun</span>
+                <span className="text-white">09:00 - 23:00</span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="space-y-8">
+            <h4 className="text-white font-black uppercase tracking-widest text-sm">Find Us</h4>
+            <div className="space-y-6 font-bold text-slate-400">
+              <div className="flex gap-4">
+                <MapPin className="w-5 h-5 text-red-500 shrink-0" />
+                <span>{settings.address}</span>
+              </div>
+              <div className="flex gap-4">
+                <Phone className="w-5 h-5 text-red-500 shrink-0" />
+                <span>{settings.phone}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-6 pt-12 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">
+          <p>© 2026 {settings.cafeName} • All Rights Reserved</p>
+          <div className="flex gap-8">
+            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+          </div>
+        </div>
       </footer>
     </div>
   );
