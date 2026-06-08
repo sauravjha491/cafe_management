@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Coffee, ArrowRight, Utensils, 
-  MapPin, Phone, Instagram, 
-  Facebook, Twitter, Clock, 
+  MapPin, Phone, MessageCircle, 
+  Globe, Share2, Clock, 
   Sparkles, Smartphone, Zap
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -240,13 +240,13 @@ export default function Home() {
             </p>
             <div className="flex gap-4">
               <a href="#" className="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center hover:bg-red-600 transition-colors group">
-                <Instagram className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                <Globe className="w-5 h-5 group-hover:scale-110 transition-transform" />
               </a>
               <a href="#" className="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center hover:bg-red-600 transition-colors group">
-                <Facebook className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                <Share2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
               </a>
               <a href="#" className="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center hover:bg-red-600 transition-colors group">
-                <Twitter className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                <MessageCircle className="w-5 h-5 group-hover:scale-110 transition-transform" />
               </a>
             </div>
           </div>
