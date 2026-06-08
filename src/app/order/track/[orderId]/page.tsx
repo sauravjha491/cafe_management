@@ -9,19 +9,36 @@ import {
   CheckCircle2, Clock, Coffee, Package, 
   Truck, User, ArrowLeft, Printer,
   Sparkles, Heart, UtensilsCrossed,
-  ChefHat, Bell, Home
+  ChefHat, Bell, Home, Navigation, Phone
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
+import dynamic from 'next/dynamic';
 
-const statuses = [
+const DeliveryTrackerMap = dynamic(() => import('@/components/DeliveryTrackerMap'), { 
+  ssr: false,
+  loading: () => <div className="h-64 bg-gray-100 animate-pulse rounded-[2.5rem] flex items-center justify-center font-black text-gray-400 uppercase tracking-widest text-xs">Loading Live Map...</div>
+});
+
+const dineInStatuses = [
   { id: "PENDING", label: "Ordered", icon: Clock, color: "text-blue-500", bg: "bg-blue-50", description: "Waiting for kitchen to accept...", particle: "🚀" },
   { id: "ACCEPTED", label: "Confirmed", icon: CheckCircle2, color: "text-green-500", bg: "bg-green-50", description: "Kitchen has received your order!", particle: "✅" },
   { id: "PREPARING", label: "Cooking", icon: ChefHat, color: "text-orange-500", bg: "bg-orange-50", description: "Chef is preparing your meal...", particle: "🔥" },
   { id: "READY", label: "Ready", icon: Package, color: "text-purple-500", bg: "bg-purple-50", description: "Hot and fresh! Grab it at the counter.", particle: "📦" },
   { id: "SERVED", label: "Served", icon: UtensilsCrossed, color: "text-gray-500", bg: "bg-gray-50", description: "Enjoy your delicious meal!", particle: "🍴" },
 ];
+
+const deliveryStatuses = [
+  { id: "PENDING", label: "Ordered", icon: Clock, color: "text-blue-500", bg: "bg-blue-50", description: "Waiting for confirmation...", particle: "🚀" },
+  { id: "ACCEPTED", label: "Confirmed", icon: CheckCircle2, color: "text-green-500", bg: "bg-green-50", description: "Order confirmed!", particle: "✅" },
+  { id: "PREPARING", label: "Preparing", icon: ChefHat, color: "text-orange-500", bg: "bg-orange-50", description: "Chef is cooking your food...", particle: "🔥" },
+  { id: "READY", label: "Ready", icon: Package, color: "text-purple-500", bg: "bg-purple-50", description: "Food is packed and ready!", particle: "📦" },
+  { id: "OUT_FOR_DELIVERY", label: "On the way", icon: Truck, color: "text-yellow-600", bg: "bg-yellow-50", description: "Rider is heading to you!", particle: "🛵" },
+  { id: "DELIVERED", label: "Delivered", icon: Home, color: "text-green-600", bg: "bg-green-50", description: "Enjoy your food!", particle: "🏠" },
+];
+
+const statuses = dineInStatuses; // Default fallback
 
 function FloatingParticles() {
   const [particles, setParticles] = useState<any[]>([]);
@@ -181,8 +198,9 @@ export default function TrackOrder() {
 
   if (!order) return null;
 
-  const currentStatusIndex = statuses.findIndex((s) => s.id === order.status);
-  const currentStatus = statuses[currentStatusIndex] || statuses[0];
+  const activeStatuses = order.type === "DELIVERY" ? deliveryStatuses : dineInStatuses;
+  const currentStatusIndex = activeStatuses.findIndex((s) => s.id === order.status);
+  const currentStatus = activeStatuses[currentStatusIndex] || activeStatuses[0];
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20 overflow-x-hidden relative">
@@ -280,6 +298,61 @@ export default function TrackOrder() {
           </div>
         </motion.div>
 
+        {/* Live Tracking Map for Delivery */}
+        {order.type === "DELIVERY" && order.deliveryOrder?.address && (
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white rounded-[3rem] p-4 shadow-2xl shadow-gray-200/50 border border-gray-100 overflow-hidden"
+          >
+            <div className="flex items-center justify-between px-4 py-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-red-50 rounded-2xl flex items-center justify-center">
+                  <Navigation className="w-5 h-5 text-red-600 animate-pulse" />
+                </div>
+                <div>
+                  <h3 className="font-black text-gray-900 text-sm uppercase tracking-tight">Live Tracking</h3>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Rider heading your way</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-xs font-black text-red-600 uppercase tracking-widest">ETA</p>
+                <p className="text-xl font-black text-gray-900 tracking-tighter">15-20 MIN</p>
+              </div>
+            </div>
+            
+            <div className="h-80 rounded-[2.5rem] overflow-hidden border-4 border-gray-50 shadow-inner">
+              <DeliveryTrackerMap 
+                customerLocation={{ 
+                  lat: order.deliveryOrder.address.latitude || 27.7172, 
+                  lng: order.deliveryOrder.address.longitude || 85.3240 
+                }}
+                cafeLocation={{ lat: 27.7172, lng: 85.3240 }} // Should come from settings
+                riderLocation={order.riderLocation} // This should be updated via Firebase real-time
+              />
+            </div>
+
+            <div className="p-4 flex items-center gap-4">
+              <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center shrink-0">
+                <User className="w-6 h-6 text-gray-400" />
+              </div>
+              <div className="flex-1">
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Your Rider</p>
+                <p className="font-black text-gray-900">{order.deliveryOrder.rider?.user?.name || "Assigning Rider..."}</p>
+              </div>
+              {order.deliveryOrder.rider?.user?.phone && (
+                <a 
+                  href={`tel:${order.deliveryOrder.rider.user.phone}`}
+                  className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-green-100 active:scale-95 transition-all"
+                >
+                  <Phone className="w-6 h-6" />
+                </a>
+              )}
+            </div>
+          </motion.div>
+        )}
+
         {/* Visual Progress Bar */}
         <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-gray-100">
           <div className="flex justify-between relative px-2">
@@ -287,11 +360,11 @@ export default function TrackOrder() {
             <div className="absolute top-1/2 left-0 w-full h-1.5 bg-gray-50 -translate-y-1/2 rounded-full" />
             <motion.div 
               initial={{ width: 0 }}
-              animate={{ width: `${(currentStatusIndex / (statuses.length - 1)) * 100}%` }}
+              animate={{ width: `${(currentStatusIndex / (activeStatuses.length - 1)) * 100}%` }}
               className="absolute top-1/2 left-0 h-1.5 bg-gradient-to-r from-red-600 to-red-400 -translate-y-1/2 rounded-full z-10 transition-all duration-1000" 
             />
 
-            {statuses.map((s, i) => {
+            {activeStatuses.map((s, i) => {
               const isPast = i < currentStatusIndex;
               const isCurrent = i === currentStatusIndex;
               return (
@@ -392,32 +465,39 @@ export default function TrackOrder() {
 
         {/* Footer Support */}
         <div className="grid grid-cols-2 gap-4">
-          <button 
-            onClick={handleCallWaiter}
-            disabled={isCallingWaiter}
+          {order.type === "TABLE" && (
+            <button 
+              onClick={handleCallWaiter}
+              disabled={isCallingWaiter}
+              className={cn(
+                "bg-white p-6 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col items-center gap-3 hover:bg-gray-50 transition-all active:scale-95 group",
+                isCallingWaiter ? "opacity-50 cursor-not-allowed" : ""
+              )}
+            >
+              <div className={cn(
+                "w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform",
+                isCallingWaiter ? "animate-pulse" : ""
+              )}>
+                <Bell className="w-6 h-6 text-red-600" />
+              </div>
+              <span className="font-black text-xs text-gray-900 uppercase tracking-widest">
+                {isCallingWaiter ? "Calling..." : "Call Waiter"}
+              </span>
+            </button>
+          )}
+          <Link 
+            href={order.type === "DELIVERY" ? "/delivery" : "/order"}
             className={cn(
               "bg-white p-6 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col items-center gap-3 hover:bg-gray-50 transition-all active:scale-95 group",
-              isCallingWaiter ? "opacity-50 cursor-not-allowed" : ""
+              order.type === "DELIVERY" ? "col-span-2" : ""
             )}
-          >
-            <div className={cn(
-              "w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform",
-              isCallingWaiter ? "animate-pulse" : ""
-            )}>
-              <Bell className="w-6 h-6 text-red-600" />
-            </div>
-            <span className="font-black text-xs text-gray-900 uppercase tracking-widest">
-              {isCallingWaiter ? "Calling..." : "Call Waiter"}
-            </span>
-          </button>
-          <Link 
-            href="/order?table=1&category=favorites"
-            className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col items-center gap-3 hover:bg-gray-50 transition-all active:scale-95 group"
           >
             <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
               <Heart className="w-6 h-6 text-red-600" />
             </div>
-            <span className="font-black text-xs text-gray-900 uppercase tracking-widest">Favorites</span>
+            <span className="font-black text-xs text-gray-900 uppercase tracking-widest">
+              {order.type === "DELIVERY" ? "Order More" : "Favorites"}
+            </span>
           </Link>
         </div>
 

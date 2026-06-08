@@ -108,9 +108,9 @@ export default function MenuManagement() {
     ]);
     const catData = await catRes.json();
     const prodData = await prodRes.json();
-    setCategories(catData);
-    setProducts(prodData);
-    if (catData.length > 0 && !formData.categoryId) {
+    setCategories(Array.isArray(catData) ? catData : []);
+    setProducts(Array.isArray(prodData) ? prodData : []);
+    if (Array.isArray(catData) && catData.length > 0 && !formData.categoryId) {
       setFormData(prev => ({ ...prev, categoryId: catData[0].id }));
     }
     setLoading(false);

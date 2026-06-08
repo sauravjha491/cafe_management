@@ -12,11 +12,68 @@ model User {
   name      String
   email     String   @unique
   password  String?  // Added for local-only fallback login
-  role      String   @default("STAFF") // OWNER, STAFF
+  role      String   @default("STAFF") // ADMIN, OWNER, STAFF, RIDER, CUSTOMER
   image     String?
   phone     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  // Relations
+  customer  Customer?
+  rider     Rider?
+  posOrders Order[] @relation("StaffOrders")
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  userId    String?  @unique
+  user      User?    @relation(fields: [userId], references: [id])
+  name      String
+  email     String?
+  phone     String   @unique
+  addresses Address[]
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Address {
+  id          String   @id @default(cuid())
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id])
+  name        String   // Home, Office, etc.
+  addressLine String
+  city        String
+  latitude    Float?
+  longitude   Float?
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  deliveryOrders DeliveryOrder[]
+}
+
+model Rider {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id])
+  vehicleNumber String?
+  isAvailable   Boolean  @default(true)
+  status        String   @default("ACTIVE") // ACTIVE, INACTIVE
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  deliveryOrders DeliveryOrder[]
+  locations      RiderLocation[]
+}
+
+model RiderLocation {
+  id        String   @id @default(cuid())
+  riderId   String
+  rider     Rider    @relation(fields: [riderId], references: [id])
+  latitude  Float
+  longitude Float
+  createdAt DateTime @default(now())
 }
 
 model Table {
@@ -45,6 +102,7 @@ model Product {
   categoryId  String
   available   Boolean     @default(true)
   featured    Boolean     @default(false)
+  stock       Int         @default(-1) // -1 for unlimited
   orderItems  OrderItem[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
@@ -53,13 +111,50 @@ model Product {
 model Order {
   id           String      @id @default(cuid())
   orderNumber  Int         @unique
-  tableNumber  Int
-  customerName String
-  total        Float
-  status       String      @default("PENDING") // PENDING, ACCEPTED, PREPARING, READY, SERVED
-  items        OrderItem[]
+  type         String      @default("TABLE") // TABLE, DELIVERY, POS
+  status       String      @default("PENDING") // PENDING, ACCEPTED, PREPARING, READY, SERVED, OUT_FOR_DELIVERY, DELIVERED, CANCELLED
+  
+  // Table info
+  tableNumber  Int?
+  
+  // Customer info
+  customerName String?
+  customerId   String?
+  customer     Customer?   @relation(fields: [customerId], references: [id])
+  
+  // Staff info (for POS)
+  staffId      String?
+  staff        User?       @relation("StaffOrders", fields: [staffId], references: [id])
+  
+  // Payment info
+  total         Float
+  subtotal      Float      @default(0)
+  tax           Float      @default(0)
+  discount      Float      @default(0)
+  deliveryFee   Float      @default(0)
+  paymentStatus String     @default("PENDING") // PENDING, PAID, REFUNDED
+  paymentMethod String     @default("CASH") // CASH, CARD, QR, WALLET
+  
+  items         OrderItem[]
+  deliveryOrder DeliveryOrder?
+  transactions  Transaction[]
+  
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
+}
+
+model DeliveryOrder {
+  id             String    @id @default(cuid())
+  orderId        String    @unique
+  order          Order     @relation(fields: [orderId], references: [id])
+  addressId      String
+  address        Address   @relation(fields: [addressId], references: [id])
+  riderId        String?
+  rider          Rider?    @relation(fields: [riderId], references: [id])
+  distance       Float?    // In km
+  estimatedTime  Int?      // In minutes
+  notes          String?
+  actualDelivery DateTime?
 }
 
 model OrderItem {
@@ -73,14 +168,37 @@ model OrderItem {
   note      String?
 }
 
-model Settings {
-  id            String  @id @default("default")
-  cafeName      String  @default("CafePro")
-  currency      String  @default("Rs.")
-  taxRate       Float   @default(5.0)
-  serviceCharge Float   @default(2.0)
-  logo          String?
-  address       String?
-  phone         String?
+model Transaction {
+  id            String        @id @default(cuid())
+  orderId       String
+  order         Order         @relation(fields: [orderId], references: [id])
+  amount        Float
+  type          String        // PAYMENT, REFUND
+  paymentMethod String
+  status        String        // SUCCESS, FAILED
+  createdAt     DateTime      @default(now())
 }
 
+model PromoCode {
+  id          String    @id @default(cuid())
+  code        String    @unique
+  discount    Float
+  type        String    // PERCENTAGE, FIXED
+  minOrder    Float     @default(0)
+  maxDiscount Float?
+  expiryDate  DateTime?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+}
+
+model Settings {
+  id               String  @id @default("default")
+  cafeName         String  @default("CafePro")
+  currency         String  @default("Rs.")
+  taxRate          Float   @default(5.0)
+  serviceCharge    Float   @default(2.0)
+  deliveryFeePerKm Float   @default(10.0)
+  logo             String?
+  address          String?
+  phone            String?
+}

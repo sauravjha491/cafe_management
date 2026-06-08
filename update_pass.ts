@@ -17,12 +17,15 @@ const createPrismaClient = () => {
 const prisma = createPrismaClient();
 
 async function main() {
-  const email = 'sauravsah491@gmail.com'
-  const password = 'Incorrect@123###'
+  const email = 'sauravshharma6@gmail.com'
+  const password = 'admin'
   
   const user = await prisma.user.update({
     where: { email },
-    data: { password }
+    data: { 
+      password,
+      role: 'OWNER'
+    }
   })
   
   console.log('Updated user:', user.email)

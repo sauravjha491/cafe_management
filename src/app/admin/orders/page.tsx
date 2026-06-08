@@ -35,7 +35,7 @@ export default function AdminOrders() {
     fetch("/api/orders")
       .then((res) => res.json())
       .then((data) => {
-        setOrders(data);
+        setOrders(Array.isArray(data) ? data : []);
         setLoading(false);
       });
 
@@ -51,7 +51,7 @@ export default function AdminOrders() {
           setTimeout(() => {
             fetch("/api/orders")
               .then((res) => res.json())
-              .then((data) => setOrders(data));
+              .then((data) => setOrders(Array.isArray(data) ? data : []));
           }, 500);
         }
       });

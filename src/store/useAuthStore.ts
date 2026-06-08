@@ -4,9 +4,9 @@ import { User as FirebaseUser } from "firebase/auth";
 
 interface AuthState {
   user: any; // Can be FirebaseUser or LocalUser
-  role: "OWNER" | "STAFF" | null;
+  role: "OWNER" | "ADMIN" | "STAFF" | "RIDER" | "CUSTOMER" | null;
   setUser: (user: any) => void;
-  setRole: (role: "OWNER" | "STAFF" | null) => void;
+  setRole: (role: "OWNER" | "ADMIN" | "STAFF" | "RIDER" | "CUSTOMER" | null) => void;
   loading: boolean;
   setLoading: (loading: boolean) => void;
 }

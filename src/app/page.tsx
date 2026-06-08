@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 export default function Home() {
   const router = useRouter();
   const [tableNumber, setTableNumber] = useState("");
+  const [orderType, setOrderType] = useState<"DINE_IN" | "DELIVERY">("DINE_IN");
   const [settings, setSettings] = useState({
     cafeName: "CafePro",
     address: "",
@@ -118,28 +119,66 @@ export default function Home() {
               transition={{ delay: 0.5 }}
               className="bg-white p-8 rounded-[3rem] shadow-2xl shadow-gray-200/50 border border-gray-50 max-w-md mx-auto lg:mx-0"
             >
-              <form onSubmit={handleStartOrdering} className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-2">Where are you sitting?</label>
-                  <div className="relative">
-                    <input 
-                      required
-                      type="number"
-                      placeholder="Enter Table Number"
-                      className="w-full px-8 py-5 bg-gray-50 border border-gray-100 rounded-3xl focus:outline-none focus:ring-4 focus:ring-red-500/10 font-black text-2xl text-center placeholder:text-gray-300 placeholder:text-lg transition-all"
-                      value={tableNumber}
-                      onChange={(e) => setTableNumber(e.target.value)}
-                    />
-                  </div>
-                </div>
+              <div className="flex gap-4 mb-6">
                 <button 
-                  type="submit"
-                  className="w-full py-5 bg-red-600 text-white rounded-3xl font-black text-lg shadow-xl shadow-red-200 hover:bg-red-700 transition-all flex items-center justify-center gap-3 active:scale-95"
+                  onClick={() => setOrderType("DINE_IN")}
+                  className={cn(
+                    "flex-1 py-3 rounded-2xl font-black text-sm transition-all flex items-center justify-center gap-2",
+                    orderType === "DINE_IN" ? "bg-red-600 text-white shadow-lg shadow-red-200" : "bg-gray-50 text-gray-500"
+                  )}
                 >
-                  Start My Order
-                  <ArrowRight className="w-6 h-6" />
+                  <Utensils className="w-4 h-4" />
+                  Dine-in
                 </button>
-              </form>
+                <button 
+                  onClick={() => setOrderType("DELIVERY")}
+                  className={cn(
+                    "flex-1 py-3 rounded-2xl font-black text-sm transition-all flex items-center justify-center gap-2",
+                    orderType === "DELIVERY" ? "bg-red-600 text-white shadow-lg shadow-red-200" : "bg-gray-50 text-gray-500"
+                  )}
+                >
+                  <MapPin className="w-4 h-4" />
+                  Delivery
+                </button>
+              </div>
+
+              {orderType === "DINE_IN" ? (
+                <form onSubmit={handleStartOrdering} className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-2">Where are you sitting?</label>
+                    <div className="relative">
+                      <input 
+                        required
+                        type="number"
+                        placeholder="Enter Table Number"
+                        className="w-full px-8 py-5 bg-gray-50 border border-gray-100 rounded-3xl focus:outline-none focus:ring-4 focus:ring-red-500/10 font-black text-2xl text-center placeholder:text-gray-300 placeholder:text-lg transition-all"
+                        value={tableNumber}
+                        onChange={(e) => setTableNumber(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <button 
+                    type="submit"
+                    className="w-full py-5 bg-red-600 text-white rounded-3xl font-black text-lg shadow-xl shadow-red-200 hover:bg-red-700 transition-all flex items-center justify-center gap-3 active:scale-95"
+                  >
+                    Start My Order
+                    <ArrowRight className="w-6 h-6" />
+                  </button>
+                </form>
+              ) : (
+                <div className="space-y-4">
+                  <p className="text-gray-500 text-center font-medium px-4">
+                    Craving something delicious? We'll bring it right to your doorstep.
+                  </p>
+                  <button 
+                    onClick={() => router.push("/delivery")}
+                    className="w-full py-5 bg-red-600 text-white rounded-3xl font-black text-lg shadow-xl shadow-red-200 hover:bg-red-700 transition-all flex items-center justify-center gap-3 active:scale-95"
+                  >
+                    Order Delivery
+                    <ArrowRight className="w-6 h-6" />
+                  </button>
+                </div>
+              )}
             </motion.div>
           </div>
 

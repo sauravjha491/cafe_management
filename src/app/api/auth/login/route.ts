@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { generateToken } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
@@ -17,8 +18,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    // In a real app, we would issue a JWT or set a session cookie here.
-    // For this local fallback, we'll just return the user data.
+    const token = generateToken({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    });
+
     return NextResponse.json({
       user: {
         id: user.id,
@@ -26,6 +32,7 @@ export async function POST(req: Request) {
         name: user.name,
         role: user.role,
       },
+      token,
     });
   } catch (error: any) {
     console.error("Local Login Error:", error);

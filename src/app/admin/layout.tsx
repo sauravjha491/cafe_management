@@ -6,7 +6,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { 
   LayoutDashboard, Coffee, Users, Table as TableIcon, 
   BarChart3, Settings, LogOut, Menu, X, Loader2, 
-  ShoppingBag, Clock, Bell, Volume2, VolumeX 
+  ShoppingBag, Clock, Bell, Volume2, VolumeX,
+  Calculator, Truck, Bike
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Toaster, toast } from "react-hot-toast";
@@ -17,7 +18,10 @@ import { collection, onSnapshot, query, orderBy, limit } from "firebase/firestor
 
 const navItems = [
   { label: "Overview", href: "/admin", icon: LayoutDashboard },
+  { label: "POS", href: "/admin/pos", icon: Calculator },
   { label: "Orders", href: "/admin/orders", icon: ShoppingBag },
+  { label: "Delivery", href: "/admin/delivery", icon: Truck },
+  { label: "Riders", href: "/admin/riders", icon: Bike },
   { label: "Menu", href: "/admin/menu", icon: Coffee },
   { label: "Tables", href: "/admin/tables", icon: TableIcon },
   { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
@@ -150,9 +154,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   // Filter nav items based on role
   const filteredNavItems = navItems.filter(item => {
-    if (role === "OWNER") return true;
-    // Staff can only see Orders, Menu, and Tables
-    return ["Orders", "Menu", "Tables"].includes(item.label);
+    if (role === "OWNER" || role === "ADMIN") return true;
+    // Staff can see POS, Orders, Menu, and Tables
+    if (role === "STAFF") {
+      return ["POS", "Orders", "Menu", "Tables"].includes(item.label);
+    }
+    // Riders can only see Delivery
+    if (role === "RIDER") {
+      return ["Delivery"].includes(item.label);
+    }
+    return false;
   });
 
   useEffect(() => {
