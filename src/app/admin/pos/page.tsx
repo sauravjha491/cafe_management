@@ -166,7 +166,7 @@ export default function POSPage() {
   const { user } = useAuthStore();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
@@ -179,6 +179,7 @@ export default function POSPage() {
   const [showCustomItemModal, setShowCustomItemModal] = useState(false);
   const [showReceipt, setShowReceipt] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(false);
   const [cashReceived, setCashReceived] = useState<string>("");
   
   // Feature States
@@ -187,6 +188,7 @@ export default function POSPage() {
   const [paymentMethod, setPaymentMethod] = useState<"CASH" | "CARD" | "QR" | "WALLET">("CASH");
   const [newCustomer, setNewCustomer] = useState({ name: "", phone: "", email: "" });
   const [customItem, setCustomItem] = useState({ name: "", price: "", quantity: "1" });
+  const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [settings, setSettings] = useState({
     currency: "Rs.",
     taxRate: 5.0,
@@ -199,22 +201,54 @@ export default function POSPage() {
   const receiptRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetchData();
+    fetchInitialData();
     fetchHeldOrders();
   }, []);
 
-  const fetchData = async () => {
+  useEffect(() => {
+    if (selectedCategory !== null || searchQuery !== "") {
+      fetchProducts(1, false);
+    }
+  }, [selectedCategory, searchQuery]);
+
+  const fetchInitialData = async () => {
     try {
-      const [productsData, categoriesData, settingsData] = await Promise.all([
-        fetch("/api/admin/products").then(res => res.json()),
+      const [categoriesData, settingsData] = await Promise.all([
         fetch("/api/categories").then(res => res.json()),
         fetch("/api/admin/settings").then(res => res.json())
       ]);
-      setProducts(Array.isArray(productsData) ? productsData : []);
       setCategories(Array.isArray(categoriesData) ? categoriesData : []);
       if (settingsData && !settingsData.error) setSettings(settingsData);
     } catch (e) {
       toast.error("Failed to fetch initial data");
+    }
+  };
+
+  const fetchProducts = async (page = 1, append = false) => {
+    setIsLoadingProducts(true);
+    try {
+      const categoryParam = selectedCategory && selectedCategory !== "all" ? `&categoryId=${selectedCategory}` : "";
+      const searchParam = searchQuery ? `&search=${searchQuery}` : "";
+      const res = await fetch(`/api/admin/products?page=${page}&limit=16${categoryParam}${searchParam}`);
+      const data = await res.json();
+      
+      if (data.products) {
+        setProducts(prev => append ? [...prev, ...data.products] : data.products);
+        setPagination({
+          page: data.pagination.page,
+          totalPages: data.pagination.pages
+        });
+      }
+    } catch (e) {
+      toast.error("Failed to load products");
+    } finally {
+      setIsLoadingProducts(false);
+    }
+  };
+
+  const loadMore = () => {
+    if (pagination.page < pagination.totalPages) {
+      fetchProducts(pagination.page + 1, true);
     }
   };
 
@@ -461,14 +495,6 @@ export default function POSPage() {
     doc.save(`Receipt-${showReceipt.orderNumber}.pdf`);
   };
 
-  const filteredProducts = useMemo(() => {
-    return products.filter(p => {
-        const matchesCategory = selectedCategory === "all" || p.categoryId === selectedCategory;
-        const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesCategory && matchesSearch;
-    });
-  }, [products, selectedCategory, searchQuery]);
-
   const getQuantityInCart = (productId: string) => {
     return cart.find(item => item.productId === productId)?.quantity || 0;
   };
@@ -481,20 +507,20 @@ export default function POSPage() {
       <div className="flex-[0.7] flex flex-col min-w-0 overflow-hidden bg-white lg:bg-transparent rounded-[3rem]">
         
         {/* Header: Search & Info */}
-        <div className="p-6 lg:p-0 flex flex-col gap-6 shrink-0 bg-white lg:bg-transparent sticky top-0 z-20">
+        <div className="p-6 lg:p-0 flex flex-col gap-6 shrink-0 bg-white lg:bg-transparent sticky top-0 z-30">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative group">
                 <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 w-6 h-6 group-focus-within:text-red-600 transition-colors" />
                 <input 
                 type="text"
-                placeholder="Search products or scan barcode..."
+                placeholder="Search products..."
                 className="w-full pl-16 pr-14 py-6 bg-white border border-gray-100 lg:border-transparent rounded-[2.5rem] shadow-lg focus:ring-8 focus:ring-red-500/5 outline-none font-bold transition-all text-base"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 {searchQuery && (
                     <button 
-                        onClick={() => setSearchQuery("")}
+                        onClick={() => { setSearchQuery(""); if (selectedCategory === null) setSelectedCategory("all"); }}
                         className="absolute right-6 top-1/2 -translate-y-1/2 p-2 bg-gray-100 hover:bg-red-50 hover:text-red-600 rounded-full transition-all"
                     >
                         <X className="w-4 h-4" />
@@ -542,24 +568,93 @@ export default function POSPage() {
         </div>
 
         {/* Product Grid - Responsive */}
-        <div className="flex-1 overflow-y-auto no-scrollbar grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 lg:gap-8 p-1 mt-4 pb-24 lg:pb-8">
-          {filteredProducts.map(product => (
-            <ProductCard 
-                key={product.id}
-                product={product}
-                currency={settings.currency}
-                onAdd={addToCart}
-                onRemove={(id) => updateQuantity(id, -1)}
-                quantityInCart={getQuantityInCart(product.id)}
-            />
-          ))}
-          {filteredProducts.length === 0 && (
-              <div className="col-span-full py-20 flex flex-col items-center justify-center text-gray-300">
-                  <div className="w-24 h-24 bg-gray-50 rounded-[3rem] flex items-center justify-center mb-6">
-                      <Search className="w-12 h-12 opacity-20" />
+        <div className="flex-1 overflow-y-auto no-scrollbar p-1 mt-4 pb-24 lg:pb-8">
+          {selectedCategory === null && searchQuery === "" ? (
+            /* --- CATEGORY-FIRST VIEW --- */
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 py-8">
+              <motion.button
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                onClick={() => setSelectedCategory("all")}
+                className="group relative h-48 bg-gray-900 rounded-[2.5rem] overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-gray-900/20 transition-all active:scale-95"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-red-600/20 to-transparent" />
+                <div className="relative h-full flex flex-col items-center justify-center gap-4 text-white">
+                  <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md group-hover:scale-110 transition-transform">
+                    <Package className="w-8 h-8" />
                   </div>
-                  <p className="font-black uppercase tracking-widest text-[10px]">No products found</p>
+                  <span className="text-lg font-black uppercase tracking-[0.2em]">All Items</span>
+                </div>
+              </motion.button>
+              
+              {categories.map((cat, idx) => (
+                <motion.button
+                  key={cat.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className="group relative h-48 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 transition-all active:scale-95 overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative h-full flex flex-col items-center justify-center gap-4">
+                    <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center text-red-600 group-hover:scale-110 transition-transform">
+                      <Tag className="w-8 h-8" />
+                    </div>
+                    <span className="text-lg font-black text-gray-900 uppercase tracking-widest">{cat.name}</span>
+                  </div>
+                </motion.button>
+              ))}
+            </div>
+          ) : (
+            /* --- PRODUCT GRID VIEW --- */
+            <div className="space-y-12">
+              <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 lg:gap-8">
+                {products.map(product => (
+                  <ProductCard 
+                      key={product.id}
+                      product={product}
+                      currency={settings.currency}
+                      onAdd={addToCart}
+                      onRemove={(id) => updateQuantity(id, -1)}
+                      quantityInCart={getQuantityInCart(product.id)}
+                  />
+                ))}
               </div>
+
+              {/* Empty State */}
+              {products.length === 0 && !isLoadingProducts && (
+                <div className="py-20 flex flex-col items-center justify-center text-gray-300">
+                    <div className="w-24 h-24 bg-gray-50 rounded-[3rem] flex items-center justify-center mb-6">
+                        <Package className="w-12 h-12 opacity-20" />
+                    </div>
+                    <p className="font-black uppercase tracking-widest text-[10px]">No products available in this category</p>
+                </div>
+              )}
+
+              {/* Loading State */}
+              {isLoadingProducts && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 lg:gap-8">
+                  {Array(8).fill(0).map((_, i) => (
+                    <div key={i} className="h-72 bg-white rounded-[2rem] animate-pulse border border-gray-50" />
+                  ))}
+                </div>
+              )}
+
+              {/* Load More Button */}
+              {pagination.page < pagination.totalPages && (
+                <div className="flex justify-center pt-8">
+                  <button 
+                    onClick={loadMore}
+                    disabled={isLoadingProducts}
+                    className="px-12 py-5 bg-white border border-gray-100 text-gray-900 rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] shadow-lg hover:bg-gray-50 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-3"
+                  >
+                    {isLoadingProducts ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                    Load More Items
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>
