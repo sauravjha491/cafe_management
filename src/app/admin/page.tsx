@@ -95,7 +95,7 @@ export default function AdminDashboard() {
   if (role === "STAFF") return null;
 
   return (
-    <div className="space-y-10 pb-10">
+    <div className="h-full overflow-y-auto no-scrollbar p-4 lg:p-8 space-y-10 pb-20">
       {/* Config Warning Banner */}
       {configWarning && (
         <motion.div 

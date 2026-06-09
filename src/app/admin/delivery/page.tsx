@@ -122,7 +122,7 @@ export default function DeliveryManagement() {
   );
 
   return (
-    <div className="flex flex-col lg:flex-row h-full lg:h-full gap-6 overflow-hidden relative">
+    <div className="flex flex-col lg:flex-row h-full bg-gray-50/50 gap-0 lg:gap-6 overflow-hidden relative p-4 lg:p-8">
       <Toaster position="top-right" />
       
       {/* Left: Orders List */}

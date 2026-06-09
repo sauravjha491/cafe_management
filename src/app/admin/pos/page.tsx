@@ -352,7 +352,7 @@ export default function POSPage() {
   });
 
   return (
-    <div className="flex flex-col lg:flex-row h-full lg:h-full bg-gray-50/50 gap-0 lg:gap-6 overflow-hidden relative">
+    <div className="flex flex-col lg:flex-row h-full bg-gray-50/50 gap-0 lg:gap-6 overflow-hidden relative p-4 lg:p-8">
       <Toaster position="top-right" />
       
       {/* --- LEFT SIDE: PRODUCTS --- */}
@@ -415,9 +415,9 @@ export default function POSPage() {
               key={product.id}
               whileTap={{ scale: 0.95 }}
               onClick={() => addToCart(product)}
-              className="bg-white p-3 lg:p-4 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-red-900/5 transition-all text-left flex flex-col group relative overflow-hidden h-fit"
+              className="bg-white p-3 lg:p-4 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-red-900/5 transition-all text-left flex flex-col group relative overflow-hidden min-h-[220px] lg:min-h-[280px]"
             >
-              <div className="relative h-28 lg:h-36 w-full rounded-2xl overflow-hidden mb-3 lg:mb-4">
+              <div className="relative h-28 lg:h-36 w-full rounded-2xl overflow-hidden mb-3 lg:mb-4 shrink-0">
                 <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 {product.stock >= 0 && (
