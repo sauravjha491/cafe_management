@@ -95,8 +95,8 @@ export default function AdminOrders() {
   if (loading) return <div className="p-8">Loading dashboard...</div>;
 
   return (
-    <div className="p-4 md:p-6 bg-gray-50 min-h-screen">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div className="space-y-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">Live Orders</h1>
           <p className="text-sm md:text-base text-gray-500 font-medium">Manage and track incoming orders in real-time</p>

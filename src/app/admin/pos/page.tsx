@@ -352,7 +352,7 @@ export default function POSPage() {
   });
 
   return (
-    <div className="flex flex-col lg:flex-row h-screen lg:h-[calc(100vh-120px)] bg-gray-50/50 gap-0 lg:gap-6 overflow-hidden relative">
+    <div className="flex flex-col lg:flex-row h-full lg:h-full bg-gray-50/50 gap-0 lg:gap-6 overflow-hidden relative">
       <Toaster position="top-right" />
       
       {/* --- LEFT SIDE: PRODUCTS --- */}
@@ -639,7 +639,7 @@ export default function POSPage() {
                 </div>
 
                 {/* Totals Section */}
-                <div className="p-8 bg-gray-900 text-white lg:rounded-t-[3rem] space-y-6">
+                <div className="p-6 lg:p-8 bg-gray-900 text-white lg:rounded-t-[3rem] space-y-6">
                   <div className="space-y-3 opacity-90">
                     <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
                       <span>Subtotal</span>

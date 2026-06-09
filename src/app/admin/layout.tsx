@@ -568,8 +568,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 lg:ml-72">
-        <header className="sticky top-0 z-40 bg-slate-900 border-b border-slate-800 px-4 md:px-6 py-4 flex items-center justify-between lg:hidden shadow-xl">
+      <div className="flex-1 flex flex-col min-w-0 lg:ml-72 h-screen overflow-hidden">
+        <header className="sticky top-0 z-40 bg-slate-900 border-b border-slate-800 px-4 md:px-6 py-4 flex items-center justify-between lg:hidden shadow-xl shrink-0">
           <button 
             onClick={() => setIsSidebarOpen(true)}
             className="p-2.5 bg-slate-800 rounded-xl text-slate-400 active:scale-95 transition-all"
@@ -585,8 +585,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
         </header>
 
-        <main className="flex-1 bg-[#f8fafc] p-4 md:p-6 lg:p-10">
-          <div className="max-w-[1600px] mx-auto">
+        <main className="flex-1 bg-[#f8fafc] p-4 md:p-6 lg:p-8 overflow-y-auto custom-scrollbar">
+          <div className="max-w-[1600px] mx-auto h-full">
             {children}
           </div>
         </main>

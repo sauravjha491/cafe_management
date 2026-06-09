@@ -115,7 +115,7 @@ export default function SalesReports() {
   };
 
   return (
-    <div className="space-y-8 p-4 lg:p-8 overflow-y-auto h-full no-scrollbar">
+    <div className="space-y-10 pb-10">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-black text-gray-900 tracking-tight">Sales Analytics</h1>

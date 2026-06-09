@@ -95,7 +95,7 @@ export default function AdminDashboard() {
   if (role === "STAFF") return null;
 
   return (
-    <div className="space-y-8 pb-10">
+    <div className="space-y-10 pb-10">
       {/* Config Warning Banner */}
       {configWarning && (
         <motion.div 
