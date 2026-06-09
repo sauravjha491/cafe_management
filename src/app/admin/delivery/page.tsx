@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Truck, Search, MapPin, User, 
-  Bike, CheckCircle2, Clock, 
+import {
+  Truck, Search, MapPin, User,
+  Bike, CheckCircle2, Clock,
   Navigation, Phone, MoreHorizontal,
   ChevronRight, Loader2, Package,
-  AlertCircle, X, Check
+  AlertCircle, X, Check, ArrowLeft
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import toast, { Toaster } from "react-hot-toast";
@@ -58,6 +58,14 @@ const statusColors: any = {
   OUT_FOR_DELIVERY: "bg-yellow-50 text-yellow-600 border-yellow-100",
   DELIVERED: "bg-gray-50 text-gray-600 border-gray-100",
   CANCELLED: "bg-red-50 text-red-600 border-red-100",
+};
+
+const DELIVERY_FLOW = ["PENDING", "ACCEPTED", "PREPARING", "READY", "OUT_FOR_DELIVERY", "DELIVERED"];
+
+const getNextStatus = (currentStatus: string) => {
+  const currentIndex = DELIVERY_FLOW.indexOf(currentStatus);
+  if (currentIndex === -1 || currentIndex === DELIVERY_FLOW.length - 1) return null;
+  return DELIVERY_FLOW[currentIndex + 1];
 };
 
 export default function DeliveryManagement() {
@@ -114,19 +122,22 @@ export default function DeliveryManagement() {
   );
 
   return (
-    <div className="flex h-[calc(100vh-120px)] gap-6 overflow-hidden">
+    <div className="flex flex-col lg:flex-row h-full lg:h-[calc(100vh-120px)] gap-6 overflow-hidden relative">
       <Toaster position="top-right" />
       
       {/* Left: Orders List */}
-      <div className="w-[450px] flex flex-col gap-6">
-        <div className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-gray-100 space-y-4">
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Deliveries</h1>
+      <div className={cn(
+        "w-full lg:w-[450px] flex flex-col gap-4 lg:gap-6 h-full",
+        selectedOrder && "hidden lg:flex"
+      )}>
+        <div className="bg-white p-4 lg:p-6 rounded-[2rem] lg:rounded-[2.5rem] shadow-sm border border-gray-100 space-y-4">
+          <h1 className="text-2xl lg:text-3xl font-black text-gray-900 tracking-tight">Deliveries</h1>
           <div className="relative group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-red-600 transition-colors" />
             <input 
               type="text"
               placeholder="Search by order # or name..."
-              className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-red-100 outline-none font-bold transition-all shadow-sm"
+              className="w-full pl-12 pr-4 py-3 lg:py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-red-100 outline-none font-bold transition-all shadow-sm text-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -140,7 +151,7 @@ export default function DeliveryManagement() {
               <p className="font-black text-[10px] uppercase tracking-widest">Loading Live Data...</p>
             </div>
           ) : filteredOrders.length === 0 ? (
-            <div className="text-center py-20 bg-white rounded-[2.5rem] border border-gray-100">
+            <div className="text-center py-20 bg-white rounded-[2rem] lg:rounded-[2.5rem] border border-gray-100">
               <Truck className="w-12 h-12 text-gray-200 mx-auto mb-4" />
               <p className="font-black text-gray-400 uppercase tracking-widest text-xs">No active deliveries</p>
             </div>
@@ -151,19 +162,19 @@ export default function DeliveryManagement() {
                 key={order.id}
                 onClick={() => setSelectedOrder(order)}
                 className={cn(
-                  "w-full text-left p-6 rounded-[2.5rem] border transition-all relative group",
+                  "w-full text-left p-5 lg:p-6 rounded-[2rem] lg:rounded-[2.5rem] border transition-all relative group",
                   selectedOrder?.id === order.id 
-                    ? "bg-white border-red-600 shadow-2xl shadow-red-900/10 translate-x-2" 
+                    ? "bg-white border-red-600 shadow-2xl shadow-red-900/10 lg:translate-x-2" 
                     : "bg-white border-gray-100 shadow-sm hover:border-gray-200"
                 )}
               >
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Order</span>
-                    <h3 className="text-xl font-black text-gray-900 tracking-tight">#{order.orderNumber}</h3>
+                    <h3 className="text-lg lg:text-xl font-black text-gray-900 tracking-tight">#{order.orderNumber}</h3>
                   </div>
                   <div className={cn(
-                    "px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border",
+                    "px-3 py-1.5 rounded-xl text-[8px] lg:text-[10px] font-black uppercase tracking-widest border",
                     statusColors[order.status]
                   )}>
                     {order.status.replace(/_/g, ' ')}
@@ -172,26 +183,26 @@ export default function DeliveryManagement() {
 
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 text-gray-500">
-                    <User className="w-4 h-4" />
-                    <span className="text-sm font-bold">{order.customerName}</span>
+                    <User className="w-4 h-4 shrink-0" />
+                    <span className="text-xs lg:text-sm font-bold truncate">{order.customerName}</span>
                   </div>
                   <div className="flex items-center gap-3 text-gray-500">
-                    <MapPin className="w-4 h-4 text-red-500" />
-                    <span className="text-sm font-bold line-clamp-1">{order.deliveryOrder.address.addressLine}</span>
+                    <MapPin className="w-4 h-4 text-red-500 shrink-0" />
+                    <span className="text-xs lg:text-sm font-bold line-clamp-1">{order.deliveryOrder.address.addressLine}</span>
                   </div>
                   <div className="flex items-center gap-3 text-gray-500">
-                    <Bike className={cn("w-4 h-4", order.deliveryOrder.rider ? "text-blue-500" : "text-gray-300")} />
-                    <span className="text-sm font-bold">
+                    <Bike className={cn("w-4 h-4 shrink-0", order.deliveryOrder.rider ? "text-blue-500" : "text-gray-300")} />
+                    <span className="text-xs lg:text-sm font-bold truncate">
                       {order.deliveryOrder.rider?.user?.name || "No rider assigned"}
                     </span>
                   </div>
                 </div>
 
                 <div className="mt-6 flex items-center justify-between pt-4 border-t border-gray-50">
-                  <span className="text-xs font-black text-gray-400 uppercase tracking-widest">
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
                     {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
-                  <span className="text-lg font-black text-red-600 tracking-tighter">
+                  <span className="text-base lg:text-lg font-black text-red-600 tracking-tighter">
                     Rs. {order.total.toLocaleString()}
                   </span>
                 </div>
@@ -202,83 +213,160 @@ export default function DeliveryManagement() {
       </div>
 
       {/* Right: Order Detail & Map */}
-      <div className="flex-1 bg-white rounded-[3rem] shadow-sm border border-gray-100 flex flex-col overflow-hidden">
+      <div className={cn(
+        "flex-1 bg-white rounded-[2rem] lg:rounded-[3rem] shadow-sm border border-gray-100 flex flex-col overflow-hidden h-full",
+        !selectedOrder && "hidden lg:flex"
+      )}>
         {selectedOrder ? (
           <>
             {/* Header */}
-            <div className="p-8 border-b border-gray-50 flex items-center justify-between">
-              <div className="flex items-center gap-6">
-                <div className="w-16 h-16 bg-red-600 rounded-3xl flex items-center justify-center text-white shadow-xl shadow-red-100">
-                  <Package className="w-8 h-8" />
+            <div className="p-4 lg:p-8 border-b border-gray-50 flex flex-col sm:flex-row lg:items-center justify-between gap-4">
+              <div className="flex items-center gap-4 lg:gap-6">
+                <button 
+                  onClick={() => setSelectedOrder(null)}
+                  className="lg:hidden p-2 bg-gray-50 rounded-xl"
+                >
+                  <ArrowLeft className="w-5 h-5 text-gray-600" />
+                </button>
+                <div className="w-12 h-12 lg:w-16 lg:h-16 bg-red-600 rounded-2xl lg:rounded-3xl flex items-center justify-center text-white shadow-xl shadow-red-100">
+                  <Package className="w-6 h-6 lg:w-8 lg:h-8" />
                 </div>
                 <div>
-                  <h2 className="text-3xl font-black text-gray-900 tracking-tight">Order #{selectedOrder.orderNumber}</h2>
-                  <p className="text-gray-500 font-bold uppercase tracking-widest text-xs flex items-center gap-2">
+                  <h2 className="text-xl lg:text-3xl font-black text-gray-900 tracking-tight">Order #{selectedOrder.orderNumber}</h2>
+                  <p className="text-gray-500 font-bold uppercase tracking-widest text-[8px] lg:text-xs flex items-center gap-2">
                     <Clock className="w-3 h-3" />
                     Placed {new Date(selectedOrder.createdAt).toLocaleString()}
                   </p>
                 </div>
               </div>
-              <div className="flex gap-3">
-                {selectedOrder.status === "PENDING" && (
-                  <button 
-                    onClick={() => updateOrderStatus(selectedOrder.id, "ACCEPTED")}
-                    className="px-6 py-3 bg-green-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-green-100 hover:bg-green-600 transition-all active:scale-95"
-                  >
-                    Accept Order
-                  </button>
-                )}
-                {!selectedOrder.deliveryOrder.rider && (
+
+              {/* Progress Tracker (Desktop) */}
+              <div className="hidden lg:flex items-center gap-4 px-8 border-x border-gray-50 flex-1 max-w-2xl">
+                {DELIVERY_FLOW.map((s, idx) => {
+                  const currentIdx = DELIVERY_FLOW.indexOf(selectedOrder.status);
+                  const isCompleted = idx <= currentIdx;
+                  const isCurrent = idx === currentIdx;
+                  
+                  return (
+                    <div key={s} className="flex items-center flex-1 last:flex-none">
+                      <div className="flex flex-col items-center gap-2">
+                        <div 
+                          className={cn(
+                            "w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black transition-all",
+                            isCurrent ? "bg-red-600 text-white scale-110 shadow-lg shadow-red-100" :
+                            isCompleted ? "bg-green-500 text-white" : "bg-gray-100 text-gray-400"
+                          )}
+                        >
+                          {isCompleted && !isCurrent ? <Check className="w-4 h-4" /> : idx + 1}
+                        </div>
+                      </div>
+                      {idx < DELIVERY_FLOW.length - 1 && (
+                        <div className={cn(
+                          "h-1 flex-1 mx-2 rounded-full",
+                          idx < currentIdx ? "bg-green-500" : "bg-gray-100"
+                        )} />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="flex gap-2 lg:gap-3">
+                {getNextStatus(selectedOrder.status) === "ACCEPTED" && (
                   <button 
                     onClick={() => setShowAssignModal(true)}
-                    className="px-6 py-3 bg-gray-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-gray-200 hover:bg-black transition-all active:scale-95 flex items-center gap-2"
+                    className="flex-1 sm:flex-none px-4 lg:px-6 py-2.5 lg:py-3 bg-gray-900 text-white rounded-xl lg:rounded-2xl font-black text-[10px] lg:text-xs uppercase tracking-widest shadow-lg shadow-gray-200 hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-2"
                   >
                     <Bike className="w-4 h-4" />
-                    Assign Rider
+                    <span className="hidden sm:inline">Assign Rider & Accept</span>
+                    <span className="sm:hidden">Assign Rider</span>
                   </button>
                 )}
-                {selectedOrder.status === "READY" && (
+                
+                {getNextStatus(selectedOrder.status) && getNextStatus(selectedOrder.status) !== "ACCEPTED" && (
                   <button 
-                    onClick={() => updateOrderStatus(selectedOrder.id, "OUT_FOR_DELIVERY")}
-                    className="px-6 py-3 bg-yellow-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-yellow-100 hover:bg-yellow-600 transition-all active:scale-95"
+                    onClick={() => updateOrderStatus(selectedOrder.id, getNextStatus(selectedOrder.status)!)}
+                    className={cn(
+                      "flex-1 sm:flex-none px-4 lg:px-6 py-2.5 lg:py-3 text-white rounded-xl lg:rounded-2xl font-black text-[10px] lg:text-xs uppercase tracking-widest shadow-lg transition-all active:scale-95",
+                      selectedOrder.status === "ACCEPTED" ? "bg-orange-500 shadow-orange-100 hover:bg-orange-600" :
+                      selectedOrder.status === "PREPARING" ? "bg-purple-500 shadow-purple-100 hover:bg-purple-600" :
+                      selectedOrder.status === "READY" ? "bg-yellow-500 shadow-yellow-100 hover:bg-yellow-600" :
+                      "bg-green-500 shadow-green-100 hover:bg-green-600"
+                    )}
                   >
-                    Out for Delivery
+                    {selectedOrder.status === "ACCEPTED" ? "Start Preparing" :
+                     selectedOrder.status === "PREPARING" ? "Mark Ready" :
+                     selectedOrder.status === "READY" ? "Out for Delivery" :
+                     "Mark Delivered"}
                   </button>
+                )}
+
+                {selectedOrder.status === "DELIVERED" && (
+                  <div className="flex-1 sm:flex-none px-4 lg:px-6 py-2.5 lg:py-3 bg-green-50 text-green-600 rounded-xl lg:rounded-2xl font-black text-[10px] lg:text-xs uppercase tracking-widest border border-green-100 text-center">
+                    Order Delivered
+                  </div>
                 )}
               </div>
             </div>
 
-            <div className="flex-1 flex overflow-hidden">
+            <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
               {/* Info Column */}
-              <div className="w-[350px] p-8 border-r border-gray-50 overflow-y-auto no-scrollbar space-y-8">
+              <div className="w-full lg:w-[350px] p-4 lg:p-8 lg:border-r border-gray-50 overflow-y-auto no-scrollbar space-y-6 lg:space-y-8 shrink-0">
+                {/* Progress Tracker (Mobile) */}
+                <div className="lg:hidden flex items-center justify-between px-2 mb-4">
+                  {DELIVERY_FLOW.map((s, idx) => {
+                    const currentIdx = DELIVERY_FLOW.indexOf(selectedOrder.status);
+                    const isCompleted = idx <= currentIdx;
+                    const isCurrent = idx === currentIdx;
+                    
+                    return (
+                      <div key={s} className="flex items-center flex-1 last:flex-none">
+                        <div className={cn(
+                          "w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-black transition-all",
+                          isCurrent ? "bg-red-600 text-white scale-110 shadow-lg shadow-red-100" :
+                          isCompleted ? "bg-green-500 text-white" : "bg-gray-100 text-gray-400"
+                        )}>
+                          {isCompleted && !isCurrent ? <Check className="w-3 h-3" /> : idx + 1}
+                        </div>
+                        {idx < DELIVERY_FLOW.length - 1 && (
+                          <div className={cn(
+                            "h-0.5 flex-1 mx-1 rounded-full",
+                            idx < currentIdx ? "bg-green-500" : "bg-gray-100"
+                          )} />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
                 <section>
                   <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Customer Details</h4>
-                  <div className="bg-gray-50 p-6 rounded-3xl space-y-4">
+                  <div className="bg-gray-50 p-4 lg:p-6 rounded-2xl lg:rounded-3xl space-y-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
                         <User className="w-5 h-5 text-red-600" />
                       </div>
-                      <span className="font-black text-gray-900">{selectedOrder.customerName}</span>
+                      <span className="font-black text-gray-900 text-sm lg:text-base">{selectedOrder.customerName}</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
                         <MapPin className="w-5 h-5 text-red-600" />
                       </div>
-                      <span className="text-xs font-bold text-gray-600 leading-relaxed">{selectedOrder.deliveryOrder.address.addressLine}</span>
+                      <span className="text-xs font-bold text-gray-600 leading-relaxed line-clamp-2">{selectedOrder.deliveryOrder.address.addressLine}</span>
                     </div>
                   </div>
                 </section>
 
                 <section>
                   <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Order Items</h4>
-                  <div className="space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3">
                     {selectedOrder.items.map((item, idx) => (
                       <div key={idx} className="flex justify-between items-center bg-white p-3 rounded-2xl border border-gray-100">
                         <div className="flex items-center gap-3">
                           <span className="w-8 h-8 bg-red-50 text-red-600 rounded-lg flex items-center justify-center font-black text-xs">{item.quantity}x</span>
-                          <span className="text-sm font-bold text-gray-800">{item.product?.name || item.name}</span>
+                          <span className="text-xs lg:text-sm font-bold text-gray-800 truncate max-w-[120px] lg:max-w-none">{item.product?.name || item.name}</span>
                         </div>
-                        <span className="text-xs font-black text-gray-400">Rs. {(item.price * item.quantity).toLocaleString()}</span>
+                        <span className="text-[10px] lg:text-xs font-black text-gray-400 shrink-0">Rs. {(item.price * item.quantity).toLocaleString()}</span>
                       </div>
                     ))}
                   </div>
@@ -286,7 +374,7 @@ export default function DeliveryManagement() {
               </div>
 
               {/* Map Column */}
-              <div className="flex-1 relative">
+              <div className="flex-1 relative min-h-[300px] lg:min-h-0 border-t lg:border-t-0 border-gray-50">
                 <div className="absolute inset-0">
                   <DeliveryTrackerMap 
                     customerLocation={{ 
@@ -297,28 +385,28 @@ export default function DeliveryManagement() {
                   />
                 </div>
                 {/* Floating Map Info */}
-                <div className="absolute top-6 left-6 right-6 z-10 flex gap-4">
-                  <div className="bg-white/90 backdrop-blur-md px-6 py-4 rounded-3xl shadow-xl border border-white/20 flex-1">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Rider Status</p>
-                    <div className="flex items-center gap-3">
-                      <div className={cn("w-3 h-3 rounded-full animate-pulse", selectedOrder.deliveryOrder.rider ? "bg-green-500" : "bg-gray-300")} />
-                      <p className="font-black text-gray-900">{selectedOrder.deliveryOrder.rider?.user?.name || "Pending Assignment"}</p>
+                <div className="absolute top-4 lg:top-6 left-4 lg:left-6 right-4 lg:right-6 z-10 flex gap-3 lg:gap-4">
+                  <div className="bg-white/90 backdrop-blur-md px-4 lg:px-6 py-3 lg:py-4 rounded-2xl lg:rounded-3xl shadow-xl border border-white/20 flex-1">
+                    <p className="text-[8px] lg:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Rider Status</p>
+                    <div className="flex items-center gap-2 lg:gap-3">
+                      <div className={cn("w-2 h-2 lg:w-3 lg:h-3 rounded-full animate-pulse", selectedOrder.deliveryOrder.rider ? "bg-green-500" : "bg-gray-300")} />
+                      <p className="font-black text-gray-900 text-xs lg:text-base truncate">{selectedOrder.deliveryOrder.rider?.user?.name || "Pending Assignment"}</p>
                     </div>
                   </div>
-                  <div className="bg-gray-900 text-white px-8 py-4 rounded-3xl shadow-xl border border-gray-800">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Distance</p>
-                    <p className="text-xl font-black tracking-tighter">3.2 KM</p>
+                  <div className="bg-gray-900 text-white px-6 lg:px-8 py-3 lg:py-4 rounded-2xl lg:rounded-3xl shadow-xl border border-gray-800">
+                    <p className="text-[8px] lg:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Distance</p>
+                    <p className="text-lg lg:text-xl font-black tracking-tighter">3.2 KM</p>
                   </div>
                 </div>
               </div>
             </div>
           </>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-gray-300">
-            <div className="w-32 h-32 bg-gray-50 rounded-[3rem] flex items-center justify-center mb-6">
-              <Navigation className="w-16 h-16 opacity-20" />
+          <div className="flex-1 flex flex-col items-center justify-center text-gray-300 p-8 text-center">
+            <div className="w-24 h-24 lg:w-32 lg:h-32 bg-gray-50 rounded-[2.5rem] lg:rounded-[3rem] flex items-center justify-center mb-6">
+              <Navigation className="w-12 h-12 lg:w-16 lg:h-16 opacity-20" />
             </div>
-            <p className="font-black uppercase tracking-widest text-xs">Select an order to view details</p>
+            <p className="font-black uppercase tracking-widest text-[10px] lg:text-xs">Select an order to view live tracking details</p>
           </div>
         )}
       </div>

@@ -475,6 +475,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="p-6 mt-auto bg-slate-900/50 border-t border-slate-800/50 space-y-4 shrink-0">
             <div className="space-y-1">
               <Link
+                href="/"
+                className="flex items-center gap-4 px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:text-white hover:bg-slate-800/50"
+              >
+                <ShoppingBag className="w-4 h-4" />
+                <span className="text-sm">View Customer Site</span>
+              </Link>
+              <Link
                 href="/admin/profile"
                 onClick={() => setIsSidebarOpen(false)}
                 className={cn(

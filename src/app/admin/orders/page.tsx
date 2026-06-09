@@ -6,24 +6,30 @@ import { db } from "@/lib/firebase";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { 
   CheckCircle2, Clock, Coffee, Package, Truck, 
-  MoreVertical, Check, X, AlertCircle 
+  MoreVertical, Check, X, AlertCircle, ChevronRight 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 
 const statusConfig = {
-  PENDING: { label: "Pending", icon: Clock, color: "text-blue-600", bg: "bg-blue-50", btn: "Accept" },
-  ACCEPTED: { label: "Accepted", icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50", btn: "Prepare" },
-  PREPARING: { label: "Preparing", icon: Coffee, color: "text-orange-600", bg: "bg-orange-50", btn: "Ready" },
-  READY: { label: "Ready", icon: Package, color: "text-purple-600", bg: "bg-purple-50", btn: "Serve" },
-  SERVED: { label: "Served", icon: Truck, color: "text-gray-600", bg: "bg-gray-50", btn: "Done" },
+  PENDING: { label: "Pending", icon: Clock, color: "text-blue-600", bg: "bg-blue-50", btn: "Accept", order: 0 },
+  ACCEPTED: { label: "Accepted", icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50", btn: "Prepare", order: 1 },
+  PREPARING: { label: "Preparing", icon: Coffee, color: "text-orange-600", bg: "bg-orange-50", btn: "Ready", order: 2 },
+  READY: { label: "Ready", icon: Package, color: "text-purple-600", bg: "bg-purple-50", btn: "Serve", order: 3 },
+  SERVED: { label: "Served", icon: Truck, color: "text-gray-600", bg: "bg-gray-50", btn: "Done", order: 4 },
+  OUT_FOR_DELIVERY: { label: "Out for Delivery", icon: Truck, color: "text-yellow-600", bg: "bg-yellow-50", btn: "Delivered", order: 4 },
+  DELIVERED: { label: "Delivered", icon: Check, color: "text-green-600", bg: "bg-green-50", btn: "Done", order: 5 },
+  CANCELLED: { label: "Cancelled", icon: X, color: "text-red-600", bg: "bg-red-50", btn: "None", order: -1 },
 };
 
-const nextStatus = {
-  PENDING: "ACCEPTED",
-  ACCEPTED: "PREPARING",
-  PREPARING: "READY",
-  READY: "SERVED",
+const ORDER_FLOW = ["PENDING", "ACCEPTED", "PREPARING", "READY", "SERVED"];
+const DELIVERY_FLOW = ["PENDING", "ACCEPTED", "PREPARING", "READY", "OUT_FOR_DELIVERY", "DELIVERED"];
+
+const getNextStatus = (currentStatus: string, orderType: string) => {
+  const flow = orderType === "DELIVERY" ? DELIVERY_FLOW : ORDER_FLOW;
+  const currentIndex = flow.indexOf(currentStatus);
+  if (currentIndex === -1 || currentIndex === flow.length - 1) return null;
+  return flow[currentIndex + 1];
 };
 
 export default function AdminOrders() {
@@ -106,9 +112,10 @@ export default function AdminOrders() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 md:gap-6">
         <AnimatePresence>
           {orders.map((order) => {
-            const config = statusConfig[order.status as keyof typeof statusConfig];
-            const StatusIcon = config.icon;
-            const next = nextStatus[order.status as keyof typeof nextStatus];
+            const config = statusConfig[order.status as keyof typeof statusConfig] || statusConfig.PENDING;
+            const next = getNextStatus(order.status, order.type);
+            const flow = order.type === "DELIVERY" ? DELIVERY_FLOW : ORDER_FLOW;
+            const currentIdx = flow.indexOf(order.status);
 
             return (
               <motion.div
@@ -123,13 +130,13 @@ export default function AdminOrders() {
                 <div className={cn("p-4 flex justify-between items-center border-b", config.bg)}>
                   <div className="flex items-center gap-2">
                     <span className="font-black text-lg">#{order.orderNumber}</span>
-                    <span className={cn("text-xs font-bold px-2 py-0.5 rounded-full uppercase", config.color, "bg-white/50")}>
-                      {config.label}
+                    <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full uppercase", config.color, "bg-white/50")}>
+                      {order.type}
                     </span>
                   </div>
                   <div className="text-right">
-                    <p className="text-[10px] text-gray-400 font-bold uppercase">Table</p>
-                    <p className="font-black text-gray-900">{order.tableNumber}</p>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase">{order.type === "TABLE" ? "Table" : "Type"}</p>
+                    <p className="font-black text-gray-900">{order.type === "TABLE" ? order.tableNumber : order.type}</p>
                   </div>
                 </div>
 
@@ -139,7 +146,38 @@ export default function AdminOrders() {
                     <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
                       <AlertCircle className="w-4 h-4 text-gray-500" />
                     </div>
-                    <span className="font-bold text-gray-800">{order.customerName}</span>
+                    <span className="font-bold text-gray-800">{order.customerName || "Guest"}</span>
+                  </div>
+
+                  {/* Stage Progress Bar */}
+                  <div className="flex items-center justify-between mb-6 px-2">
+                    {flow.map((s, idx) => {
+                      const sIdx = flow.indexOf(s);
+                      const isCompleted = idx <= currentIdx;
+                      const isCurrent = idx === currentIdx;
+                      const sCfg = statusConfig[s as keyof typeof statusConfig];
+                      
+                      return (
+                        <div key={s} className="flex items-center flex-1 last:flex-none">
+                          <div 
+                            className={cn(
+                              "w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-black transition-all",
+                              isCurrent ? "bg-red-600 text-white scale-110 shadow-lg shadow-red-100" :
+                              isCompleted ? "bg-green-500 text-white" : "bg-gray-100 text-gray-400"
+                            )}
+                            title={sCfg?.label}
+                          >
+                            {isCompleted && !isCurrent ? <Check className="w-3 h-3" /> : idx + 1}
+                          </div>
+                          {idx < flow.length - 1 && (
+                            <div className={cn(
+                              "h-0.5 flex-1 mx-1 rounded-full",
+                              idx < currentIdx ? "bg-green-500" : "bg-gray-100"
+                            )} />
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
 
                   <div className="space-y-3">
@@ -173,20 +211,28 @@ export default function AdminOrders() {
                   
                   {next ? (
                     <button
-                      onClick={() => updateStatus(order.id, next)}
+                      onClick={() => {
+                        if (order.type === "DELIVERY" && next === "ACCEPTED") {
+                          window.location.href = "/admin/delivery";
+                          return;
+                        }
+                        updateStatus(order.id, next);
+                      }}
                       className={cn(
                         "w-full py-3 rounded-2xl font-bold text-white shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2",
                         next === "ACCEPTED" ? "bg-blue-600 shadow-blue-100" :
                         next === "PREPARING" ? "bg-green-600 shadow-green-100" :
                         next === "READY" ? "bg-orange-600 shadow-orange-100" :
+                        next === "OUT_FOR_DELIVERY" ? "bg-yellow-600 shadow-yellow-100" :
+                        next === "DELIVERED" || next === "SERVED" ? "bg-green-600 shadow-green-100" :
                         "bg-purple-600 shadow-purple-100"
                       )}
                     >
-                      {statusConfig[next as keyof typeof statusConfig].btn} Order
-                      <Check className="w-5 h-5" />
+                      {order.type === "DELIVERY" && next === "ACCEPTED" ? "Assign Rider" : (statusConfig[next as keyof typeof statusConfig]?.btn || "Next") + " Stage"}
+                      <ChevronRight className="w-5 h-5" />
                     </button>
                   ) : (
-                    <div className="py-3 text-center text-gray-400 font-bold text-sm bg-gray-100 rounded-2xl">
+                    <div className="py-3 text-center text-green-600 font-black text-xs bg-green-50 rounded-2xl uppercase tracking-widest border border-green-100">
                       Order Completed
                     </div>
                   )}
