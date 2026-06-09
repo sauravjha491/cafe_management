@@ -238,5 +238,6 @@ export default function AdminOrders() {
         </AnimatePresence>
       </div>
     </div>
+  </div>
   );
 }
