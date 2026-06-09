@@ -149,32 +149,26 @@ export default function AdminOrders() {
                     <span className="font-bold text-gray-800">{order.customerName || "Guest"}</span>
                   </div>
 
-                  {/* Stage Progress Bar */}
-                  <div className="flex items-center justify-between mb-6 px-2">
+                  {/* Status Badges */}
+                  <div className="flex flex-wrap gap-2 mb-6">
                     {flow.map((s, idx) => {
-                      const sIdx = flow.indexOf(s);
                       const isCompleted = idx <= currentIdx;
                       const isCurrent = idx === currentIdx;
                       const sCfg = statusConfig[s as keyof typeof statusConfig];
                       
+                      if (!isCurrent && !isCompleted) return null;
+
                       return (
-                        <div key={s} className="flex items-center flex-1 last:flex-none">
-                          <div 
-                            className={cn(
-                              "w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-black transition-all",
-                              isCurrent ? "bg-red-600 text-white scale-110 shadow-lg shadow-red-100" :
-                              isCompleted ? "bg-green-500 text-white" : "bg-gray-100 text-gray-400"
-                            )}
-                            title={sCfg?.label}
-                          >
-                            {isCompleted && !isCurrent ? <Check className="w-3 h-3" /> : idx + 1}
-                          </div>
-                          {idx < flow.length - 1 && (
-                            <div className={cn(
-                              "h-0.5 flex-1 mx-1 rounded-full",
-                              idx < currentIdx ? "bg-green-500" : "bg-gray-100"
-                            )} />
+                        <div 
+                          key={s}
+                          className={cn(
+                            "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-all",
+                            isCurrent ? cn(sCfg.bg, sCfg.color, "ring-2 ring-current ring-offset-2") :
+                            "bg-gray-100 text-gray-400"
                           )}
+                        >
+                          {isCompleted && !isCurrent ? <Check className="w-3 h-3" /> : sCfg.icon && <sCfg.icon className="w-3 h-3" />}
+                          {sCfg.label}
                         </div>
                       );
                     })}

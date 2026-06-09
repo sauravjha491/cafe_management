@@ -22,6 +22,9 @@ model User {
   customer  Customer?
   rider     Rider?
   posOrders Order[] @relation("StaffOrders")
+  posModuleOrders POSOrder[] @relation("StaffPOSOrders")
+  cashierSessions CashierSession[]
+  refunds         POSRefund[] @relation("RefundProcessor")
 }
 
 model Customer {
@@ -33,6 +36,7 @@ model Customer {
   phone     String   @unique
   addresses Address[]
   orders    Order[]
+  posOrders POSOrder[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -104,7 +108,8 @@ model Product {
   featured    Boolean     @default(false)
   stock       Int         @default(-1) // -1 for unlimited
   orderItems  OrderItem[]
-  createdAt   DateTime    @default(now())
+  posOrderItems POSOrderItem[]
+  createdAt    DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }
 
@@ -201,4 +206,92 @@ model Settings {
   logo             String?
   address          String?
   phone            String?
+}
+
+// --- POS Module Models ---
+
+model POSOrder {
+  id              String         @id @default(cuid())
+  orderNumber     String         @unique
+  receiptNumber   String         @unique
+  invoiceNumber   String?        @unique
+  status          String         @default("COMPLETED") // COMPLETED, HELD, REFUNDED, DRAFT
+  customerName    String?
+  customerPhone   String?
+  customerId      String?
+  customer        Customer?      @relation(fields: [customerId], references: [id])
+  staffId         String
+  staff           User           @relation("StaffPOSOrders", fields: [staffId], references: [id])
+  subtotal        Float
+  tax             Float
+  discount        Float          @default(0)
+  serviceCharge   Float          @default(0)
+  total           Float
+  paymentMethod   String         // CASH, CARD, QR, WALLET
+  paymentStatus   String         @default("PAID") // PAID, REFUNDED, PARTIAL_REFUNDED
+  items           POSOrderItem[]
+  payments        POSPayment[]
+  refunds         POSRefund[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model POSOrderItem {
+  id         String   @id @default(cuid())
+  orderId    String
+  order      POSOrder @relation(fields: [orderId], references: [id])
+  productId  String?
+  product    Product? @relation(fields: [productId], references: [id])
+  name       String   // For custom items or snapshots
+  quantity   Int
+  price      Float
+  note       String?
+  discount   Float    @default(0)
+}
+
+model POSPayment {
+  id            String   @id @default(cuid())
+  orderId       String
+  order         POSOrder @relation(fields: [orderId], references: [id])
+  amount        Float
+  method        String   // CASH, CARD, QR, WALLET
+  transactionId String?
+  received      Float?   // For cash
+  change        Float?   // For cash
+  status        String   @default("SUCCESS")
+  createdAt     DateTime @default(now())
+}
+
+model POSRefund {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       POSOrder @relation(fields: [orderId], references: [id])
+  amount      Float
+  reason      String
+  staffId     String
+  staff       User     @relation("RefundProcessor", fields: [staffId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model CashRegister {
+  id        String   @id @default(cuid())
+  name      String
+  status    String   @default("CLOSED") // OPEN, CLOSED
+  balance   Float    @default(0)
+  sessions  CashierSession[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CashierSession {
+  id             String       @id @default(cuid())
+  registerId     String
+  register       CashRegister @relation(fields: [registerId], references: [id])
+  staffId        String
+  staff          User         @relation(fields: [staffId], references: [id])
+  openingBalance Float
+  closingBalance Float?
+  status         String       @default("OPEN") // OPEN, CLOSED
+  openedAt       DateTime     @default(now())
+  closedAt       DateTime?
 }

@@ -240,35 +240,15 @@ export default function DeliveryManagement() {
                 </div>
               </div>
 
-              {/* Progress Tracker (Desktop) */}
-              <div className="hidden lg:flex items-center gap-4 px-8 border-x border-gray-50 flex-1 max-w-2xl">
-                {DELIVERY_FLOW.map((s, idx) => {
-                  const currentIdx = DELIVERY_FLOW.indexOf(selectedOrder.status);
-                  const isCompleted = idx <= currentIdx;
-                  const isCurrent = idx === currentIdx;
-                  
-                  return (
-                    <div key={s} className="flex items-center flex-1 last:flex-none">
-                      <div className="flex flex-col items-center gap-2">
-                        <div 
-                          className={cn(
-                            "w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black transition-all",
-                            isCurrent ? "bg-red-600 text-white scale-110 shadow-lg shadow-red-100" :
-                            isCompleted ? "bg-green-500 text-white" : "bg-gray-100 text-gray-400"
-                          )}
-                        >
-                          {isCompleted && !isCurrent ? <Check className="w-4 h-4" /> : idx + 1}
-                        </div>
-                      </div>
-                      {idx < DELIVERY_FLOW.length - 1 && (
-                        <div className={cn(
-                          "h-1 flex-1 mx-2 rounded-full",
-                          idx < currentIdx ? "bg-green-500" : "bg-gray-100"
-                        )} />
-                      )}
-                    </div>
-                  );
-                })}
+              {/* Status Badge */}
+              <div className="hidden sm:flex items-center gap-4 px-8 border-x border-gray-50 flex-1 max-w-2xl justify-center">
+                <div className={cn(
+                  "px-6 py-2 rounded-2xl font-black text-xs uppercase tracking-[0.2em] border shadow-sm flex items-center gap-3",
+                  statusColors[selectedOrder.status]
+                )}>
+                  <div className="w-2 h-2 rounded-full animate-pulse bg-current" />
+                  {selectedOrder.status.replace(/_/g, ' ')}
+                </div>
               </div>
 
               <div className="flex gap-2 lg:gap-3">
@@ -312,33 +292,6 @@ export default function DeliveryManagement() {
             <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
               {/* Info Column */}
               <div className="w-full lg:w-[350px] p-4 lg:p-8 lg:border-r border-gray-50 overflow-y-auto no-scrollbar space-y-6 lg:space-y-8 shrink-0">
-                {/* Progress Tracker (Mobile) */}
-                <div className="lg:hidden flex items-center justify-between px-2 mb-4">
-                  {DELIVERY_FLOW.map((s, idx) => {
-                    const currentIdx = DELIVERY_FLOW.indexOf(selectedOrder.status);
-                    const isCompleted = idx <= currentIdx;
-                    const isCurrent = idx === currentIdx;
-                    
-                    return (
-                      <div key={s} className="flex items-center flex-1 last:flex-none">
-                        <div className={cn(
-                          "w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-black transition-all",
-                          isCurrent ? "bg-red-600 text-white scale-110 shadow-lg shadow-red-100" :
-                          isCompleted ? "bg-green-500 text-white" : "bg-gray-100 text-gray-400"
-                        )}>
-                          {isCompleted && !isCurrent ? <Check className="w-3 h-3" /> : idx + 1}
-                        </div>
-                        {idx < DELIVERY_FLOW.length - 1 && (
-                          <div className={cn(
-                            "h-0.5 flex-1 mx-1 rounded-full",
-                            idx < currentIdx ? "bg-green-500" : "bg-gray-100"
-                          )} />
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-
                 <section>
                   <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Customer Details</h4>
                   <div className="bg-gray-50 p-4 lg:p-6 rounded-2xl lg:rounded-3xl space-y-4">

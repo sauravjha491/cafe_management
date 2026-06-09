@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { 
-  LayoutDashboard, Coffee, Users, Table as TableIcon, 
+  LayoutDashboard, Coffee, Table as TableIcon, 
   BarChart3, Settings, LogOut, Menu, X, Loader2, 
   ShoppingBag, Clock, Bell, Volume2, VolumeX,
-  Calculator, Truck, Bike
+  Calculator, Truck, Bike, History, RotateCcw,
+  UtensilsCrossed, Grid, ClipboardList, UserCog, Users
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Toaster, toast } from "react-hot-toast";
@@ -17,15 +18,26 @@ import { signOut, onAuthStateChanged } from "firebase/auth";
 import { collection, onSnapshot, query, orderBy, limit } from "firebase/firestore";
 
 const navItems = [
-  { label: "Overview", href: "/admin", icon: LayoutDashboard },
-  { label: "POS", href: "/admin/pos", icon: Calculator },
-  { label: "Orders", href: "/admin/orders", icon: ShoppingBag },
-  { label: "Delivery", href: "/admin/delivery", icon: Truck },
-  { label: "Riders", href: "/admin/riders", icon: Bike },
-  { label: "Menu", href: "/admin/menu", icon: Coffee },
-  { label: "Tables", href: "/admin/tables", icon: TableIcon },
-  { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-  { label: "Staff", href: "/admin/staff", icon: Users },
+  {
+    title: "POS System",
+    items: [
+      { name: "POS Dashboard", icon: Calculator, href: "/admin/pos" },
+      { name: "POS Orders", icon: History, href: "/admin/pos/orders" },
+      { name: "Sales Reports", icon: BarChart3, href: "/admin/reports" },
+      { name: "Refunds", icon: RotateCcw, href: "/admin/pos/orders" },
+    ]
+  },
+  {
+    title: "Management",
+    items: [
+      { name: "Menu Items", icon: UtensilsCrossed, href: "/admin/menu" },
+      { name: "Categories", icon: Grid, href: "/admin/categories" },
+      { name: "Table Orders", icon: ClipboardList, href: "/admin/orders" },
+      { name: "Delivery", icon: Truck, href: "/admin/delivery" },
+      { name: "Customers", icon: Users, href: "/admin/customers" },
+      { name: "Staff", icon: UserCog, href: "/admin/staff" },
+    ]
+  },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -153,18 +165,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   };
 
   // Filter nav items based on role
-  const filteredNavItems = navItems.filter(item => {
-    if (role === "OWNER" || role === "ADMIN") return true;
-    // Staff can see POS, Orders, Menu, and Tables
-    if (role === "STAFF") {
-      return ["POS", "Orders", "Menu", "Tables"].includes(item.label);
-    }
-    // Riders can only see Delivery
-    if (role === "RIDER") {
-      return ["Delivery"].includes(item.label);
-    }
-    return false;
-  });
+  const filteredNavItems = navItems.map(category => ({
+    ...category,
+    items: category.items.filter(item => {
+      if (role === "OWNER" || role === "ADMIN") return true;
+      if (role === "STAFF") {
+        return ["POS Dashboard", "Table Orders", "Menu Items", "Categories"].includes(item.name);
+      }
+      if (role === "RIDER") {
+        return ["Delivery"].includes(item.name);
+      }
+      return false;
+    })
+  })).filter(category => category.items.length > 0);
 
   useEffect(() => {
     if (!auth) {
@@ -445,30 +458,39 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           {/* Nav Links */}
-          <nav className="flex-1 px-6 space-y-1.5 overflow-y-auto custom-scrollbar py-4">
-            {filteredNavItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setIsSidebarOpen(false)}
-                  className={cn(
-                    "flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group",
-                    isActive 
-                      ? "bg-gradient-to-r from-red-600 to-red-500 text-white shadow-lg shadow-red-600/20 translate-x-1" 
-                      : "text-slate-400 hover:text-white hover:bg-slate-800/50"
-                  )}
-                >
-                  <Icon className={cn("w-5 h-5 transition-all duration-300", isActive ? "scale-110" : "group-hover:scale-110")} />
-                  <span className="text-sm">{item.label}</span>
-                  {isActive && (
-                    <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
-                  )}
-                </Link>
-              );
-            })}
+          <nav className="flex-1 px-6 space-y-8 overflow-y-auto custom-scrollbar py-4">
+            {filteredNavItems.map((category, idx) => (
+              <div key={idx} className="space-y-3">
+                <h4 className="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
+                  {category.title}
+                </h4>
+                <div className="space-y-1.5">
+                  {category.items.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = pathname === item.href;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setIsSidebarOpen(false)}
+                        className={cn(
+                          "flex items-center gap-4 px-4 py-3 rounded-2xl font-bold transition-all duration-300 group",
+                          isActive 
+                            ? "bg-gradient-to-r from-red-600 to-red-500 text-white shadow-lg shadow-red-600/20 translate-x-1" 
+                            : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+                        )}
+                      >
+                        <Icon className={cn("w-5 h-5 transition-all duration-300", isActive ? "scale-110" : "group-hover:scale-110")} />
+                        <span className="text-sm">{item.name}</span>
+                        {isActive && (
+                          <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+                        )}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </nav>
 
           {/* Footer Actions */}
