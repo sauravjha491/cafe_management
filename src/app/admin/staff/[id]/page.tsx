@@ -192,5 +192,4 @@ export default function EditStaffPage() {
       </div>
     </div>
   );
-  );
 }

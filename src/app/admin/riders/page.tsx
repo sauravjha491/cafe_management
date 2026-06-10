@@ -6,7 +6,7 @@ import {
   Bike, Plus, Search, MoreVertical, 
   Trash2, Edit2, Phone, Mail, 
   CheckCircle2, XCircle, Loader2,
-  User, Shield, ShieldAlert
+  User, Shield, ShieldAlert, ChevronRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import toast, { Toaster } from "react-hot-toast";
