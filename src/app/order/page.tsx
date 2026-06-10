@@ -141,29 +141,29 @@ function OrderContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-40">
+    <div className="min-h-screen bg-slate-50 pb-40">
       <Toaster position="top-center" />
       
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white border-b px-4 py-3 flex items-center justify-between">
+      <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-100 px-4 py-3 flex items-center justify-between">
         <div className="flex flex-col">
-          <h1 className="text-xl font-bold text-red-600 uppercase">{settings.cafeName}</h1>
-          <span className="text-xs text-gray-500 font-medium">Table No: {table}</span>
+          <h1 className="text-xl font-black text-red-600 uppercase tracking-tight leading-none">{settings.cafeName}</h1>
+          <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">Table No: {table}</span>
         </div>
         <div className="flex items-center gap-2">
           <button 
             onClick={() => setIsHistoryOpen(true)}
-            className="relative p-2 bg-gray-100 rounded-full"
+            className="relative p-2.5 bg-slate-100 rounded-xl text-slate-600 hover:bg-slate-200 transition-colors"
           >
-            <History className="w-6 h-6 text-gray-700" />
+            <History className="w-5 h-5" />
           </button>
           <button 
             onClick={() => setIsCartOpen(true)}
-            className="relative p-2 bg-gray-100 rounded-full"
+            className="relative p-2.5 bg-slate-100 rounded-xl text-slate-600 hover:bg-slate-200 transition-colors"
           >
-            <ShoppingCart className="w-6 h-6 text-gray-700" />
+            <ShoppingCart className="w-5 h-5" />
             {items.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold">
+              <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[9px] w-5 h-5 flex items-center justify-center rounded-full font-black border-2 border-white">
                 {items.length}
               </span>
             )}
@@ -172,13 +172,13 @@ function OrderContent() {
       </header>
 
       {/* Search Bar */}
-      <div className="p-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+      <div className="p-4 lg:p-6 lg:max-w-4xl lg:mx-auto">
+        <div className="relative group">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 group-focus-within:text-red-600 transition-colors" />
           <input
             type="text"
             placeholder="Search for food..."
-            className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/20"
+            className="w-full pl-12 pr-4 py-4 bg-white border border-slate-100 rounded-2xl shadow-sm focus:outline-none focus:ring-4 focus:ring-red-500/5 font-bold transition-all"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -186,15 +186,15 @@ function OrderContent() {
       </div>
 
       {/* Categories */}
-      <div className="sticky top-[64px] z-20 bg-white/80 backdrop-blur-md py-4 border-b border-gray-100">
-        <div className="overflow-x-auto no-scrollbar flex px-4 gap-2">
+      <div className="sticky top-[64px] z-20 bg-white/80 backdrop-blur-md py-4 border-b border-slate-100">
+        <div className="overflow-x-auto no-scrollbar flex px-4 gap-2 lg:justify-center">
           <button
             onClick={() => setSelectedCategory("favorites")}
             className={cn(
-              "px-4 py-2 rounded-full whitespace-nowrap text-sm font-semibold transition-all flex items-center gap-2",
+              "px-5 py-2.5 rounded-full whitespace-nowrap text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2",
               selectedCategory === "favorites" 
-                ? "bg-red-600 text-white shadow-lg shadow-red-200" 
-                : "bg-white text-gray-600 border border-gray-200"
+                ? "bg-slate-900 text-white shadow-lg" 
+                : "bg-white text-slate-400 border border-slate-100"
             )}
           >
             <Heart className={cn("w-4 h-4", selectedCategory === "favorites" ? "fill-white" : "")} />
@@ -205,10 +205,10 @@ function OrderContent() {
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
               className={cn(
-                "px-4 py-2 rounded-full whitespace-nowrap text-sm font-semibold transition-all",
+                "px-5 py-2.5 rounded-full whitespace-nowrap text-xs font-black uppercase tracking-widest transition-all",
                 selectedCategory === cat.id 
                   ? "bg-red-600 text-white shadow-lg shadow-red-200" 
-                  : "bg-white text-gray-600 border border-gray-200"
+                  : "bg-white text-slate-400 border border-slate-100"
               )}
             >
               {cat.name}
@@ -217,27 +217,101 @@ function OrderContent() {
         </div>
       </div>
 
-      {/* Featured Section */}
-      {selectedCategory !== "favorites" && searchQuery === "" && categories.flatMap(c => c.products).filter(p => p.featured).length > 0 && (
-        <div className="py-6">
-          <div className="px-4 mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-yellow-500 fill-yellow-500" />
-              Chef's Special
-            </h2>
-          </div>
-          <div className="overflow-x-auto no-scrollbar flex gap-4 px-4 pb-4">
-            {categories.flatMap(c => c.products).filter(p => p.featured).map((product) => (
-              <motion.div
-                key={`featured-${product.id}`}
-                whileTap={{ scale: 0.98 }}
-                className="min-w-[280px] bg-white rounded-3xl overflow-hidden shadow-xl shadow-gray-200/50 border border-gray-100 flex flex-col"
-              >
-                <div className="relative h-40">
-                  <Image src={product.image} alt={product.name} fill className="object-cover" />
-                  <div className="absolute top-3 left-3 bg-white/80 backdrop-blur-md p-2 rounded-full shadow-sm">
-                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+      <div className="lg:max-w-6xl lg:mx-auto">
+        {/* Featured Section */}
+        {selectedCategory !== "favorites" && searchQuery === "" && categories.flatMap(c => c.products).filter(p => p.featured).length > 0 && (
+          <div className="py-8">
+            <div className="px-4 mb-6">
+              <h2 className="text-2xl font-black text-slate-900 flex items-center gap-3 tracking-tight">
+                <Sparkles className="w-6 h-6 text-yellow-500 fill-yellow-500" />
+                Chef's Special
+              </h2>
+            </div>
+            <div className="overflow-x-auto no-scrollbar flex gap-6 px-4 pb-6">
+              {categories.flatMap(c => c.products).filter(p => p.featured).map((product) => (
+                <motion.div
+                  key={`featured-${product.id}`}
+                  whileTap={{ scale: 0.98 }}
+                  className="min-w-[300px] lg:min-w-[340px] bg-white rounded-[2.5rem] overflow-hidden shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col group"
+                >
+                  <div className="relative h-44 overflow-hidden">
+                    <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
+                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md p-2.5 rounded-2xl shadow-sm">
+                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    </div>
+                    <button 
+                      onClick={() => {
+                        if (!product.available || product.stock === 0) return;
+                        const wasFavorite = isFavorite(product.id);
+                        toggleFavorite(product.id);
+                        toast.success(wasFavorite ? "Removed from favorites" : "Added to favorites");
+                      }}
+                      className="absolute top-4 right-4 p-2.5 bg-white/90 backdrop-blur-md rounded-2xl shadow-sm hover:bg-white transition-all z-10"
+                    >
+                      <Heart className={cn("w-5 h-5 transition-colors", isFavorite(product.id) ? "fill-red-600 text-red-600" : "text-slate-300")} />
+                    </button>
+                    {(!product.available || product.stock === 0) && (
+                      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] flex items-center justify-center">
+                        <span className="bg-white text-slate-900 px-5 py-2.5 rounded-2xl font-black text-xs shadow-2xl uppercase tracking-widest">
+                          Sold Out
+                        </span>
+                      </div>
+                    )}
                   </div>
+                  <div className="p-6 flex flex-col flex-1">
+                    <h3 className="font-black text-slate-900 text-lg line-clamp-1 mb-1">{product.name}</h3>
+                    <p className="text-slate-400 text-xs font-medium line-clamp-2 mb-4 flex-1 leading-relaxed">{product.description}</p>
+                    <div className="flex items-center justify-between mt-auto">
+                      <span className="text-xl font-black text-red-600">{settings.currency} {product.price.toLocaleString()}</span>
+                      <button 
+                        disabled={!product.available || product.stock === 0}
+                        onClick={() => {
+                          addItem(product);
+                          toast.success(`Added ${product.name}`);
+                        }}
+                        className="bg-red-600 text-white p-3 rounded-2xl shadow-lg shadow-red-100 active:scale-90 transition-all disabled:bg-slate-200 disabled:shadow-none"
+                      >
+                        <Plus className="w-6 h-6" />
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Product List */}
+        <div className="p-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {filteredProducts.length === 0 ? (
+            <div className="col-span-full flex flex-col items-center justify-center py-24 text-slate-300">
+              <div className="w-24 h-24 bg-slate-100 rounded-[3rem] flex items-center justify-center mb-6">
+                <Coffee className="w-10 h-10 opacity-20" />
+              </div>
+              <p className="font-black text-xs uppercase tracking-[0.2em]">Menu is being prepared...</p>
+            </div>
+          ) : (
+            filteredProducts.map((product) => (
+              <motion.div
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                key={product.id}
+                className="bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 group"
+              >
+                <div className="relative h-52 w-full overflow-hidden">
+                  <Image 
+                    src={product.image} 
+                    alt={product.name}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  {product.featured && (
+                    <div className="absolute top-4 left-4 bg-yellow-400 text-[10px] font-black px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-lg">
+                      <Sparkles className="w-3.5 h-3.5 fill-current" />
+                      FEATURED
+                    </div>
+                  )}
                   <button 
                     onClick={() => {
                       if (!product.available || product.stock === 0) return;
@@ -245,111 +319,40 @@ function OrderContent() {
                       toggleFavorite(product.id);
                       toast.success(wasFavorite ? "Removed from favorites" : "Added to favorites");
                     }}
-                    className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-md rounded-full shadow-sm hover:bg-white transition-all z-10"
+                    className="absolute top-4 right-4 p-2.5 bg-white/90 backdrop-blur-md rounded-2xl shadow-sm hover:bg-white transition-all z-10"
                   >
-                    <Heart className={cn("w-5 h-5 transition-colors", isFavorite(product.id) ? "fill-red-600 text-red-600" : "text-gray-400")} />
+                    <Heart className={cn("w-5 h-5 transition-colors", isFavorite(product.id) ? "fill-red-600 text-red-600" : "text-slate-300")} />
                   </button>
                   {(!product.available || product.stock === 0) && (
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center">
-                      <span className="bg-white text-gray-900 px-3 py-1.5 rounded-lg font-black text-[10px] shadow-2xl uppercase tracking-widest">
+                    <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] flex items-center justify-center">
+                      <span className="bg-white text-slate-900 px-5 py-2.5 rounded-2xl font-black text-xs shadow-2xl uppercase tracking-widest">
                         Sold Out
                       </span>
                     </div>
                   )}
                 </div>
-                <div className="p-4 flex flex-col flex-1">
-                  <h3 className="font-bold text-gray-800 line-clamp-2 mb-1 h-10">{product.name}</h3>
-                  <p className="text-gray-500 text-xs line-clamp-2 mb-3 flex-1">{product.description}</p>
-                  <div className="flex items-center justify-between mt-auto">
-                    <span className="font-black text-red-600">{settings.currency} {product.price.toLocaleString()}</span>
-                    <button 
-                      disabled={!product.available || product.stock === 0}
-                      onClick={() => {
-                        addItem(product);
-                        toast.success(`Added ${product.name}`);
-                      }}
-                      className="bg-red-600 text-white p-2 rounded-xl shadow-lg shadow-red-100 active:scale-90 transition-all disabled:bg-gray-200 disabled:shadow-none"
-                    >
-                      <Plus className="w-5 h-5" />
-                    </button>
+                <div className="p-6">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-black text-slate-900 text-xl tracking-tight line-clamp-1">{product.name}</h3>
+                    <span className="font-black text-red-600 text-lg">{settings.currency}{product.price.toLocaleString()}</span>
                   </div>
+                  <p className="text-slate-400 text-xs font-medium line-clamp-2 mb-6 leading-relaxed">{product.description}</p>
+                  <button
+                    disabled={!product.available || product.stock === 0}
+                    onClick={() => {
+                      addItem(product);
+                      toast.success(`Added ${product.name}`);
+                    }}
+                    className="w-full bg-red-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-red-700 shadow-lg shadow-red-100 transition-all active:scale-95 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed disabled:shadow-none"
+                  >
+                    <Plus className="w-4 h-4" />
+                    {(!product.available || product.stock === 0) ? "OUT OF STOCK" : "ADD TO CART"}
+                  </button>
                 </div>
               </motion.div>
-            ))}
-          </div>
+            ))
+          )}
         </div>
-      )}
-
-      {/* Product List */}
-      <div className="p-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filteredProducts.length === 0 ? (
-          <div className="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
-            <Coffee className="w-16 h-16 mb-4 opacity-20" />
-            <p className="font-bold text-lg">Menu is being prepared...</p>
-            <p className="text-sm mt-1">Please check back in a moment.</p>
-          </div>
-        ) : (
-          filteredProducts.map((product) => (
-            <motion.div
-              layout
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              key={product.id}
-              className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <div className="relative h-48 w-full">
-                <Image 
-                  src={product.image} 
-                  alt={product.name}
-                  fill
-                  className="object-cover"
-                />
-                {product.featured && (
-                  <div className="absolute top-3 left-3 bg-yellow-400 text-xs font-black px-2 py-1 rounded-md flex items-center gap-1 shadow-sm">
-                    <Star className="w-3 h-3 fill-current" />
-                    FEATURED
-                  </div>
-                )}
-                <button 
-                  onClick={() => {
-                    if (!product.available || product.stock === 0) return;
-                    const wasFavorite = isFavorite(product.id);
-                    toggleFavorite(product.id);
-                    toast.success(wasFavorite ? "Removed from favorites" : "Added to favorites");
-                  }}
-                  className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-md rounded-full shadow-sm hover:bg-white transition-all z-10"
-                >
-                  <Heart className={cn("w-5 h-5 transition-colors", isFavorite(product.id) ? "fill-red-600 text-red-600" : "text-gray-400")} />
-                </button>
-                {(!product.available || product.stock === 0) && (
-                  <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center">
-                    <span className="bg-white text-gray-900 px-4 py-2 rounded-xl font-black text-sm shadow-2xl uppercase tracking-widest">
-                      Sold Out
-                    </span>
-                  </div>
-                )}
-              </div>
-              <div className="p-4">
-                <div className="flex justify-between items-start mb-1">
-                  <h3 className="font-bold text-gray-800 text-lg">{product.name}</h3>
-                  <span className="font-bold text-red-600">{settings.currency} {product.price.toLocaleString()}</span>
-                </div>
-                <p className="text-gray-500 text-xs line-clamp-2 mb-4">{product.description}</p>
-                <button
-                  disabled={!product.available || product.stock === 0}
-                  onClick={() => {
-                    addItem(product);
-                    toast.success(`Added ${product.name}`);
-                  }}
-                  className="w-full bg-red-600 text-white py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-red-700 transition-colors disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
-                >
-                  <Plus className="w-4 h-4" />
-                  {(!product.available || product.stock === 0) ? "OUT OF STOCK" : "ADD TO CART"}
-                </button>
-              </div>
-            </motion.div>
-          ))
-        )}
       </div>
 
       {/* History Drawer */}

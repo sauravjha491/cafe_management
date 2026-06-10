@@ -83,104 +83,114 @@ export default function EditStaffPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8 pb-20">
-      <div className="flex items-center gap-4">
-        <Link href="/admin/staff" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-          <ArrowLeft className="w-6 h-6 text-gray-500" />
-        </Link>
-        <div>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight leading-tight">Edit Staff Profile</h1>
-          <p className="text-sm md:text-base text-gray-500 font-medium">Update team member details and access level</p>
+    <div className="h-full flex flex-col min-w-0 bg-slate-50/50">
+      <div className="p-4 lg:p-8 shrink-0 bg-white border-b border-slate-100 lg:bg-transparent lg:border-0">
+        <div className="flex items-center gap-6">
+          <Link href="/admin/staff" className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all active:scale-95">
+            <ArrowLeft className="w-6 h-6 text-slate-400" />
+          </Link>
+          <div>
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">Edit Staff Profile</h1>
+            <p className="text-sm md:text-base text-slate-500 font-medium">Update team member details and access level</p>
+          </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-[2.5rem] md:rounded-[3rem] shadow-sm border border-gray-100 overflow-hidden">
-        {/* Profile Header */}
-        <div className="bg-gray-900 h-32 relative">
-          <div className="absolute -bottom-12 left-8 p-1 bg-white rounded-[2rem] shadow-lg">
-            {formData.image ? (
-              <img 
-                src={formData.image} 
-                alt="Profile" 
-                className="w-24 h-24 rounded-[1.8rem] object-cover border-4 border-white"
-              />
-            ) : (
-              <div className="w-24 h-24 bg-gray-50 rounded-[1.8rem] flex items-center justify-center text-3xl font-black text-gray-900 border-4 border-white">
-                {formData.name.charAt(0).toUpperCase()}
-              </div>
-            )}
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 lg:px-8 pb-20">
+        <div className="max-w-3xl bg-white rounded-2xl lg:rounded-[3rem] shadow-sm border border-slate-100 overflow-hidden">
+          {/* Profile Header */}
+          <div className="bg-slate-900 h-40 relative">
+            <div className="absolute -bottom-16 left-10 p-1.5 bg-white rounded-[2.5rem] shadow-xl">
+              {formData.image ? (
+                <img 
+                  src={formData.image} 
+                  alt="Profile" 
+                  className="w-32 h-32 rounded-[2rem] object-cover border-4 border-white"
+                />
+              ) : (
+                <div className="w-32 h-32 bg-slate-50 rounded-[2rem] flex items-center justify-center text-4xl font-black text-slate-900 border-4 border-white">
+                  {formData.name.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <button className="absolute bottom-2 right-2 p-3 bg-red-600 text-white rounded-2xl shadow-lg hover:bg-red-700 transition-all active:scale-90">
+                <Camera className="w-5 h-5" />
+              </button>
+            </div>
           </div>
+
+          <form onSubmit={handleSubmit} className="pt-24 p-10 space-y-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                <div className="relative group">
+                  <User className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-red-600 transition-colors" />
+                  <input
+                    required
+                    type="text"
+                    className="w-full pl-14 pr-6 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-red-500/5 focus:bg-white outline-none font-bold transition-all"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+                <div className="relative group">
+                  <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-red-600 transition-colors" />
+                  <input
+                    required
+                    type="email"
+                    className="w-full pl-14 pr-6 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-red-500/5 focus:bg-white outline-none font-bold transition-all"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
+                <div className="relative group">
+                  <Phone className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-red-600 transition-colors" />
+                  <input
+                    type="text"
+                    className="w-full pl-14 pr-6 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-red-500/5 focus:bg-white outline-none font-bold transition-all"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Access Role</label>
+                <div className="relative group">
+                  <Shield className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-red-600 transition-colors" />
+                  <select
+                    className="w-full pl-14 pr-10 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-red-500/5 focus:bg-white outline-none font-bold transition-all appearance-none cursor-pointer"
+                    value={formData.role}
+                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                  >
+                    <option value="STAFF">STAFF (Orders only)</option>
+                    <option value="OWNER">OWNER (Full access)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-6">
+              <button
+                type="submit"
+                disabled={saving}
+                className="w-full md:w-auto bg-red-600 text-white px-12 py-5 rounded-2xl font-black text-lg shadow-xl shadow-red-200 hover:bg-red-700 transition-all flex items-center justify-center gap-3 active:scale-95 disabled:bg-slate-200"
+              >
+                {saving ? <Loader2 className="w-6 h-6 animate-spin" /> : <Save className="w-6 h-6" />}
+                Save Changes
+              </button>
+            </div>
+          </form>
         </div>
-
-        <form onSubmit={handleSubmit} className="pt-20 p-8 space-y-8">
-          <div className="grid grid-cols-1 gap-6">
-            <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
-              <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  required
-                  type="text"
-                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-red-500/20 outline-none font-bold"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  required
-                  type="email"
-                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-red-500/20 outline-none font-bold"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Phone Number</label>
-              <div className="relative">
-                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-red-500/20 outline-none font-bold"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Access Role</label>
-              <div className="relative">
-                <Shield className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <select
-                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-red-500/20 outline-none font-bold appearance-none"
-                  value={formData.role}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                >
-                  <option value="STAFF">STAFF (Orders only)</option>
-                  <option value="OWNER">OWNER (Full access)</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={saving}
-            className="w-full bg-red-600 text-white py-4 rounded-2xl font-black text-lg shadow-xl shadow-red-200 hover:bg-red-700 transition-all flex items-center justify-center gap-2 active:scale-95 disabled:bg-gray-300"
-          >
-            {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-            Save Staff Details
-          </button>
-        </form>
       </div>
     </div>
+  );
   );
 }

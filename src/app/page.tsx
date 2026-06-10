@@ -46,13 +46,13 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] flex flex-col font-sans selection:bg-red-100 selection:text-red-600">
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans selection:bg-red-100 selection:text-red-600">
       {/* Hero Section */}
       <div className="relative flex-1 flex flex-col">
         {/* Background Patterns */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-red-50 rounded-full blur-3xl opacity-50" />
-          <div className="absolute top-[20%] -right-[5%] w-[30%] h-[30%] bg-orange-50 rounded-full blur-3xl opacity-50" />
+          <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-red-100/30 rounded-full blur-[120px] opacity-50" />
+          <div className="absolute top-[20%] -right-[5%] w-[30%] h-[30%] bg-orange-100/30 rounded-full blur-[100px] opacity-50" />
         </div>
 
         {/* Navigation */}
@@ -65,7 +65,7 @@ export default function Home() {
             <div className="w-12 h-12 bg-red-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-red-200">
               <Coffee className="w-7 h-7" />
             </div>
-            <span className="text-2xl font-black text-gray-900 tracking-tighter uppercase">
+            <span className="text-2xl font-black text-slate-900 tracking-tighter uppercase">
               {settings.cafeName.split(' ')[0]}<span className="text-red-600">{settings.cafeName.split(' ').slice(1).join(' ') || "PRO"}</span>
             </span>
           </motion.div>
@@ -73,7 +73,7 @@ export default function Home() {
           <motion.div 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="hidden md:flex items-center gap-8 text-sm font-bold text-gray-500 uppercase tracking-widest"
+            className="hidden md:flex items-center gap-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]"
           >
             <a href="#features" className="hover:text-red-600 transition-colors">Experience</a>
             <a href="#about" className="hover:text-red-600 transition-colors">About Us</a>
@@ -88,7 +88,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 rounded-full shadow-sm text-red-600 font-black text-xs uppercase tracking-widest"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-100 rounded-full shadow-sm text-red-600 font-black text-[10px] uppercase tracking-[0.2em]"
             >
               <Sparkles className="w-4 h-4 fill-current" />
               New Generation of Dining
@@ -98,7 +98,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-5xl md:text-8xl font-black text-gray-900 leading-[0.9] tracking-tighter"
+              className="text-5xl md:text-8xl font-black text-slate-900 leading-[0.9] tracking-tighter"
             >
               Scan. Order. <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-500">Enjoy.</span>
@@ -108,23 +108,23 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="text-lg md:text-xl text-gray-500 max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed"
+              className="text-lg md:text-xl text-slate-500 max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed"
             >
-              Welcome to <span className="text-gray-900 font-bold">{settings.cafeName}</span>. Skip the queue and experience the most seamless way to enjoy your favorite treats.
+              Welcome to <span className="text-slate-900 font-black">{settings.cafeName}</span>. Skip the queue and experience the most seamless way to enjoy your favorite treats.
             </motion.p>
 
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="bg-white p-8 rounded-[3rem] shadow-2xl shadow-gray-200/50 border border-gray-50 max-w-md mx-auto lg:mx-0"
+              className="bg-white p-8 md:p-10 rounded-[3rem] shadow-2xl shadow-slate-200/50 border border-slate-50 max-w-md mx-auto lg:mx-0"
             >
-              <div className="flex gap-4 mb-6">
+              <div className="flex gap-4 mb-8">
                 <button 
                   onClick={() => setOrderType("DINE_IN")}
                   className={cn(
-                    "flex-1 py-3 rounded-2xl font-black text-sm transition-all flex items-center justify-center gap-2",
-                    orderType === "DINE_IN" ? "bg-red-600 text-white shadow-lg shadow-red-200" : "bg-gray-50 text-gray-500"
+                    "flex-1 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all flex items-center justify-center gap-2",
+                    orderType === "DINE_IN" ? "bg-red-600 text-white shadow-xl shadow-red-200" : "bg-slate-50 text-slate-400"
                   )}
                 >
                   <Utensils className="w-4 h-4" />
@@ -133,8 +133,8 @@ export default function Home() {
                 <button 
                   onClick={() => setOrderType("DELIVERY")}
                   className={cn(
-                    "flex-1 py-3 rounded-2xl font-black text-sm transition-all flex items-center justify-center gap-2",
-                    orderType === "DELIVERY" ? "bg-red-600 text-white shadow-lg shadow-red-200" : "bg-gray-50 text-gray-500"
+                    "flex-1 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all flex items-center justify-center gap-2",
+                    orderType === "DELIVERY" ? "bg-red-600 text-white shadow-xl shadow-red-200" : "bg-slate-50 text-slate-400"
                   )}
                 >
                   <MapPin className="w-4 h-4" />
@@ -143,15 +143,15 @@ export default function Home() {
               </div>
 
               {orderType === "DINE_IN" ? (
-                <form onSubmit={handleStartOrdering} className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-2">Where are you sitting?</label>
+                <form onSubmit={handleStartOrdering} className="space-y-6">
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">Where are you sitting?</label>
                     <div className="relative">
                       <input 
                         required
                         type="number"
                         placeholder="Enter Table Number"
-                        className="w-full px-8 py-5 bg-gray-50 border border-gray-100 rounded-3xl focus:outline-none focus:ring-4 focus:ring-red-500/10 font-black text-2xl text-center placeholder:text-gray-300 placeholder:text-lg transition-all"
+                        className="w-full px-8 py-6 bg-slate-50 border border-slate-100 rounded-3xl focus:outline-none focus:ring-8 focus:ring-red-500/5 font-black text-3xl text-center placeholder:text-slate-200 placeholder:text-xl transition-all"
                         value={tableNumber}
                         onChange={(e) => setTableNumber(e.target.value)}
                       />
@@ -159,7 +159,7 @@ export default function Home() {
                   </div>
                   <button 
                     type="submit"
-                    className="w-full py-5 bg-red-600 text-white rounded-3xl font-black text-lg shadow-xl shadow-red-200 hover:bg-red-700 transition-all flex items-center justify-center gap-3 active:scale-95"
+                    className="w-full py-6 bg-red-600 text-white rounded-[2rem] font-black text-xl shadow-2xl shadow-red-200 hover:bg-red-700 transition-all flex items-center justify-center gap-4 active:scale-95"
                   >
                     Start My Order
                     <ArrowRight className="w-6 h-6" />
@@ -167,19 +167,19 @@ export default function Home() {
                   <button 
                     type="button"
                     onClick={() => router.push('/order?table=0')}
-                    className="w-full py-4 text-gray-400 font-black text-xs uppercase tracking-widest hover:text-red-600 transition-colors"
+                    className="w-full py-4 text-slate-400 font-black text-[10px] uppercase tracking-[0.2em] hover:text-red-600 transition-colors"
                   >
                     Just browse the menu
                   </button>
                 </form>
               ) : (
-                <div className="space-y-4">
-                  <p className="text-gray-500 text-center font-medium px-4">
+                <div className="space-y-6">
+                  <p className="text-slate-500 text-center font-medium px-4 leading-relaxed">
                     Craving something delicious? We'll bring it right to your doorstep.
                   </p>
                   <button 
                     onClick={() => router.push("/delivery")}
-                    className="w-full py-5 bg-red-600 text-white rounded-3xl font-black text-lg shadow-xl shadow-red-200 hover:bg-red-700 transition-all flex items-center justify-center gap-3 active:scale-95"
+                    className="w-full py-6 bg-red-600 text-white rounded-[2rem] font-black text-xl shadow-2xl shadow-red-200 hover:bg-red-700 transition-all flex items-center justify-center gap-4 active:scale-95"
                   >
                     Order Delivery
                     <ArrowRight className="w-6 h-6" />

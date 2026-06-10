@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Coffee, Lock, Mail, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
+import { motion } from "framer-motion";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
@@ -84,25 +85,37 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-      <div className="max-w-md w-full bg-white rounded-[2rem] shadow-xl shadow-gray-200/50 border border-gray-100 p-8 md:p-12">
-        <div className="flex flex-col items-center mb-10">
-          <div className="bg-red-50 p-4 rounded-3xl mb-4">
-            <Coffee className="w-10 h-10 text-red-600" />
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 lg:p-6 relative overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute top-0 left-0 w-full h-full -z-10">
+        <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-red-100/30 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-100/30 rounded-full blur-[120px]" />
+      </div>
+
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-md w-full bg-white rounded-[2.5rem] lg:rounded-[3rem] shadow-2xl shadow-slate-200/50 border border-slate-100 p-8 lg:p-12"
+      >
+        <div className="flex flex-col items-center mb-12">
+          <div className="bg-red-600 p-5 rounded-[2rem] mb-6 shadow-xl shadow-red-200">
+            <Coffee className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-3xl font-black text-gray-900">CAFE<span className="text-red-600">PRO</span></h1>
-          <p className="text-gray-400 font-bold text-sm uppercase tracking-widest mt-2">Admin Dashboard</p>
+          <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase">
+            CAFE<span className="text-red-600">PRO</span>
+          </h1>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-3">Admin Infrastructure</p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-xs font-black text-gray-400 uppercase tracking-wider ml-1">Email Address</label>
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <form onSubmit={handleLogin} className="space-y-8">
+          <div className="space-y-3">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Work Email</label>
+            <div className="relative group">
+              <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-red-600 transition-colors" />
               <input
                 type="email"
                 required
-                className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-red-500/20 outline-none transition-all font-medium"
+                className="w-full pl-14 pr-6 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-8 focus:ring-red-500/5 focus:bg-white focus:border-red-100 outline-none transition-all font-bold"
                 placeholder="admin@cafepro.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -110,14 +123,17 @@ export default function AdminLoginPage() {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-xs font-black text-gray-400 uppercase tracking-wider ml-1">Password</label>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <div className="space-y-3">
+            <div className="flex justify-between items-center px-1">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Secret Key</label>
+              <button type="button" className="text-[10px] font-black text-red-600 uppercase tracking-widest hover:underline">Forgot?</button>
+            </div>
+            <div className="relative group">
+              <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-red-600 transition-colors" />
               <input
                 type="password"
                 required
-                className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-red-500/20 outline-none transition-all font-medium"
+                className="w-full pl-14 pr-6 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-8 focus:ring-red-500/5 focus:bg-white focus:border-red-100 outline-none transition-all font-bold"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -128,25 +144,25 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={isLoggingIn}
-            className="w-full bg-red-600 text-white py-4 rounded-2xl font-black text-lg shadow-lg shadow-red-200 hover:bg-red-700 transition-all active:scale-95 flex items-center justify-center gap-2 disabled:bg-gray-300 disabled:shadow-none"
+            className="w-full bg-slate-900 text-white py-6 rounded-2xl font-black text-lg shadow-2xl shadow-slate-200 hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-4 disabled:bg-slate-200 disabled:shadow-none"
           >
             {isLoggingIn ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                Logging in...
+                <Loader2 className="w-6 h-6 animate-spin" />
+                Authorizing...
               </>
             ) : (
-              "Access Dashboard"
+              "Sign In to Dashboard"
             )}
           </button>
         </form>
 
-        <div className="mt-8 text-center">
-          <p className="text-sm text-gray-400 font-medium">
-            Forgot password? <span className="text-red-600 font-bold cursor-pointer hover:underline">Reset here</span>
+        <div className="mt-12 text-center pt-8 border-t border-slate-50">
+          <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
+            Protected by Enterprise Security
           </p>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

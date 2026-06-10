@@ -223,189 +223,193 @@ export default function AnalyticsPage() {
   };
 
   return (
-    <div className="space-y-8 pb-10">
-      {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-        <div>
-          <h1 className="text-4xl font-black text-gray-900 tracking-tight leading-tight mb-2">Analytics</h1>
-          <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Insight into your business growth</p>
-        </div>
-        
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="bg-white p-1.5 rounded-2xl shadow-sm border border-gray-100 flex gap-1">
-            {(["today", "weekly", "monthly", "all"] as TimeRange[]).map((range) => (
-              <button
-                key={range}
-                onClick={() => setTimeRange(range)}
-                className={cn(
-                  "px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                  timeRange === range 
-                    ? "bg-red-600 text-white shadow-xl shadow-red-200" 
-                    : "text-gray-400 hover:text-gray-900 hover:bg-gray-50"
-                )}
+    <div className="h-full flex flex-col min-w-0 bg-slate-50/50">
+      {/* Header Area */}
+      <div className="p-4 lg:p-8 shrink-0 bg-white border-b border-slate-100 lg:bg-transparent lg:border-0">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div>
+            <h1 className="text-4xl font-black text-slate-900 tracking-tight leading-tight">Analytics Dashboard</h1>
+            <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Real-time business intelligence</p>
+          </div>
+          
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="bg-slate-100/50 p-1 rounded-xl lg:bg-white lg:p-1.5 lg:rounded-2xl shadow-sm border border-slate-100 flex gap-1">
+              {(["today", "weekly", "monthly", "all"] as TimeRange[]).map((range) => (
+                <button
+                  key={range}
+                  onClick={() => setTimeRange(range)}
+                  className={cn(
+                    "px-6 py-2.5 rounded-lg lg:rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                    timeRange === range 
+                      ? "bg-slate-900 text-white shadow-lg" 
+                      : "text-slate-400 hover:text-slate-900"
+                  )}
+                >
+                  {range}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex gap-2">
+              <button 
+                onClick={exportPDF}
+                className="p-3 bg-white text-slate-400 border border-slate-100 rounded-xl lg:rounded-2xl hover:text-red-600 transition-all shadow-sm group"
+                title="Export PDF"
               >
-                {range}
+                <FileText className="w-6 h-6" />
               </button>
-            ))}
-          </div>
-
-          <div className="flex gap-2">
-            <button 
-              onClick={exportPDF}
-              className="p-3 bg-white text-gray-400 border border-gray-100 rounded-2xl hover:text-red-600 hover:border-red-100 transition-all shadow-sm group"
-              title="Export PDF"
-            >
-              <FileText className="w-6 h-6" />
-            </button>
-            <button 
-              onClick={exportExcel}
-              className="p-3 bg-white text-gray-400 border border-gray-100 rounded-2xl hover:text-green-600 hover:border-green-100 transition-all shadow-sm group"
-              title="Export Excel"
-            >
-              <Download className="w-6 h-6" />
-            </button>
+              <button 
+                onClick={exportExcel}
+                className="p-3 bg-white text-slate-400 border border-slate-100 rounded-xl lg:rounded-2xl hover:text-green-600 transition-all shadow-sm group"
+                title="Export Excel"
+              >
+                <Download className="w-6 h-6" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Primary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {[
-          { label: "Total Revenue", value: `${settings.currency} ${stats.totalRevenue.toLocaleString()}`, icon: DollarSign, color: "text-green-600", bg: "bg-green-50" },
-          { label: "Total Orders", value: stats.totalOrders, icon: ShoppingBag, color: "text-blue-600", bg: "bg-blue-50" },
-          { label: "Dine-In Sales", value: `${settings.currency} ${stats.dineInRevenue.toLocaleString()}`, icon: TableIcon, color: "text-purple-600", bg: "bg-purple-50" },
-          { label: "Delivery Sales", value: `${settings.currency} ${stats.deliveryRevenue.toLocaleString()}`, icon: Truck, color: "text-orange-600", bg: "bg-orange-50" },
-        ].map((stat, i) => (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            key={i}
-            className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-gray-200 transition-all group"
-          >
-            <div className={cn("w-16 h-16 rounded-[1.5rem] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform", stat.bg)}>
-              <stat.icon className={cn("w-8 h-8", stat.color)} />
-            </div>
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{stat.label}</p>
-            <h3 className="text-3xl font-black text-gray-900 tracking-tighter">{stat.value}</h3>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Revenue Trend */}
-        <div className="lg:col-span-2 bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center">
-                <BarChart3 className="w-6 h-6 text-red-600" />
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 lg:px-8 space-y-10 pb-20">
+        {/* Primary Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            { label: "Total Revenue", value: `${settings.currency} ${stats.totalRevenue.toLocaleString()}`, icon: DollarSign, color: "text-green-600", bg: "bg-green-50" },
+            { label: "Total Orders", value: stats.totalOrders, icon: ShoppingBag, color: "text-blue-600", bg: "bg-blue-50" },
+            { label: "Dine-In Sales", value: `${settings.currency} ${stats.dineInRevenue.toLocaleString()}`, icon: TableIcon, color: "text-purple-600", bg: "bg-purple-50" },
+            { label: "Delivery Sales", value: `${settings.currency} ${stats.deliveryRevenue.toLocaleString()}`, icon: Truck, color: "text-orange-600", bg: "bg-orange-50" },
+          ].map((stat, i) => (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              key={i}
+              className="bg-white p-8 rounded-2xl lg:rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all group"
+            >
+              <div className={cn("w-14 h-14 rounded-xl lg:rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform", stat.bg)}>
+                <stat.icon className={cn("w-7 h-7 lg:w-8 lg:h-8", stat.color)} />
               </div>
-              <h2 className="text-xl font-black text-gray-900 tracking-tight">Revenue Trend</h2>
-            </div>
-            <Activity className="w-5 h-5 text-gray-300" />
-          </div>
-          <div className="h-80">
-            <Line 
-              data={lineChartData} 
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                  y: { beginAtZero: true, grid: { color: '#f8fafc' } },
-                  x: { grid: { display: false } }
-                }
-              }} 
-            />
-          </div>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
+              <h3 className="text-3xl font-black text-slate-900 tracking-tighter">{stat.value}</h3>
+            </motion.div>
+          ))}
         </div>
 
-        {/* Revenue Distribution */}
-        <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm">
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center">
-              <PieChart className="w-6 h-6 text-blue-600" />
-            </div>
-            <h2 className="text-xl font-black text-gray-900 tracking-tight">Sales Split</h2>
-          </div>
-          <div className="h-64 relative">
-            <Doughnut 
-              data={doughnutData}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom' } },
-                cutout: '70%',
-              }}
-            />
-          </div>
-          <div className="mt-8 space-y-4">
-            {[
-              { label: "Dine-In", value: stats.dineInRevenue, color: "bg-blue-500" },
-              { label: "Delivery", value: stats.deliveryRevenue, color: "bg-amber-500" },
-              { label: "POS", value: stats.posRevenue, color: "bg-emerald-500" },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={cn("w-3 h-3 rounded-full", item.color)} />
-                  <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">{item.label}</span>
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+          {/* Revenue Trend */}
+          <div className="xl:col-span-2 bg-white p-6 lg:p-8 rounded-2xl lg:rounded-[3rem] border border-slate-100 shadow-sm">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center">
+                  <BarChart3 className="w-6 h-6 text-red-600" />
                 </div>
-                <span className="text-sm font-black text-gray-900">{((item.value / stats.totalRevenue) * 100 || 0).toFixed(1)}%</span>
+                <h2 className="text-xl font-black text-slate-900 tracking-tight">Revenue Dynamics</h2>
               </div>
-            ))}
+              <Activity className="w-5 h-5 text-slate-300" />
+            </div>
+            <div className="h-80">
+              <Line 
+                data={lineChartData} 
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: { legend: { display: false } },
+                  scales: {
+                    y: { beginAtZero: true, grid: { color: '#f8fafc' } },
+                    x: { grid: { display: false } }
+                  }
+                }} 
+              />
+            </div>
+          </div>
+
+          {/* Revenue Distribution */}
+          <div className="bg-white p-6 lg:p-8 rounded-2xl lg:rounded-[3rem] border border-slate-100 shadow-sm">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                <PieChart className="w-6 h-6 text-blue-600" />
+              </div>
+              <h2 className="text-xl font-black text-slate-900 tracking-tight">Channel Split</h2>
+            </div>
+            <div className="h-64 relative">
+              <Doughnut 
+                data={doughnutData}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: { legend: { position: 'bottom' } },
+                  cutout: '70%',
+                }}
+              />
+            </div>
+            <div className="mt-8 space-y-4">
+              {[
+                { label: "Dine-In", value: stats.dineInRevenue, color: "bg-blue-500" },
+                { label: "Delivery", value: stats.deliveryRevenue, color: "bg-amber-500" },
+                { label: "POS", value: stats.posRevenue, color: "bg-emerald-500" },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={cn("w-3 h-3 rounded-full", item.color)} />
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">{item.label}</span>
+                  </div>
+                  <span className="text-sm font-black text-slate-900">{((item.value / stats.totalRevenue) * 100 || 0).toFixed(1)}%</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Detailed Metrics */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Top Items */}
-        <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm">
-          <h2 className="text-xl font-black text-gray-900 tracking-tight mb-8 flex items-center gap-3">
-            <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
-            Bestsellers
-          </h2>
-          <div className="space-y-6">
-            {stats.topItems.map((item, i) => (
-              <div key={i} className="space-y-3">
-                <div className="flex justify-between items-end">
+        {/* Detailed Metrics */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Top Items */}
+          <div className="bg-white p-6 lg:p-8 rounded-2xl lg:rounded-[3rem] border border-slate-100 shadow-sm">
+            <h2 className="text-xl font-black text-slate-900 tracking-tight mb-8 flex items-center gap-3">
+              <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
+              High Performers
+            </h2>
+            <div className="space-y-6">
+              {stats.topItems.map((item, i) => (
+                <div key={i} className="space-y-3">
+                  <div className="flex justify-between items-end">
+                    <div className="flex items-center gap-4">
+                      <span className="text-2xl font-black text-slate-100">0{i + 1}</span>
+                      <span className="font-bold text-slate-800">{item.name}</span>
+                    </div>
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{item.count} Units</span>
+                  </div>
+                  <div className="h-2 bg-slate-50 rounded-full overflow-hidden">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${(item.count / (stats.topItems[0]?.count || 1)) * 100}%` }}
+                      className="h-full bg-red-600 rounded-full"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Category Performance */}
+          <div className="bg-white p-6 lg:p-8 rounded-2xl lg:rounded-[3rem] border border-slate-100 shadow-sm">
+            <h2 className="text-xl font-black text-slate-900 tracking-tight mb-8 flex items-center gap-3">
+              <Calculator className="w-6 h-6 text-indigo-600" />
+              Category Intelligence
+            </h2>
+            <div className="space-y-4">
+              {Object.entries(stats.categorySales).map(([name, revenue]: any, i) => (
+                <div key={i} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl hover:bg-white hover:border-slate-100 border border-transparent transition-all group">
                   <div className="flex items-center gap-4">
-                    <span className="text-2xl font-black text-gray-100">0{i + 1}</span>
-                    <span className="font-bold text-gray-800">{item.name}</span>
+                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center font-black text-slate-300 border border-slate-100 group-hover:text-red-600 transition-colors">
+                      {name[0]}
+                    </div>
+                    <span className="font-bold text-slate-700">{name}</span>
                   </div>
-                  <span className="text-xs font-black text-gray-400 uppercase tracking-widest">{item.count} Sold</span>
+                  <span className="font-black text-slate-900">{settings.currency} {revenue.toLocaleString()}</span>
                 </div>
-                <div className="h-2 bg-gray-50 rounded-full overflow-hidden">
-                  <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: `${(item.count / stats.topItems[0].count) * 100}%` }}
-                    className="h-full bg-red-600 rounded-full"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Category Performance */}
-        <div className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm">
-          <h2 className="text-xl font-black text-gray-900 tracking-tight mb-8 flex items-center gap-3">
-            <Calculator className="w-6 h-6 text-indigo-600" />
-            Category Revenue
-          </h2>
-          <div className="space-y-4">
-            {Object.entries(stats.categorySales).map(([name, revenue]: any, i) => (
-              <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl hover:bg-white hover:border-gray-100 border border-transparent transition-all group">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center font-black text-gray-300 border border-gray-100 group-hover:text-indigo-600 transition-colors">
-                    {name[0]}
-                  </div>
-                  <span className="font-bold text-gray-700">{name}</span>
-                </div>
-                <span className="font-black text-gray-900">{settings.currency} {revenue.toLocaleString()}</span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>

@@ -203,157 +203,160 @@ function DeliveryContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] pb-40">
+    <div className="min-h-screen bg-slate-50 pb-40">
       <Toaster position="top-center" />
       
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b px-6 py-4 flex items-center justify-between">
+      <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={() => router.back()} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-            <X className="w-6 h-6 text-gray-900" />
+          <button onClick={() => router.back()} className="p-2.5 bg-slate-100 rounded-xl hover:bg-slate-200 transition-colors">
+            <X className="w-5 h-5 text-slate-900" />
           </button>
           <div className="flex flex-col">
-            <h1 className="text-xl font-black text-red-600 uppercase tracking-tighter">{settings.cafeName}</h1>
-            <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Home Delivery</span>
+            <h1 className="text-xl font-black text-red-600 uppercase tracking-tight leading-none">{settings.cafeName}</h1>
+            <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">Home Delivery</span>
           </div>
         </div>
         <button 
           onClick={() => setIsCartOpen(true)}
-          className="relative p-3 bg-red-600 rounded-2xl shadow-lg shadow-red-200"
+          className="relative p-3.5 bg-red-600 rounded-2xl shadow-xl shadow-red-200 active:scale-95 transition-all"
         >
-          <ShoppingCart className="w-6 h-6 text-white" />
+          <ShoppingCart className="w-5 h-5 text-white" />
           {items.length > 0 && (
-            <span className="absolute -top-1 -right-1 bg-white text-red-600 text-[10px] w-6 h-6 flex items-center justify-center rounded-full font-black shadow-sm">
+            <span className="absolute -top-1.5 -right-1.5 bg-white text-red-600 text-[9px] w-6 h-6 flex items-center justify-center rounded-full font-black shadow-sm border-2 border-red-600">
               {items.length}
             </span>
           )}
         </button>
       </header>
 
-      {/* Hero Search */}
-      <div className="p-6 bg-white border-b border-gray-100">
-        <div className="relative group">
-          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 w-6 h-6 group-focus-within:text-red-600 transition-colors" />
-          <input
-            type="text"
-            placeholder="Search for dishes, drinks..."
-            className="w-full pl-14 pr-6 py-5 bg-gray-50 border border-transparent rounded-[2rem] focus:outline-none focus:bg-white focus:border-red-100 focus:ring-4 focus:ring-red-500/5 font-bold text-lg transition-all"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+      <div className="lg:max-w-6xl lg:mx-auto">
+        {/* Hero Search */}
+        <div className="p-6 bg-transparent">
+          <div className="relative group">
+            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 w-6 h-6 group-focus-within:text-red-600 transition-colors" />
+            <input
+              type="text"
+              placeholder="Search for dishes, drinks..."
+              className="w-full pl-16 pr-6 py-6 bg-white border border-slate-100 rounded-[2.5rem] focus:outline-none focus:ring-8 focus:ring-red-500/5 font-bold text-lg shadow-sm transition-all"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
         </div>
-      </div>
 
-      {/* Categories */}
-      <div className="sticky top-[89px] z-20 bg-white/80 backdrop-blur-md py-4 border-b border-gray-100">
-        <div className="overflow-x-auto no-scrollbar flex px-6 gap-3">
-          <button
-            onClick={() => setSelectedCategory("favorites")}
-            className={cn(
-              "px-6 py-3 rounded-2xl whitespace-nowrap text-sm font-black transition-all flex items-center gap-2 uppercase tracking-widest",
-              selectedCategory === "favorites" 
-                ? "bg-red-600 text-white shadow-xl shadow-red-200" 
-                : "bg-gray-50 text-gray-500 border border-transparent hover:bg-gray-100"
-            )}
-          >
-            <Heart className={cn("w-4 h-4", selectedCategory === "favorites" ? "fill-white" : "")} />
-            Favorites
-          </button>
-          {categories.map((cat) => (
+        {/* Categories */}
+        <div className="sticky top-[89px] z-20 bg-slate-50/80 backdrop-blur-md py-6 border-b border-slate-100">
+          <div className="overflow-x-auto no-scrollbar flex px-6 gap-3 lg:justify-center">
             <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
+              onClick={() => setSelectedCategory("favorites")}
               className={cn(
-                "px-6 py-3 rounded-2xl whitespace-nowrap text-sm font-black transition-all uppercase tracking-widest",
-                selectedCategory === cat.id 
-                  ? "bg-red-600 text-white shadow-xl shadow-red-200" 
-                  : "bg-gray-50 text-gray-500 border border-transparent hover:bg-gray-100"
+                "px-8 py-3.5 rounded-2xl whitespace-nowrap text-xs font-black transition-all flex items-center gap-2 uppercase tracking-widest",
+                selectedCategory === "favorites" 
+                  ? "bg-slate-900 text-white shadow-xl" 
+                  : "bg-white text-slate-400 border border-slate-100 hover:bg-slate-50"
               )}
             >
-              {cat.name}
+              <Heart className={cn("w-4 h-4", selectedCategory === "favorites" ? "fill-white" : "")} />
+              Favorites
             </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Product List */}
-      <div className="p-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {filteredProducts.length === 0 ? (
-          <div className="col-span-full flex flex-col items-center justify-center py-32 text-gray-300">
-            <Coffee className="w-20 h-20 mb-6 opacity-10" />
-            <p className="font-black text-2xl uppercase tracking-tighter">No items found</p>
-            <p className="text-sm font-bold mt-2">Try searching for something else</p>
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={cn(
+                  "px-8 py-3.5 rounded-2xl whitespace-nowrap text-xs font-black transition-all uppercase tracking-widest",
+                  selectedCategory === cat.id 
+                    ? "bg-red-600 text-white shadow-xl shadow-red-200" 
+                    : "bg-white text-slate-400 border border-slate-100 hover:bg-slate-50"
+                )}
+              >
+                {cat.name}
+              </button>
+            ))}
           </div>
-        ) : (
-          filteredProducts.map((product) => (
-            <motion.div
-              layout
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              key={product.id}
-              className="bg-white rounded-[2.5rem] overflow-hidden border border-gray-50 shadow-sm hover:shadow-2xl hover:shadow-gray-200 transition-all group"
-            >
-              <div className="relative h-64 w-full overflow-hidden">
-                <Image 
-                  src={product.image} 
-                  alt={product.name}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                
-                <button 
-                  onClick={() => {
-                    if (!product.available || product.stock === 0) return;
-                    const wasFavorite = isFavorite(product.id);
-                    toggleFavorite(product.id);
-                    toast.success(wasFavorite ? "Removed from favorites" : "Added to favorites");
-                  }}
-                  className="absolute top-4 right-4 p-3 bg-white/90 backdrop-blur-md rounded-2xl shadow-xl hover:bg-white transition-all z-10"
-                >
-                  <Heart className={cn("w-6 h-6 transition-colors", isFavorite(product.id) ? "fill-red-600 text-red-600" : "text-gray-400")} />
-                </button>
+        </div>
 
-                {product.featured && (
-                  <div className="absolute top-4 left-4 bg-yellow-400 text-black text-[10px] font-black px-3 py-1.5 rounded-xl flex items-center gap-1 shadow-xl">
-                    <Sparkles className="w-3 h-3 fill-current" />
-                    CHEF'S PICK
-                  </div>
-                )}
-
-                {(!product.available || product.stock === 0) && (
-                  <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center">
-                    <span className="bg-white text-gray-900 px-6 py-3 rounded-2xl font-black text-sm shadow-2xl uppercase tracking-widest">
-                      Sold Out
-                    </span>
-                  </div>
-                )}
+        {/* Product List */}
+        <div className="p-6 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {filteredProducts.length === 0 ? (
+            <div className="col-span-full flex flex-col items-center justify-center py-32 text-slate-300">
+              <div className="w-24 h-24 bg-slate-100 rounded-[3rem] flex items-center justify-center mb-6">
+                <Coffee className="w-10 h-10 opacity-20" />
               </div>
-              
-              <div className="p-6 space-y-4">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-black text-gray-900 text-xl tracking-tight mb-1 h-14 line-clamp-2">{product.name}</h3>
-                    <p className="text-gray-500 text-xs font-medium line-clamp-2 leading-relaxed">{product.description}</p>
-                  </div>
-                  <span className="font-black text-red-600 text-lg whitespace-nowrap">{settings.currency} {product.price.toLocaleString()}</span>
+              <p className="font-black text-xs uppercase tracking-[0.2em]">No items found</p>
+            </div>
+          ) : (
+            filteredProducts.map((product) => (
+              <motion.div
+                layout
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                key={product.id}
+                className="bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500 group"
+              >
+                <div className="relative h-64 w-full overflow-hidden">
+                  <Image 
+                    src={product.image} 
+                    alt={product.name}
+                    fill
+                    className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  
+                  <button 
+                    onClick={() => {
+                      if (!product.available || product.stock === 0) return;
+                      const wasFavorite = isFavorite(product.id);
+                      toggleFavorite(product.id);
+                      toast.success(wasFavorite ? "Removed from favorites" : "Added to favorites");
+                    }}
+                    className="absolute top-5 right-5 p-3 bg-white/90 backdrop-blur-md rounded-2xl shadow-xl hover:bg-white transition-all z-10"
+                  >
+                    <Heart className={cn("w-6 h-6 transition-colors", isFavorite(product.id) ? "fill-red-600 text-red-600" : "text-slate-300")} />
+                  </button>
+
+                  {product.featured && (
+                    <div className="absolute top-5 left-5 bg-yellow-400 text-slate-900 text-[10px] font-black px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-xl">
+                      <Sparkles className="w-3.5 h-3.5 fill-current" />
+                      CHEF'S PICK
+                    </div>
+                  )}
+
+                  {(!product.available || product.stock === 0) && (
+                    <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] flex items-center justify-center">
+                      <span className="bg-white text-slate-900 px-6 py-3 rounded-2xl font-black text-sm shadow-2xl uppercase tracking-widest">
+                        Sold Out
+                      </span>
+                    </div>
+                  )}
                 </div>
                 
-                <button
-                  disabled={!product.available || product.stock === 0}
-                  onClick={() => {
-                    addItem(product);
-                    toast.success(`Added ${product.name}`);
-                  }}
-                  className="w-full bg-red-600 text-white py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 shadow-xl shadow-red-100 hover:bg-red-700 transition-all active:scale-95 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed disabled:shadow-none"
-                >
-                  <Plus className="w-5 h-5" />
-                  {(!product.available || product.stock === 0) ? "OUT OF STOCK" : "ADD TO BASKET"}
-                </button>
-              </div>
-            </motion.div>
-          ))
-        )}
+                <div className="p-8 space-y-6">
+                  <div>
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="font-black text-slate-900 text-2xl tracking-tight line-clamp-1 flex-1">{product.name}</h3>
+                      <span className="font-black text-red-600 text-xl ml-4">{settings.currency}{product.price.toLocaleString()}</span>
+                    </div>
+                    <p className="text-slate-400 text-sm font-medium line-clamp-2 leading-relaxed h-10">{product.description}</p>
+                  </div>
+                  
+                  <button
+                    disabled={!product.available || product.stock === 0}
+                    onClick={() => {
+                      addItem(product);
+                      toast.success(`Added ${product.name}`);
+                    }}
+                    className="w-full bg-red-600 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 shadow-xl shadow-red-100 hover:bg-red-700 transition-all active:scale-95 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none"
+                  >
+                    <Plus className="w-5 h-5" />
+                    {(!product.available || product.stock === 0) ? "OUT OF STOCK" : "ADD TO BASKET"}
+                  </button>
+                </div>
+              </motion.div>
+            ))
+          )}
+        </div>
       </div>
 
       {/* Checkout Drawer */}

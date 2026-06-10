@@ -203,7 +203,7 @@ export default function TrackOrder() {
   const currentStatus = activeStatuses[currentStatusIndex] || activeStatuses[0];
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 overflow-x-hidden relative">
+    <div className="min-h-screen bg-slate-50 pb-20 overflow-x-hidden relative">
       <Toaster position="top-center" />
       <FloatingParticles />
       
@@ -211,10 +211,10 @@ export default function TrackOrder() {
       <motion.div 
         initial={{ height: 0 }}
         animate={{ height: "16rem" }}
-        className="fixed top-0 left-0 w-full bg-gradient-to-b from-red-600 to-red-700 rounded-b-[4rem] -z-10" 
+        className="fixed top-0 left-0 w-full bg-gradient-to-b from-slate-900 to-slate-800 rounded-b-[4rem] -z-10 shadow-2xl" 
       />
       
-      {/* Confetti Placeholder (if you want to add actual confetti lib later) */}
+      {/* Confetti Placeholder */}
       <AnimatePresence>
         {showConfetti && (
           <motion.div 
@@ -231,20 +231,22 @@ export default function TrackOrder() {
       <div className="max-w-2xl mx-auto px-4 pt-8 space-y-6">
         {/* Navigation */}
         <div className="flex items-center justify-between text-white mb-8">
-          <Link href="/order" className="p-3 bg-white/20 backdrop-blur-md rounded-2xl hover:bg-white/30 transition-all group">
+          <Link href="/order" className="p-3 bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl hover:bg-white/20 transition-all group">
             <Home className="w-6 h-6 group-hover:scale-110 transition-transform" />
           </Link>
           <div className="text-center">
             <motion.h1 
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="font-black text-2xl tracking-tight"
+              className="font-black text-2xl tracking-tight leading-none"
             >
               Order Tracking
             </motion.h1>
-            <p className="text-[10px] font-bold uppercase tracking-widest opacity-80">Table {order.tableNumber} • #{order.orderNumber}</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 mt-1.5">
+              {order.type === "DELIVERY" ? "DELIVERY" : `TABLE ${order.tableNumber}`} • #{order.orderNumber}
+            </p>
           </div>
-          <button onClick={() => window.print()} className="p-3 bg-white/20 backdrop-blur-md rounded-2xl hover:bg-white/30 transition-all">
+          <button onClick={() => window.print()} className="p-3 bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl hover:bg-white/20 transition-all">
             <Printer className="w-6 h-6" />
           </button>
         </div>
@@ -253,7 +255,7 @@ export default function TrackOrder() {
         <motion.div 
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="bg-white rounded-[3.5rem] p-10 shadow-2xl shadow-red-900/10 border border-gray-100 relative overflow-hidden group"
+          className="bg-white rounded-[3.5rem] p-10 shadow-2xl shadow-slate-200 border border-slate-100 relative overflow-hidden group"
         >
           {/* Animated Background Icon */}
           <motion.div 
@@ -262,7 +264,7 @@ export default function TrackOrder() {
               scale: [1, 1.05, 0.95, 1]
             }}
             transition={{ repeat: Infinity, duration: 10 }}
-            className="absolute -right-12 -top-12 opacity-[0.04] scale-[5] text-red-600 pointer-events-none"
+            className="absolute -right-12 -top-12 opacity-[0.03] scale-[5] text-slate-900 pointer-events-none"
           >
             <currentStatus.icon className="w-24 h-24" />
           </motion.div>
@@ -282,17 +284,17 @@ export default function TrackOrder() {
               />
             </motion.div>
             
-            <h2 className="text-4xl font-black text-gray-900 mb-2 tracking-tight">{currentStatus.label}</h2>
-            <p className="text-gray-500 font-bold max-w-[240px] leading-snug">{currentStatus.description}</p>
+            <h2 className="text-4xl font-black text-slate-900 mb-2 tracking-tighter leading-none">{currentStatus.label}</h2>
+            <p className="text-slate-500 font-bold max-w-[240px] leading-snug mt-2">{currentStatus.description}</p>
             
-            <div className="mt-8 flex gap-3">
-              <div className="px-5 py-2.5 bg-gray-50 rounded-2xl border border-gray-100 flex items-center gap-2">
-                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">ID</span>
-                <span className="font-black text-gray-900">#{order.orderNumber}</span>
+            <div className="mt-10 flex gap-3">
+              <div className="px-6 py-3 bg-slate-50 rounded-2xl border border-slate-100 flex items-center gap-2">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">ORDER NO</span>
+                <span className="font-black text-slate-900">#{order.orderNumber}</span>
               </div>
-              <div className="px-5 py-2.5 bg-red-50 rounded-2xl border border-red-100 flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
-                <span className="text-[10px] font-black text-red-600 uppercase tracking-widest">Live</span>
+              <div className="px-6 py-3 bg-green-50 rounded-2xl border border-green-100 flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-[10px] font-black text-green-600 uppercase tracking-widest">Live Status</span>
               </div>
             </div>
           </div>
@@ -304,47 +306,47 @@ export default function TrackOrder() {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="bg-white rounded-[3rem] p-4 shadow-2xl shadow-gray-200/50 border border-gray-100 overflow-hidden"
+            className="bg-white rounded-[3rem] p-4 shadow-2xl shadow-slate-200 border border-slate-100 overflow-hidden"
           >
-            <div className="flex items-center justify-between px-4 py-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-red-50 rounded-2xl flex items-center justify-center">
-                  <Navigation className="w-5 h-5 text-red-600 animate-pulse" />
+            <div className="flex items-center justify-between px-6 py-5">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center shadow-sm">
+                  <Navigation className="w-6 h-6 text-red-600 animate-pulse" />
                 </div>
                 <div>
-                  <h3 className="font-black text-gray-900 text-sm uppercase tracking-tight">Live Tracking</h3>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Rider heading your way</p>
+                  <h3 className="font-black text-slate-900 text-sm uppercase tracking-tight">Live Tracking</h3>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Rider is heading your way</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-xs font-black text-red-600 uppercase tracking-widest">ETA</p>
-                <p className="text-xl font-black text-gray-900 tracking-tighter">15-20 MIN</p>
+                <p className="text-[10px] font-black text-red-600 uppercase tracking-widest">ETA</p>
+                <p className="text-2xl font-black text-slate-900 tracking-tighter">15-20 MIN</p>
               </div>
             </div>
             
-            <div className="h-80 rounded-[2.5rem] overflow-hidden border-4 border-gray-50 shadow-inner">
+            <div className="h-80 rounded-[2.5rem] overflow-hidden border-4 border-slate-50 shadow-inner">
               <DeliveryTrackerMap 
                 customerLocation={{ 
                   lat: order.deliveryOrder.address.latitude || 27.7172, 
                   lng: order.deliveryOrder.address.longitude || 85.3240 
                 }}
-                cafeLocation={{ lat: 27.7172, lng: 85.3240 }} // Should come from settings
-                riderLocation={order.riderLocation} // This should be updated via Firebase real-time
+                cafeLocation={{ lat: 27.7172, lng: 85.3240 }}
+                riderLocation={order.riderLocation}
               />
             </div>
 
-            <div className="p-4 flex items-center gap-4">
-              <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center shrink-0">
-                <User className="w-6 h-6 text-gray-400" />
+            <div className="p-6 flex items-center gap-5 bg-slate-50/50">
+              <div className="w-14 h-14 bg-white rounded-2xl border border-slate-100 flex items-center justify-center shrink-0 shadow-sm">
+                <User className="w-7 h-7 text-slate-300" />
               </div>
               <div className="flex-1">
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Your Rider</p>
-                <p className="font-black text-gray-900">{order.deliveryOrder.rider?.user?.name || "Assigning Rider..."}</p>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Assigned Rider</p>
+                <p className="font-black text-slate-900 text-lg leading-none">{order.deliveryOrder.rider?.user?.name || "Locating Rider..."}</p>
               </div>
               {order.deliveryOrder.rider?.user?.phone && (
                 <a 
                   href={`tel:${order.deliveryOrder.rider.user.phone}`}
-                  className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-green-100 active:scale-95 transition-all"
+                  className="w-14 h-14 bg-green-500 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-green-100 active:scale-95 transition-all"
                 >
                   <Phone className="w-6 h-6" />
                 </a>

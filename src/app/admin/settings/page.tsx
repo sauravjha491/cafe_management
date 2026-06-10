@@ -71,125 +71,127 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pb-20">
-      <div>
-        <h1 className="text-3xl font-black text-gray-900 tracking-tight leading-tight">Dashboard Settings</h1>
-        <p className="text-sm md:text-base text-gray-500 font-medium">Customize your café profile and checkout preferences</p>
+    <div className="h-full flex flex-col min-w-0 bg-slate-50/50">
+      <div className="p-4 lg:p-8 shrink-0 bg-white border-b border-slate-100 lg:bg-transparent lg:border-0">
+        <h1 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">Dashboard Settings</h1>
+        <p className="text-sm md:text-base text-slate-500 font-medium">Customize your café profile and checkout preferences</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* General Settings */}
-        <div className="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-3xl shadow-sm border border-gray-100">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="bg-red-50 p-2.5 rounded-xl">
-              <Store className="w-5 h-5 text-red-600" />
-            </div>
-            <h2 className="text-xl font-black text-gray-900">Café Profile</h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Café Name</label>
-              <input
-                required
-                type="text"
-                className="w-full px-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-red-500/20 outline-none font-bold"
-                value={formData.cafeName}
-                onChange={(e) => setFormData({ ...formData, cafeName: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Phone Number</label>
-              <div className="relative">
-                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-red-500/20 outline-none font-bold"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                />
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 lg:px-8 pb-20">
+        <form onSubmit={handleSubmit} className="max-w-4xl space-y-6">
+          {/* General Settings */}
+          <div className="bg-white p-6 md:p-8 rounded-2xl lg:rounded-[2rem] shadow-sm border border-slate-100">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="bg-red-50 p-2.5 rounded-xl">
+                <Store className="w-5 h-5 text-red-600" />
               </div>
+              <h2 className="text-xl font-black text-slate-900">Café Profile</h2>
             </div>
-            <div className="md:col-span-2 space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Store Address</label>
-              <div className="relative">
-                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-red-500/20 outline-none font-bold"
-                  value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
 
-        {/* Checkout Settings */}
-        <div className="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-3xl shadow-sm border border-gray-100">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="bg-blue-50 p-2.5 rounded-xl">
-              <DollarSign className="w-5 h-5 text-blue-600" />
-            </div>
-            <h2 className="text-xl font-black text-gray-900">Checkout & Taxes</h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Currency Symbol</label>
-              <div className="relative">
-                <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Café Name</label>
                 <input
                   required
                   type="text"
-                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-red-500/20 outline-none font-bold"
-                  value={formData.currency}
-                  onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+                  className="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-red-500/20 outline-none font-bold"
+                  value={formData.cafeName}
+                  onChange={(e) => setFormData({ ...formData, cafeName: e.target.value })}
                 />
               </div>
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Tax Rate (%)</label>
-              <div className="relative">
-                <Percent className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  required
-                  type="number"
-                  step="0.1"
-                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-red-500/20 outline-none font-bold"
-                  value={formData.taxRate}
-                  onChange={(e) => setFormData({ ...formData, taxRate: parseFloat(e.target.value) || 0 })}
-                />
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
+                <div className="relative">
+                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input
+                    type="text"
+                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-red-500/20 outline-none font-bold"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  />
+                </div>
               </div>
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Service Charge (%)</label>
-              <div className="relative">
-                <Percent className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  required
-                  type="number"
-                  step="0.1"
-                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-red-500/20 outline-none font-bold"
-                  value={formData.serviceCharge}
-                  onChange={(e) => setFormData({ ...formData, serviceCharge: parseFloat(e.target.value) || 0 })}
-                />
+              <div className="md:col-span-2 space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Store Address</label>
+                <div className="relative">
+                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input
+                    type="text"
+                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-red-500/20 outline-none font-bold"
+                    value={formData.address}
+                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={saving}
-            className="w-full md:w-auto bg-red-600 text-white px-10 py-4 rounded-2xl font-black text-lg shadow-xl shadow-red-200 hover:bg-red-700 transition-all flex items-center justify-center gap-2 active:scale-95 disabled:bg-gray-300"
-          >
-            {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-            Save Changes
-          </button>
-        </div>
-      </form>
+          {/* Checkout Settings */}
+          <div className="bg-white p-6 md:p-8 rounded-2xl lg:rounded-[2rem] shadow-sm border border-slate-100">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="bg-blue-50 p-2.5 rounded-xl">
+                <DollarSign className="w-5 h-5 text-blue-600" />
+              </div>
+              <h2 className="text-xl font-black text-slate-900">Checkout & Taxes</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Currency Symbol</label>
+                <div className="relative">
+                  <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input
+                    required
+                    type="text"
+                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-red-500/20 outline-none font-bold"
+                    value={formData.currency}
+                    onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Tax Rate (%)</label>
+                <div className="relative">
+                  <Percent className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input
+                    required
+                    type="number"
+                    step="0.1"
+                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-red-500/20 outline-none font-bold"
+                    value={formData.taxRate}
+                    onChange={(e) => setFormData({ ...formData, taxRate: parseFloat(e.target.value) || 0 })}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Service Charge (%)</label>
+                <div className="relative">
+                  <Percent className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input
+                    required
+                    type="number"
+                    step="0.1"
+                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-red-500/20 outline-none font-bold"
+                    value={formData.serviceCharge}
+                    onChange={(e) => setFormData({ ...formData, serviceCharge: parseFloat(e.target.value) || 0 })}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={saving}
+              className="w-full md:w-auto bg-red-600 text-white px-10 py-4 rounded-2xl font-black text-lg shadow-xl shadow-red-200 hover:bg-red-700 transition-all flex items-center justify-center gap-2 active:scale-95 disabled:bg-slate-300"
+            >
+              {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

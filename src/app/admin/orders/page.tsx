@@ -95,22 +95,24 @@ export default function AdminOrders() {
   if (loading) return <div className="p-8">Loading dashboard...</div>;
 
   return (
-    <div className="h-full flex flex-col overflow-hidden p-4 lg:p-8 space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">Live Orders</h1>
-          <p className="text-sm md:text-base text-gray-500 font-medium">Manage and track incoming orders in real-time</p>
-        </div>
-        <div className="flex gap-4 self-start md:self-auto">
-          <div className="bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-xs md:text-sm font-bold text-gray-600">Live Feed</span>
+    <div className="h-full flex flex-col min-w-0 bg-slate-50/50">
+      <div className="p-4 lg:p-8 shrink-0 bg-white border-b border-slate-100 lg:bg-transparent lg:border-0">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Live Orders</h1>
+            <p className="text-sm md:text-base text-slate-500 font-medium">Manage and track incoming orders in real-time</p>
+          </div>
+          <div className="flex gap-4 self-start md:self-auto">
+            <div className="bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-100 flex items-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-xs md:text-sm font-bold text-slate-600">Live Feed</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto no-scrollbar pb-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 md:gap-6">
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 lg:px-8 pb-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 md:gap-6">
           <AnimatePresence>
             {orders.map((order) => {
             const config = statusConfig[order.status as keyof typeof statusConfig] || statusConfig.PENDING;

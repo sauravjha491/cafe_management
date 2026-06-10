@@ -96,85 +96,85 @@ export default function StaffManagement() {
   }
 
   return (
-    <div className="space-y-6 md:space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight leading-tight">Staff Management</h1>
-          <p className="text-sm md:text-base text-gray-500 font-medium">Manage team members and their access levels</p>
+    <div className="h-full flex flex-col min-w-0 bg-slate-50/50">
+      <div className="p-4 lg:p-8 shrink-0 bg-white border-b border-slate-100 lg:bg-transparent lg:border-0">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">Staff Management</h1>
+            <p className="text-slate-500 font-medium">Manage team members and their access levels</p>
+          </div>
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black flex items-center justify-center gap-3 shadow-xl shadow-red-200 hover:bg-red-700 transition-all active:scale-95"
+          >
+            <Plus className="w-6 h-6" />
+            Add Team Member
+          </button>
         </div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="bg-red-600 text-white px-6 py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-red-200 hover:bg-red-700 transition-all active:scale-95 w-full md:w-auto text-sm md:text-base"
-        >
-          <Plus className="w-5 h-5" />
-          Add Team Member
-        </button>
       </div>
 
-      <div className="bg-white p-3 md:p-4 rounded-[2rem] md:rounded-3xl shadow-sm border border-gray-100">
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 lg:px-8 space-y-8 pb-20">
+        {/* Search */}
+        <div className="bg-white p-4 rounded-2xl lg:rounded-[2rem] shadow-sm border border-slate-100 relative group">
+          <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 w-6 h-6 group-focus-within:text-red-600 transition-colors" />
           <input
             type="text"
             placeholder="Search by name or email..."
-            className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-red-500/20 font-medium text-sm md:text-base"
+            className="w-full pl-16 pr-8 py-4 bg-slate-50 border border-transparent rounded-xl lg:rounded-2xl focus:bg-white focus:ring-4 focus:ring-red-500/5 outline-none font-bold transition-all"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-        {loading ? (
-          [1, 2, 3].map(i => <div key={i} className="h-48 bg-white rounded-[2.5rem] animate-pulse" />)
-        ) : (
-          filteredStaff.map((member) => (
+        {/* Staff Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredStaff.map((member) => (
             <motion.div
               layout
               key={member.id}
-              className="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-sm border border-gray-100 relative group"
+              className="bg-white p-8 rounded-2xl lg:rounded-[2.5rem] shadow-sm border border-slate-100 relative group hover:shadow-2xl transition-all duration-500"
             >
-              <div className="flex justify-between items-start mb-6">
+              <div className="flex justify-between items-start mb-8">
                 <div className={cn(
-                  "w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center text-xl md:text-2xl font-black transition-transform group-hover:scale-110",
+                  "w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black transition-transform group-hover:scale-110",
                   member.role === "OWNER" ? "bg-red-50 text-red-600" : "bg-blue-50 text-blue-600"
                 )}>
                   {member.name.charAt(0).toUpperCase()}
                 </div>
                 <div className={cn(
-                  "px-3 py-1 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5",
+                  "px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2",
                   member.role === "OWNER" ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"
                 )}>
-                  {member.role === "OWNER" ? <ShieldCheck className="w-3 h-3" /> : <User className="w-3 h-3" />}
+                  {member.role === "OWNER" ? <ShieldCheck className="w-3.5 h-3.5" /> : <User className="w-3.5 h-3.5" />}
                   {member.role}
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <h3 className="text-lg md:text-xl font-black text-gray-900 tracking-tight truncate">{member.name}</h3>
-                <div className="flex items-center gap-2 text-gray-400 text-xs md:text-sm font-medium truncate">
+              <div className="space-y-2">
+                <h3 className="text-xl font-black text-slate-900 tracking-tight truncate group-hover:text-red-600 transition-colors">{member.name}</h3>
+                <div className="flex items-center gap-2 text-slate-400 text-sm font-medium truncate">
                   <Mail className="w-4 h-4 shrink-0" />
                   {member.email}
                 </div>
               </div>
 
-              <div className="mt-6 pt-6 border-t flex gap-2">
+              <div className="mt-8 pt-8 border-t border-slate-50 flex gap-2">
                 <Link 
                   href={`/admin/staff/${member.id}`}
-                  className="flex-1 py-2.5 rounded-xl border border-gray-100 font-bold text-xs md:text-sm text-gray-500 hover:bg-gray-50 transition-colors flex items-center justify-center"
+                  className="flex-1 py-3.5 bg-slate-50 rounded-xl font-black text-[10px] uppercase tracking-widest text-slate-500 hover:bg-slate-900 hover:text-white transition-all flex items-center justify-center shadow-sm active:scale-95"
                 >
                   Edit Profile
                 </Link>
                 <button 
                   onClick={() => handleDelete(member.id)}
-                  className="p-2.5 rounded-xl border border-gray-100 text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                  className="p-3.5 bg-white border border-slate-100 text-slate-400 hover:text-red-600 hover:bg-red-50 hover:border-red-100 transition-all shadow-sm active:scale-95"
                 >
                   <Trash2 className="w-5 h-5" />
                 </button>
               </div>
             </motion.div>
-          ))
-        )}
+          ))}
+        </div>
       </div>
 
       <AnimatePresence>

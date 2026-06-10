@@ -439,8 +439,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Sidebar */}
       <aside 
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-72 bg-[#0f172a] text-slate-300 border-r border-slate-800 shadow-2xl transition-transform duration-300 ease-in-out",
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          "fixed inset-y-0 left-0 z-50 w-[var(--sidebar-width)] bg-[#0f172a] text-slate-300 border-r border-slate-800 shadow-2xl transition-transform duration-300 ease-in-out lg:translate-x-0",
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         <div className="h-full flex flex-col">
@@ -568,11 +568,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 lg:ml-72 h-screen overflow-hidden">
-        <header className="sticky top-0 z-40 bg-slate-900 border-b border-slate-800 px-4 md:px-6 py-4 flex items-center justify-between lg:hidden shadow-xl shrink-0">
+      <div className="flex-1 flex flex-col min-w-0 lg:pl-[var(--sidebar-width)] h-screen overflow-hidden">
+        <header className="sticky top-0 z-40 bg-slate-900 border-b border-slate-800 px-4 md:px-6 h-[var(--header-height)] flex items-center justify-between lg:hidden shadow-xl shrink-0">
           <button 
             onClick={() => setIsSidebarOpen(true)}
             className="p-2.5 bg-slate-800 rounded-xl text-slate-400 active:scale-95 transition-all"
+            aria-label="Open sidebar"
           >
             <Menu className="w-6 h-6" />
           </button>
@@ -585,8 +586,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
         </header>
 
-        <main className="flex-1 bg-[#f8fafc] overflow-hidden">
-          <div className="h-full w-full">
+        <main className="flex-1 bg-[#f8fafc] overflow-y-auto custom-scrollbar">
+          <div className="min-h-full w-full">
             {children}
           </div>
         </main>

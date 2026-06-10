@@ -103,84 +103,95 @@ export default function TablesPage() {
   };
 
   return (
-    <div className="space-y-6 md:space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">Table Management</h1>
-          <p className="text-sm md:text-base text-gray-500 font-medium">Manage tables and generate QR codes</p>
+    <div className="h-full flex flex-col min-w-0 bg-slate-50/50">
+      <div className="p-4 lg:p-8 shrink-0 bg-white border-b border-slate-100 lg:bg-transparent lg:border-0">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Table Management</h1>
+            <p className="text-slate-500 font-medium">Manage tables and generate QR codes</p>
+          </div>
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black flex items-center justify-center gap-3 shadow-xl shadow-red-200 hover:bg-red-700 transition-all active:scale-95"
+          >
+            <Plus className="w-6 h-6" />
+            Add New Table
+          </button>
         </div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="bg-red-600 text-white px-6 py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-red-200 hover:bg-red-700 transition-all active:scale-95 w-full md:w-auto"
-        >
-          <Plus className="w-5 h-5" />
-          Add New Table
-        </button>
       </div>
 
-      {/* Search and Filters */}
-      <div className="bg-white p-3 md:p-4 rounded-[2rem] md:rounded-3xl shadow-sm border border-gray-100">
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 lg:px-8 space-y-8 pb-20">
+        {/* Search */}
+        <div className="bg-white p-4 rounded-2xl lg:rounded-[2rem] shadow-sm border border-slate-100 relative group">
+          <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 w-6 h-6 group-focus-within:text-red-600 transition-colors" />
           <input
             type="text"
             placeholder="Search table number..."
-            className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-red-500/20 font-medium"
+            className="w-full pl-16 pr-8 py-4 bg-slate-50 border border-transparent rounded-xl lg:rounded-2xl focus:bg-white focus:ring-4 focus:ring-red-500/5 outline-none font-bold transition-all"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-      </div>
 
-      {/* Tables Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-        {loading ? (
-          [1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-64 bg-white rounded-3xl animate-pulse" />
-          ))
-        ) : (
-          filteredTables.map((table) => (
-            <div key={table.id} className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden flex flex-col group">
-              <div className="p-6 flex-1 flex flex-col items-center justify-center gap-4">
-                <div className="bg-gray-50 p-6 rounded-3xl border-2 border-dashed border-gray-200 transition-all group-hover:border-red-200 group-hover:bg-red-50">
-                  <QRCodeSVG
-                    id={`qr-${table.tableNumber}`}
-                    value={`${typeof window !== "undefined" ? window.location.origin : ""}/order?table=${table.tableNumber}`}
-                    size={140}
-                    level="H"
-                    includeMargin={true}
-                  />
+        {/* Tables Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {loading ? (
+            Array(8).fill(0).map((_, i) => (
+              <div key={i} className="h-80 bg-white rounded-2xl lg:rounded-[2.5rem] animate-pulse border border-slate-50" />
+            ))
+          ) : (
+            filteredTables.map((table) => (
+              <motion.div
+                layout
+                key={table.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-white rounded-2xl lg:rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden flex flex-col group hover:shadow-2xl transition-all duration-500"
+              >
+                <div className="p-8 flex-1 flex flex-col items-center justify-center gap-6">
+                  <div className="bg-slate-50 p-6 rounded-3xl border-2 border-dashed border-slate-100 transition-all group-hover:border-red-200 group-hover:bg-red-50 relative">
+                    <QRCodeSVG
+                      id={`qr-${table.tableNumber}`}
+                      value={`${typeof window !== "undefined" ? window.location.origin : ""}/order?table=${table.tableNumber}`}
+                      size={160}
+                      level="H"
+                      includeMargin={true}
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-white/0 group-hover:bg-white/5 transition-colors pointer-events-none" />
+                  </div>
+                  <div className="text-center">
+                    <h3 className="text-3xl font-black text-slate-900 tracking-tighter leading-none">Table {table.tableNumber}</h3>
+                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-2">Ready for scan</p>
+                  </div>
                 </div>
-                <div className="text-center">
-                  <h3 className="text-2xl font-black text-gray-900 tracking-tight">Table {table.tableNumber}</h3>
-                  <p className="text-xs text-gray-400 font-black uppercase tracking-widest mt-1">Ready for scan</p>
+                
+                <div className="p-4 bg-slate-50/50 border-t border-slate-100 flex gap-2">
+                  <button 
+                    onClick={() => printQR(table.tableNumber)}
+                    className="flex-1 bg-white border border-slate-200 text-slate-900 py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-900 hover:text-white transition-all shadow-sm active:scale-95"
+                  >
+                    <Printer className="w-4 h-4" />
+                    Print QR
+                  </button>
+                  <button 
+                    onClick={() => window.open(`/order?table=${table.tableNumber}`, "_blank")}
+                    className="p-3.5 bg-white border border-slate-200 text-slate-400 hover:text-red-600 rounded-xl hover:bg-red-50 transition-all shadow-sm active:scale-95"
+                    title="Open Link"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </button>
+                  <button 
+                    onClick={() => handleDeleteTable(table.id)}
+                    className="p-3.5 bg-white border border-slate-200 text-slate-400 hover:text-red-600 rounded-xl hover:bg-red-50 transition-all shadow-sm active:scale-95"
+                    title="Delete Table"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
-              </div>
-              
-              <div className="p-4 bg-gray-50 border-t flex gap-2">
-                <button 
-                  onClick={() => printQR(table.tableNumber)}
-                  className="flex-1 bg-white border border-gray-200 text-gray-700 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors"
-                >
-                  <Printer className="w-4 h-4" />
-                  Print
-                </button>
-                <button 
-                  onClick={() => window.open(`/order?table=${table.tableNumber}`, "_blank")}
-                  className="p-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-100"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                </button>
-                <button 
-                  onClick={() => handleDeleteTable(table.id)}
-                  className="p-2.5 bg-white border border-gray-200 text-red-600 rounded-xl hover:bg-red-50"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          ))
-        )}
+              </motion.div>
+            ))
+          )}
+        </div>
       </div>
 
       {/* Add Table Modal */}

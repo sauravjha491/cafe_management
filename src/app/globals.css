@@ -1,15 +1,70 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: "Inter", "Geist Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Geist Mono", monospace;
+
+  /* Custom Spacing System */
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-48: 48px;
+  --spacing-64: 64px;
+
+  /* Responsive Breakpoints */
+  --breakpoint-xs: 320px;
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+}
+
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 255, 255, 255;
+  --foreground-rgb: 15, 23, 42;
+  --background-start-rgb: 248, 250, 252;
   --background-end-rgb: 255, 255, 255;
+  
+  /* SaaS Design System Variables */
+  --sidebar-width: 260px;
+  --header-height: 64px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  --radius-full: 9999px;
+  
+  /* Shadow System */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 }
 
 body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-start-rgb));
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* Typography Hierarchy */
+h1 { @apply text-3xl font-black tracking-tight leading-tight md:text-4xl; }
+h2 { @apply text-2xl font-black tracking-tight leading-snug md:text-3xl; }
+h3 { @apply text-xl font-bold tracking-tight leading-normal; }
+h4 { @apply text-lg font-bold tracking-tight leading-normal; }
+
+.body-large { @apply text-lg leading-relaxed; }
+.body-normal { @apply text-base leading-relaxed; }
+.body-small { @apply text-sm leading-relaxed; }
 
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {
@@ -20,17 +75,37 @@ body {
     scrollbar-width: none;
   }
   .custom-scrollbar::-webkit-scrollbar {
-    width: 4px;
+    width: 6px;
   }
   .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #334155;
+    background: #e2e8f0;
     border-radius: 10px;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #475569;
+    background: #cbd5e1;
+  }
+}
+
+/* Table Card for Mobile */
+@media (max-width: 768px) {
+  .responsive-table {
+    @apply flex flex-col gap-4;
+  }
+  .responsive-table thead {
+    @apply hidden;
+  }
+  .responsive-table tr {
+    @apply flex flex-col bg-white p-4 rounded-2xl shadow-sm border border-slate-100;
+  }
+  .responsive-table td {
+    @apply flex justify-between py-2 border-b border-slate-50 last:border-0;
+  }
+  .responsive-table td::before {
+    content: attr(data-label);
+    @apply font-black text-[10px] uppercase tracking-widest text-slate-400;
   }
 }
 
@@ -45,12 +120,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #e5e7eb;
+  background: #e2e8f0;
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #d1d5db;
+  background: #cbd5e1;
 }
 
 @keyframes ring {

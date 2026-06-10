@@ -87,96 +87,100 @@ export default function CategoriesPage() {
   );
 
   return (
-    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-10">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex items-center gap-6">
-          <Link href="/admin" className="p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all active:scale-95">
-            <ArrowLeft className="w-6 h-6 text-gray-400" />
-          </Link>
-          <div>
-            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Categories</h1>
-            <p className="text-gray-500 font-medium">Manage your product categories</p>
+    <div className="h-full flex flex-col min-w-0 bg-slate-50/50">
+      {/* Header Area */}
+      <div className="p-4 lg:p-8 shrink-0 bg-white border-b border-slate-100 lg:bg-transparent lg:border-0">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex items-center gap-6">
+            <Link href="/admin" className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all active:scale-95">
+              <ArrowLeft className="w-6 h-6 text-slate-400" />
+            </Link>
+            <div>
+              <h1 className="text-3xl font-black text-slate-900 tracking-tight">Categories</h1>
+              <p className="text-slate-500 font-medium">Manage your product categories</p>
+            </div>
           </div>
-        </div>
-        <button 
-          onClick={() => { setEditingCategory(null); setNewCategoryName(""); setIsModalOpen(true); }}
-          className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black flex items-center justify-center gap-3 shadow-2xl shadow-red-200 hover:bg-red-700 transition-all active:scale-95"
-        >
-          <Plus className="w-6 h-6" />
-          Add Category
-        </button>
-      </div>
-
-      {/* Stats & Search */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="md:col-span-3 relative group">
-          <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 w-6 h-6 group-focus-within:text-red-600 transition-colors" />
-          <input 
-            type="text"
-            placeholder="Search categories..."
-            className="w-full pl-16 pr-8 py-5 bg-white border border-gray-100 rounded-[2rem] shadow-sm focus:ring-8 focus:ring-red-500/5 outline-none font-bold transition-all"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-        <div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total</p>
-            <h3 className="text-2xl font-black text-gray-900 leading-none">{categories.length}</h3>
-          </div>
-          <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-600">
-            <Layers className="w-6 h-6" />
-          </div>
+          <button 
+            onClick={() => { setEditingCategory(null); setNewCategoryName(""); setIsModalOpen(true); }}
+            className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black flex items-center justify-center gap-3 shadow-xl shadow-red-200 hover:bg-red-700 transition-all active:scale-95"
+          >
+            <Plus className="w-6 h-6" />
+            Add Category
+          </button>
         </div>
       </div>
 
-      {/* Categories Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {loading ? (
-          Array(8).fill(0).map((_, i) => (
-            <div key={i} className="h-40 bg-white rounded-[2.5rem] animate-pulse border border-gray-50" />
-          ))
-        ) : (
-          filteredCategories.map((cat) => (
-            <motion.div
-              layout
-              key={cat.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-300 group"
-            >
-              <div className="flex justify-between items-start mb-6">
-                <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover:bg-red-50 group-hover:text-red-600 transition-colors">
-                  <Tag className="w-7 h-7" />
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 lg:px-8 space-y-10 pb-20">
+        {/* Stats & Search */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="md:col-span-3 relative group">
+            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 w-6 h-6 group-focus-within:text-red-600 transition-colors" />
+            <input 
+              type="text"
+              placeholder="Search categories..."
+              className="w-full pl-16 pr-8 py-5 bg-white border border-slate-100 rounded-2xl lg:rounded-[2rem] shadow-sm focus:ring-8 focus:ring-red-500/5 outline-none font-bold transition-all"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className="bg-white p-6 rounded-2xl lg:rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between">
+            <div>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total</p>
+              <h3 className="text-2xl font-black text-slate-900 leading-none">{categories.length}</h3>
+            </div>
+            <div className="w-12 h-12 bg-red-50 rounded-xl lg:rounded-2xl flex items-center justify-center text-red-600">
+              <Layers className="w-6 h-6" />
+            </div>
+          </div>
+        </div>
+
+        {/* Categories Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {loading ? (
+            Array(8).fill(0).map((_, i) => (
+              <div key={i} className="h-40 bg-white rounded-2xl lg:rounded-[2.5rem] animate-pulse border border-slate-50" />
+            ))
+          ) : (
+            filteredCategories.map((cat) => (
+              <motion.div
+                layout
+                key={cat.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-white p-6 lg:p-8 rounded-2xl lg:rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 group"
+              >
+                <div className="flex justify-between items-start mb-6">
+                  <div className="w-14 h-14 bg-slate-50 rounded-xl lg:rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-red-50 group-hover:text-red-600 transition-colors">
+                    <Tag className="w-7 h-7" />
+                  </div>
+                  <div className="flex gap-1">
+                    <button 
+                      onClick={() => { setEditingCategory(cat); setNewCategoryName(cat.name); setIsModalOpen(true); }}
+                      className="p-3 bg-slate-50 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button 
+                      onClick={() => handleDelete(cat.id)}
+                      className="p-3 bg-slate-50 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex gap-1">
-                  <button 
-                    onClick={() => { setEditingCategory(cat); setNewCategoryName(cat.name); setIsModalOpen(true); }}
-                    className="p-3 bg-gray-50 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </button>
-                  <button 
-                    onClick={() => handleDelete(cat.id)}
-                    className="p-3 bg-gray-50 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                <h3 className="text-xl font-black text-slate-900 group-hover:text-red-600 transition-colors truncate">
+                  {cat.name}
+                </h3>
+                <div className="mt-4 flex items-center gap-2">
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    {cat.products?.length || 0} Products
+                  </span>
+                  <ChevronRight className="w-3 h-3 text-slate-300 group-hover:translate-x-1 transition-transform" />
                 </div>
-              </div>
-              <h3 className="text-xl font-black text-gray-900 group-hover:text-red-600 transition-colors truncate">
-                {cat.name}
-              </h3>
-              <div className="mt-4 flex items-center gap-2">
-                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                  {cat.products?.length || 0} Products
-                </span>
-                <ChevronRight className="w-3 h-3 text-gray-300 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </motion.div>
-          ))
-        )}
+              </motion.div>
+            ))
+          )}
+        </div>
       </div>
 
       {/* Modal */}

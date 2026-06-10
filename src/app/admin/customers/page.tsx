@@ -79,120 +79,124 @@ export default function CustomersPage() {
   );
 
   return (
-    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-10">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex items-center gap-6">
-          <Link href="/admin" className="p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all active:scale-95">
-            <ArrowLeft className="w-6 h-6 text-gray-400" />
-          </Link>
-          <div>
-            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Customers</h1>
-            <p className="text-gray-500 font-medium">Manage your customer database and loyalty</p>
+    <div className="h-full flex flex-col min-w-0 bg-slate-50/50">
+      {/* Header Area */}
+      <div className="p-4 lg:p-8 shrink-0 bg-white border-b border-slate-100 lg:bg-transparent lg:border-0">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex items-center gap-6">
+            <Link href="/admin" className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all active:scale-95">
+              <ArrowLeft className="w-6 h-6 text-slate-400" />
+            </Link>
+            <div>
+              <h1 className="text-3xl font-black text-slate-900 tracking-tight">Customers</h1>
+              <p className="text-slate-500 font-medium">Manage your customer database and loyalty</p>
+            </div>
           </div>
-        </div>
-        <button 
-          onClick={() => { setEditingCustomer(null); setFormData({ name: "", phone: "", email: "" }); setIsModalOpen(true); }}
-          className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black flex items-center justify-center gap-3 shadow-2xl shadow-red-200 hover:bg-red-700 transition-all active:scale-95"
-        >
-          <Plus className="w-6 h-6" />
-          Add Customer
-        </button>
-      </div>
-
-      {/* Stats & Search */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="md:col-span-3 relative group">
-          <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 w-6 h-6 group-focus-within:text-red-600 transition-colors" />
-          <input 
-            type="text"
-            placeholder="Search by name or phone number..."
-            className="w-full pl-16 pr-8 py-5 bg-white border border-gray-100 rounded-[2rem] shadow-sm focus:ring-8 focus:ring-red-500/5 outline-none font-bold transition-all"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-        <div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Database</p>
-            <h3 className="text-2xl font-black text-gray-900 leading-none">{customers.length}</h3>
-          </div>
-          <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-600">
-            <User className="w-6 h-6" />
-          </div>
+          <button 
+            onClick={() => { setEditingCustomer(null); setFormData({ name: "", phone: "", email: "" }); setIsModalOpen(true); }}
+            className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black flex items-center justify-center gap-3 shadow-xl shadow-red-200 hover:bg-red-700 transition-all active:scale-95"
+          >
+            <Plus className="w-6 h-6" />
+            Add Customer
+          </button>
         </div>
       </div>
 
-      {/* Customers List/Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {loading ? (
-          Array(6).fill(0).map((_, i) => (
-            <div key={i} className="h-64 bg-white rounded-[2.5rem] animate-pulse border border-gray-50" />
-          ))
-        ) : (
-          filteredCustomers.map((customer) => (
-            <motion.div
-              layout
-              key={customer.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-300 group"
-            >
-              <div className="flex justify-between items-start mb-6">
-                <div className="w-16 h-16 bg-gray-50 rounded-[1.5rem] flex items-center justify-center text-gray-400 group-hover:bg-red-50 group-hover:text-red-600 transition-colors relative">
-                  <User className="w-8 h-8" />
-                  {customer.orders?.length > 5 && (
-                    <div className="absolute -top-1 -right-1 p-1 bg-yellow-400 rounded-full">
-                      <Star className="w-3 h-3 text-white fill-white" />
-                    </div>
-                  )}
-                </div>
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button 
-                    onClick={() => { setEditingCustomer(customer); setFormData({ name: customer.name, phone: customer.phone, email: customer.email || "" }); setIsModalOpen(true); }}
-                    className="p-3 bg-gray-50 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 lg:px-8 space-y-10 pb-20">
+        {/* Stats & Search */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="md:col-span-3 relative group">
+            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 w-6 h-6 group-focus-within:text-red-600 transition-colors" />
+            <input 
+              type="text"
+              placeholder="Search by name or phone number..."
+              className="w-full pl-16 pr-8 py-5 bg-white border border-slate-100 rounded-2xl lg:rounded-[2rem] shadow-sm focus:ring-8 focus:ring-red-500/5 outline-none font-bold transition-all"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className="bg-white p-6 rounded-2xl lg:rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between">
+            <div>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Database</p>
+              <h3 className="text-2xl font-black text-slate-900 leading-none">{customers.length}</h3>
+            </div>
+            <div className="w-12 h-12 bg-red-50 rounded-xl lg:rounded-2xl flex items-center justify-center text-red-600">
+              <User className="w-6 h-6" />
+            </div>
+          </div>
+        </div>
 
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-xl font-black text-gray-900 group-hover:text-red-600 transition-colors truncate">
-                    {customer.name}
-                  </h3>
-                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">
-                    Customer Since {new Date(customer.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-
-                <div className="pt-4 space-y-3 border-t border-gray-50">
-                  <div className="flex items-center gap-3 text-gray-500 font-bold text-sm">
-                    <Phone className="w-4 h-4 text-gray-300" />
-                    {customer.phone}
+        {/* Customers List/Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {loading ? (
+            Array(6).fill(0).map((_, i) => (
+              <div key={i} className="h-64 bg-white rounded-2xl lg:rounded-[2.5rem] animate-pulse border border-slate-50" />
+            ))
+          ) : (
+            filteredCustomers.map((customer) => (
+              <motion.div
+                layout
+                key={customer.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white p-6 lg:p-8 rounded-2xl lg:rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 group"
+              >
+                <div className="flex justify-between items-start mb-6">
+                  <div className="w-16 h-16 bg-slate-50 rounded-xl lg:rounded-[1.5rem] flex items-center justify-center text-slate-400 group-hover:bg-red-50 group-hover:text-red-600 transition-colors relative">
+                    <User className="w-8 h-8" />
+                    {customer.orders?.length > 5 && (
+                      <div className="absolute -top-1 -right-1 p-1 bg-yellow-400 rounded-full">
+                        <Star className="w-3 h-3 text-white fill-white" />
+                      </div>
+                    )}
                   </div>
-                  {customer.email && (
-                    <div className="flex items-center gap-3 text-gray-500 font-bold text-sm">
-                      <Mail className="w-4 h-4 text-gray-300" />
-                      {customer.email}
-                    </div>
-                  )}
+                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button 
+                      onClick={() => { setEditingCustomer(customer); setFormData({ name: customer.name, phone: customer.phone, email: customer.email || "" }); setIsModalOpen(true); }}
+                      className="p-3 bg-slate-50 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
 
-                <div className="pt-4 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <ShoppingBag className="w-4 h-4 text-red-500" />
-                    <span className="font-black text-gray-900 text-sm">{customer.posOrders?.length || 0} Orders</span>
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-xl font-black text-slate-900 group-hover:text-red-600 transition-colors truncate">
+                      {customer.name}
+                    </h3>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
+                      Customer Since {new Date(customer.createdAt).toLocaleDateString()}
+                    </p>
                   </div>
-                  <button className="text-[10px] font-black text-red-600 uppercase tracking-widest hover:underline flex items-center gap-1">
-                    History <ChevronRight className="w-3 h-3" />
-                  </button>
+
+                  <div className="pt-4 space-y-3 border-t border-slate-50">
+                    <div className="flex items-center gap-3 text-slate-500 font-bold text-sm">
+                      <Phone className="w-4 h-4 text-slate-300" />
+                      {customer.phone}
+                    </div>
+                    {customer.email && (
+                      <div className="flex items-center gap-3 text-slate-500 font-bold text-sm">
+                        <Mail className="w-4 h-4 text-slate-300" />
+                        {customer.email}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-4 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <ShoppingBag className="w-4 h-4 text-red-500" />
+                      <span className="font-black text-slate-900 text-sm">{customer.posOrders?.length || 0} Orders</span>
+                    </div>
+                    <button className="text-[10px] font-black text-red-600 uppercase tracking-widest hover:underline flex items-center gap-1">
+                      History <ChevronRight className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))
-        )}
+              </motion.div>
+            ))
+          )}
+        </div>
       </div>
 
       {/* Modal */}

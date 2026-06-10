@@ -500,40 +500,41 @@ export default function POSPage() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-full bg-gray-50/50 gap-0 lg:gap-8 overflow-hidden relative p-4 lg:p-8">
+    <div className="flex flex-col lg:flex-row h-full bg-slate-50/50 gap-0 overflow-hidden relative">
       <Toaster position="top-right" />
       
-      {/* --- LEFT SIDE: PRODUCTS AREA (70%) --- */}
-      <div className="flex-[0.7] flex flex-col min-w-0 overflow-hidden bg-white lg:bg-transparent rounded-[2rem] lg:rounded-[3rem]">
+      {/* --- LEFT SIDE: PRODUCTS AREA --- */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-white lg:bg-transparent">
         
         {/* Header: Search & Info */}
-        <div className="p-4 lg:p-0 flex flex-col gap-4 lg:gap-6 shrink-0 bg-white lg:bg-transparent sticky top-0 z-30">
+        <div className="p-4 lg:p-8 flex flex-col gap-4 lg:gap-6 shrink-0 bg-white lg:bg-transparent sticky top-0 z-30 border-b lg:border-0 border-slate-100">
           <div className="flex items-center gap-3 lg:gap-4">
             <div className="flex-1 relative group">
-                <Search className="absolute left-4 lg:left-6 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 lg:w-6 h-6 group-focus-within:text-red-600 transition-colors" />
+                <Search className="absolute left-4 lg:left-6 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 lg:w-6 lg:h-6 group-focus-within:text-red-600 transition-colors" />
                 <input 
                 type="text"
                 placeholder="Search products..."
-                className="w-full pl-12 lg:pl-16 pr-10 lg:pr-14 py-4 lg:py-6 bg-gray-50 lg:bg-white border border-transparent lg:border-transparent rounded-2xl lg:rounded-[2.5rem] shadow-sm lg:shadow-lg focus:ring-8 focus:ring-red-500/5 outline-none font-bold transition-all text-sm lg:text-base"
+                className="w-full pl-12 lg:pl-16 pr-10 lg:pr-14 py-3 lg:py-5 bg-slate-50 lg:bg-white border border-transparent lg:border-transparent rounded-xl lg:rounded-2xl shadow-sm lg:shadow-md focus:ring-4 focus:ring-red-500/5 outline-none font-bold transition-all text-sm lg:text-base"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 {searchQuery && (
                     <button 
                         onClick={() => { setSearchQuery(""); if (selectedCategory === null) setSelectedCategory("all"); }}
-                        className="absolute right-4 lg:right-6 top-1/2 -translate-y-1/2 p-1.5 lg:p-2 bg-gray-200 hover:bg-red-50 hover:text-red-600 rounded-full transition-all"
+                        className="absolute right-4 lg:right-6 top-1/2 -translate-y-1/2 p-1.5 lg:p-2 bg-slate-200 hover:bg-red-50 hover:text-red-600 rounded-full transition-all"
                     >
-                        <X className="w-3 h-3 lg:w-4 h-4" />
+                        <X className="w-3 h-3 lg:w-4 lg:h-4" />
                     </button>
                 )}
             </div>
             <button 
                 onClick={() => setShowCartMobile(true)}
-                className="lg:hidden relative p-4 bg-red-600 text-white rounded-2xl shadow-xl shadow-red-200 active:scale-95 transition-all"
+                className="lg:hidden relative p-3 bg-red-600 text-white rounded-xl shadow-lg shadow-red-200 active:scale-95 transition-all"
+                aria-label="Open cart"
             >
                 <ShoppingCart className="w-6 h-6" />
                 {cart.length > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-gray-900 border-2 border-white text-[10px] font-black rounded-full flex items-center justify-center">
+                <span className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-slate-900 border-2 border-white text-[10px] font-black rounded-full flex items-center justify-center">
                     {cart.length}
                 </span>
                 )}
@@ -541,15 +542,15 @@ export default function POSPage() {
           </div>
 
           {/* Categories Horizontal Scroll */}
-          <div className="flex gap-2 lg:gap-4 overflow-x-auto no-scrollbar pb-2 lg:pb-4 sticky top-0 z-10 bg-inherit">
+          <div className="flex gap-2 lg:gap-3 overflow-x-auto no-scrollbar pb-2 lg:pb-0 sticky top-0 z-10 bg-inherit">
             <button
                 onClick={() => setSelectedCategory("all")}
                 className={cn(
-                "px-6 lg:px-10 py-3 lg:py-4 rounded-xl lg:rounded-[1.5rem] text-[10px] lg:text-[11px] font-black whitespace-nowrap transition-all uppercase tracking-widest flex items-center gap-2 lg:gap-3 border-2",
-                selectedCategory === "all" ? "bg-gray-900 border-gray-900 text-white shadow-2xl scale-105" : "bg-white text-gray-400 border-transparent hover:border-gray-100 hover:bg-gray-50 shadow-sm"
+                "px-5 lg:px-8 py-2.5 lg:py-3.5 rounded-xl text-[10px] lg:text-[11px] font-black whitespace-nowrap transition-all uppercase tracking-widest flex items-center gap-2 border-2",
+                selectedCategory === "all" ? "bg-slate-900 border-slate-900 text-white shadow-lg scale-105" : "bg-white text-slate-400 border-transparent hover:border-slate-100 hover:bg-slate-50 shadow-sm"
                 )}
             >
-                <Package className="w-4 h-4 lg:w-5 h-5" />
+                <Package className="w-4 h-4" />
                 All
             </button>
             {categories.map(cat => (
@@ -557,8 +558,8 @@ export default function POSPage() {
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
                 className={cn(
-                    "px-6 lg:px-10 py-3 lg:py-4 rounded-xl lg:rounded-[1.5rem] text-[10px] lg:text-[11px] font-black whitespace-nowrap transition-all uppercase tracking-widest border-2",
-                    selectedCategory === cat.id ? "bg-gray-900 border-gray-900 text-white shadow-2xl scale-105" : "bg-white text-gray-400 border-transparent hover:border-gray-100 hover:bg-gray-50 shadow-sm"
+                    "px-5 lg:px-8 py-2.5 lg:py-3.5 rounded-xl text-[10px] lg:text-[11px] font-black whitespace-nowrap transition-all uppercase tracking-widest border-2",
+                    selectedCategory === cat.id ? "bg-slate-900 border-slate-900 text-white shadow-lg scale-105" : "bg-white text-slate-400 border-transparent hover:border-slate-100 hover:bg-slate-50 shadow-sm"
                 )}
                 >
                 {cat.name}
@@ -568,22 +569,22 @@ export default function POSPage() {
         </div>
 
         {/* Product Grid - Responsive */}
-        <div className="flex-1 overflow-y-auto no-scrollbar p-1 mt-4 pb-24 lg:pb-8">
+        <div className="flex-1 overflow-y-auto custom-scrollbar px-4 lg:px-8 pb-24 lg:pb-8">
           {selectedCategory === null && searchQuery === "" ? (
             /* --- CATEGORY-FIRST VIEW --- */
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 py-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6 py-6 lg:py-8">
               <motion.button
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 onClick={() => setSelectedCategory("all")}
-                className="group relative h-48 bg-gray-900 rounded-[2.5rem] overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-gray-900/20 transition-all active:scale-95"
+                className="group relative h-40 lg:h-48 bg-slate-900 rounded-2xl lg:rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all active:scale-95"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-red-600/20 to-transparent" />
-                <div className="relative h-full flex flex-col items-center justify-center gap-4 text-white">
-                  <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md group-hover:scale-110 transition-transform">
-                    <Package className="w-8 h-8" />
+                <div className="relative h-full flex flex-col items-center justify-center gap-3 lg:gap-4 text-white">
+                  <div className="w-12 h-12 lg:w-16 lg:h-16 bg-white/10 rounded-xl lg:rounded-2xl flex items-center justify-center backdrop-blur-md group-hover:scale-110 transition-transform">
+                    <Package className="w-6 h-6 lg:w-8 lg:h-8" />
                   </div>
-                  <span className="text-lg font-black uppercase tracking-[0.2em]">All Items</span>
+                  <span className="text-sm lg:text-lg font-black uppercase tracking-[0.2em]">All Items</span>
                 </div>
               </motion.button>
               
@@ -594,22 +595,22 @@ export default function POSPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className="group relative h-48 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 transition-all active:scale-95 overflow-hidden"
+                  className="group relative h-40 lg:h-48 bg-white rounded-2xl lg:rounded-3xl border border-slate-100 shadow-sm hover:shadow-lg transition-all active:scale-95 overflow-hidden"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="relative h-full flex flex-col items-center justify-center gap-4">
-                    <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center text-red-600 group-hover:scale-110 transition-transform">
-                      <Tag className="w-8 h-8" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative h-full flex flex-col items-center justify-center gap-3 lg:gap-4">
+                    <div className="w-12 h-12 lg:w-16 lg:h-16 bg-red-50 rounded-xl lg:rounded-2xl flex items-center justify-center text-red-600 group-hover:scale-110 transition-transform">
+                      <Tag className="w-6 h-6 lg:w-8 lg:h-8" />
                     </div>
-                    <span className="text-lg font-black text-gray-900 uppercase tracking-widest">{cat.name}</span>
+                    <span className="text-sm lg:text-lg font-black text-slate-900 uppercase tracking-widest">{cat.name}</span>
                   </div>
                 </motion.button>
               ))}
             </div>
           ) : (
             /* --- PRODUCT GRID VIEW --- */
-            <div className="space-y-12">
-              <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 lg:gap-8">
+            <div className="py-6 lg:py-8">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 lg:gap-6">
                 {products.map(product => (
                   <ProductCard 
                       key={product.id}
@@ -624,19 +625,19 @@ export default function POSPage() {
 
               {/* Empty State */}
               {products.length === 0 && !isLoadingProducts && (
-                <div className="py-20 flex flex-col items-center justify-center text-gray-300">
-                    <div className="w-24 h-24 bg-gray-50 rounded-[3rem] flex items-center justify-center mb-6">
-                        <Package className="w-12 h-12 opacity-20" />
+                <div className="py-20 flex flex-col items-center justify-center text-slate-300">
+                    <div className="w-20 h-20 bg-slate-50 rounded-2xl flex items-center justify-center mb-6">
+                        <Package className="w-10 h-10 opacity-20" />
                     </div>
-                    <p className="font-black uppercase tracking-widest text-[10px]">No products available in this category</p>
+                    <p className="font-black uppercase tracking-widest text-[10px]">No products available</p>
                 </div>
               )}
 
               {/* Loading State */}
               {isLoadingProducts && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 lg:gap-8">
+                <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 lg:gap-6">
                   {Array(8).fill(0).map((_, i) => (
-                    <div key={i} className="h-72 bg-white rounded-[2rem] animate-pulse border border-gray-50" />
+                    <div key={i} className="h-64 lg:h-72 bg-white rounded-2xl lg:rounded-3xl animate-pulse border border-slate-50" />
                   ))}
                 </div>
               )}
@@ -647,10 +648,10 @@ export default function POSPage() {
                   <button 
                     onClick={loadMore}
                     disabled={isLoadingProducts}
-                    className="px-12 py-5 bg-white border border-gray-100 text-gray-900 rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] shadow-lg hover:bg-gray-50 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-3"
+                    className="px-8 lg:px-12 py-3 lg:py-5 bg-white border border-slate-100 text-slate-900 rounded-xl lg:rounded-2xl font-black text-xs uppercase tracking-widest shadow-md hover:bg-slate-50 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-3"
                   >
                     {isLoadingProducts ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-                    Load More Items
+                    Load More
                   </button>
                 </div>
               )}
@@ -659,9 +660,9 @@ export default function POSPage() {
         </div>
       </div>
 
-      {/* --- RIGHT SIDE: CART AREA (30%) --- */}
+      {/* --- RIGHT SIDE: CART AREA (ORDER PANEL) --- */}
       <AnimatePresence>
-        {(showCartMobile || typeof window !== 'undefined' && window.innerWidth >= 1024) && (
+        {(showCartMobile || (typeof window !== 'undefined' && window.innerWidth >= 1024)) && (
           <>
             {/* Mobile Backdrop */}
             <motion.div 
@@ -669,7 +670,7 @@ export default function POSPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowCartMobile(false)}
-              className="fixed inset-0 bg-black/60 z-[60] lg:hidden backdrop-blur-md"
+              className="fixed inset-0 bg-slate-900/60 z-[60] lg:hidden backdrop-blur-sm"
             />
             
             <motion.div 
@@ -678,19 +679,19 @@ export default function POSPage() {
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 200 }}
               className={cn(
-                "fixed inset-y-0 right-0 z-[70] w-full max-w-[440px] bg-white lg:relative lg:z-0 lg:flex-[0.3] lg:rounded-[3rem] lg:shadow-2xl border-l lg:border border-gray-100 flex flex-col shadow-2xl overflow-hidden",
+                "fixed inset-y-0 right-0 z-[70] w-full max-w-[400px] bg-white lg:relative lg:z-0 lg:w-[400px] border-l border-slate-200 flex flex-col shadow-2xl lg:shadow-none overflow-hidden",
                 !showCartMobile && "hidden lg:flex"
               )}
             >
               {/* Cart Header */}
-              <div className="p-8 border-b border-gray-50 flex items-center justify-between shrink-0 bg-white">
+              <div className="p-6 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-red-50 rounded-[1.5rem] flex items-center justify-center text-red-600 shadow-sm">
-                    <ShoppingCart className="w-7 h-7" />
+                  <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-red-600 shadow-sm">
+                    <ShoppingCart className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-black text-gray-900 tracking-tight">Current Order</h3>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none mt-1.5">
+                    <h3 className="text-xl font-black text-slate-900 tracking-tight">Current Order</h3>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mt-1">
                       {cart.reduce((a, b) => a + b.quantity, 0)} Items Selected
                     </p>
                   </div>
@@ -698,120 +699,118 @@ export default function POSPage() {
                 <div className="flex gap-2">
                   <button 
                     onClick={() => setShowHeldOrdersModal(true)}
-                    className="p-4 bg-gray-50 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-2xl transition-all relative shadow-sm"
+                    className="p-3 bg-slate-50 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all relative shadow-sm"
                   >
-                    <History className="w-6 h-6" />
+                    <History className="w-5 h-5" />
                     {heldOrders.length > 0 && (
-                      <span className="absolute -top-1 -right-1 w-6 h-6 bg-blue-600 border-2 border-white text-[9px] font-black text-white rounded-full flex items-center justify-center">
+                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-blue-600 border-2 border-white text-[8px] font-black text-white rounded-full flex items-center justify-center">
                         {heldOrders.length}
                       </span>
                     )}
                   </button>
                   <button 
                     onClick={() => setShowCartMobile(false)} 
-                    className="lg:hidden p-4 bg-gray-50 text-gray-400 rounded-2xl"
-                  >
-                    <X className="w-6 h-6" />
+                    className="lg:hidden p-3 bg-slate-50 text-slate-400 rounded-xl"
+                    aria-label="Close cart"
+                >
+                    <X className="w-5 h-5" />
                   </button>
                 </div>
               </div>
 
               {/* Customer Selector */}
-              <div className="px-8 py-5 bg-gray-50/50 border-b border-gray-50 flex items-center justify-between shrink-0">
-                <div className="flex items-center gap-4 overflow-hidden">
-                  <div className="w-11 h-11 bg-white rounded-2xl flex items-center justify-center shadow-sm shrink-0">
-                    <User className="w-5 h-5 text-gray-400" />
+              <div className="px-6 py-4 bg-slate-50/50 border-b border-slate-100 flex items-center justify-between shrink-0">
+                <div className="flex items-center gap-3 overflow-hidden">
+                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm shrink-0">
+                    <User className="w-5 h-5 text-slate-400" />
                   </div>
                   <div className="overflow-hidden">
-                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1.5">Customer Info</p>
-                    <p className="font-black text-gray-900 text-sm truncate">
+                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Customer</p>
+                    <p className="font-black text-slate-900 text-xs truncate">
                       {selectedCustomer ? selectedCustomer.name : "Walk-in Customer"}
                     </p>
                   </div>
                 </div>
-                <div className="flex gap-2 shrink-0">
+                <div className="flex gap-1 shrink-0">
                   {selectedCustomer && (
                     <button 
                       onClick={() => setSelectedCustomer(null)}
-                      className="p-3 text-gray-400 hover:text-red-600 transition-colors"
+                      className="p-2 text-slate-400 hover:text-red-600 transition-colors"
                     >
-                      <X className="w-5 h-5" />
+                      <X className="w-4 h-4" />
                     </button>
                   )}
                   <button 
                     onClick={() => setShowCustomerModal(true)}
-                    className="p-3 bg-white text-gray-400 hover:text-red-600 rounded-2xl shadow-sm transition-all active:scale-95"
+                    className="p-2.5 bg-white text-slate-400 hover:text-red-600 rounded-xl shadow-sm transition-all active:scale-95"
                   >
-                    <UserPlus className="w-6 h-6" />
+                    <UserPlus className="w-5 h-5" />
                   </button>
                 </div>
               </div>
 
               {/* Cart List */}
-              <div className="flex-1 overflow-y-auto p-8 space-y-6 no-scrollbar bg-white">
+              <div className="flex-1 overflow-y-auto p-6 space-y-4 no-scrollbar bg-white">
                 {cart.length === 0 ? (
-                  <div className="h-full flex flex-col items-center justify-center text-gray-200 py-12">
-                    <div className="w-32 h-32 bg-gray-50 rounded-[4rem] flex items-center justify-center mb-8 shadow-inner">
-                      <ShoppingCart className="w-16 h-16 opacity-10" />
+                  <div className="h-full flex flex-col items-center justify-center text-slate-200 py-10">
+                    <div className="w-24 h-24 bg-slate-50 rounded-[2.5rem] flex items-center justify-center mb-6 shadow-inner">
+                      <ShoppingCart className="w-12 h-12 opacity-10" />
                     </div>
-                    <h4 className="font-black uppercase tracking-[0.2em] text-[12px] text-gray-400">Your cart is empty</h4>
-                    <p className="text-[11px] font-bold text-gray-300 mt-3 max-w-[200px] text-center leading-relaxed">
-                      Add some delicious items to start a new order
-                    </p>
+                    <h4 className="font-black uppercase tracking-widest text-[10px] text-slate-400">Your cart is empty</h4>
                   </div>
                 ) : (
                   <AnimatePresence initial={false}>
                     {cart.map(item => (
                       <motion.div 
                         layout
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, x: -100 }}
+                        exit={{ opacity: 0, x: -50 }}
                         key={item.id} 
-                        className="flex gap-5 group bg-white p-4 rounded-[2rem] hover:bg-gray-50 transition-all border border-transparent hover:border-gray-100"
+                        className="flex gap-4 group bg-white p-3 rounded-2xl hover:bg-slate-50 transition-all border border-transparent hover:border-slate-100"
                       >
-                        <div className="relative w-24 h-24 rounded-[1.5rem] overflow-hidden shrink-0 bg-gray-50 shadow-md">
+                        <div className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-slate-50 shadow-sm">
                           {item.image ? (
-                            <Image src={item.image} alt={item.name} fill className="object-cover transition-transform group-hover:scale-110" />
+                            <Image src={item.image} alt={item.name} fill className="object-cover" />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-gray-200">
-                              <Sparkles className="w-10 h-10" />
+                            <div className="w-full h-full flex items-center justify-center text-slate-200">
+                              <Sparkles className="w-6 h-6" />
                             </div>
                           )}
                         </div>
-                        <div className="flex-1 flex flex-col justify-between py-1 min-w-0">
-                          <div className="flex justify-between items-start gap-3">
+                        <div className="flex-1 flex flex-col justify-between py-0.5 min-w-0">
+                          <div className="flex justify-between items-start gap-2">
                             <div className="min-w-0">
-                                <h5 className="font-black text-gray-900 text-base line-clamp-1">{item.name}</h5>
-                                <p className="text-[10px] font-black text-red-600 uppercase tracking-widest mt-1">
-                                  {item.categoryName || 'General'} • {settings.currency}{item.price}
+                                <h5 className="font-bold text-slate-900 text-sm line-clamp-1">{item.name}</h5>
+                                <p className="text-[9px] font-black text-red-600 uppercase tracking-widest mt-0.5">
+                                  {settings.currency}{item.price}
                                 </p>
                             </div>
                             <button 
                               onClick={() => updateQuantity(item.productId || item.id, -item.quantity)} 
-                              className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-red-50 hover:text-red-600 transition-all shrink-0"
+                              className="w-6 h-6 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 hover:bg-red-50 hover:text-red-600 transition-all shrink-0"
                             >
-                              <X className="w-4 h-4" />
+                              <X className="w-3 h-3" />
                             </button>
                           </div>
                           
-                          <div className="flex justify-between items-center mt-3">
-                            <p className="font-black text-gray-900 text-lg">
+                          <div className="flex justify-between items-center mt-2">
+                            <p className="font-black text-slate-900 text-sm">
                               {settings.currency}{(item.price * item.quantity).toLocaleString()}
                             </p>
-                            <div className="flex items-center gap-3 bg-white p-1 rounded-xl border border-gray-100 shadow-sm">
+                            <div className="flex items-center gap-2 bg-white p-0.5 rounded-lg border border-slate-100 shadow-sm">
                               <button 
                                 onClick={() => updateQuantity(item.productId || item.id, -1)} 
-                                className="w-9 h-9 rounded-lg bg-gray-50 text-gray-900 hover:bg-red-50 hover:text-red-600 transition-all active:scale-90 flex items-center justify-center"
+                                className="w-7 h-7 rounded-md bg-slate-50 text-slate-900 hover:text-red-600 transition-all active:scale-90 flex items-center justify-center"
                               >
-                                <Minus className="w-4 h-4" />
+                                <Minus className="w-3 h-3" />
                               </button>
-                              <span className="text-sm font-black w-6 text-center">{item.quantity}</span>
+                              <span className="text-xs font-black w-5 text-center">{item.quantity}</span>
                               <button 
                                 onClick={() => updateQuantity(item.productId || item.id, 1)} 
-                                className="w-9 h-9 rounded-lg bg-gray-50 text-gray-900 hover:bg-red-50 hover:text-red-600 transition-all active:scale-90 flex items-center justify-center"
+                                className="w-7 h-7 rounded-md bg-slate-50 text-slate-900 hover:text-red-600 transition-all active:scale-90 flex items-center justify-center"
                               >
-                                <Plus className="w-4 h-4" />
+                                <Plus className="w-3 h-3" />
                               </button>
                             </div>
                           </div>
@@ -825,70 +824,52 @@ export default function POSPage() {
               {/* Summary & Checkout Footer */}
               <div className="shrink-0 bg-white">
                 {/* Action Buttons */}
-                <div className="px-8 py-5 grid grid-cols-4 gap-4 border-t border-gray-50">
-                  <button 
-                    onClick={() => setShowCustomItemModal(true)}
-                    className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-gray-50 text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all group active:scale-95"
-                  >
-                    <Plus className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                    <span className="text-[8px] font-black uppercase tracking-widest">Custom</span>
-                  </button>
-                  <button 
-                    onClick={() => setShowDiscountModal(true)}
-                    className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-gray-50 text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all group active:scale-95"
-                  >
-                    <Tag className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                    <span className="text-[8px] font-black uppercase tracking-widest">Discount</span>
-                  </button>
-                  <button 
-                    onClick={handleHoldOrder}
-                    disabled={cart.length === 0 || isProcessing}
-                    className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-gray-50 text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all group disabled:opacity-30 active:scale-95"
-                  >
-                    {isProcessing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Pause className="w-5 h-5 group-hover:scale-110 transition-transform" />}
-                    <span className="text-[8px] font-black uppercase tracking-widest">Hold</span>
-                  </button>
-                  <button 
-                    onClick={() => setCart([])}
-                    disabled={cart.length === 0}
-                    className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-gray-50 text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all group disabled:opacity-30 active:scale-95"
-                  >
-                    <Trash2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                    <span className="text-[8px] font-black uppercase tracking-widest">Clear</span>
-                  </button>
+                <div className="px-6 py-4 grid grid-cols-4 gap-2 border-t border-slate-50">
+                  {[
+                    { id: 'custom', icon: Plus, label: 'Custom', onClick: () => setShowCustomItemModal(true) },
+                    { id: 'discount', icon: Tag, label: 'Discount', onClick: () => setShowDiscountModal(true) },
+                    { id: 'hold', icon: Pause, label: 'Hold', onClick: handleHoldOrder, disabled: cart.length === 0 || isProcessing },
+                    { id: 'clear', icon: Trash2, label: 'Clear', onClick: () => setCart([]), disabled: cart.length === 0 }
+                  ].map(btn => (
+                    <button 
+                      key={btn.id}
+                      onClick={btn.onClick}
+                      disabled={btn.disabled}
+                      className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-50 text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all group disabled:opacity-30 active:scale-95"
+                    >
+                      <btn.icon className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                      <span className="text-[7px] font-black uppercase tracking-widest">{btn.label}</span>
+                    </button>
+                  ))}
                 </div>
 
                 {/* Totals Section */}
-                <div className="p-8 lg:p-10 bg-gray-900 text-white lg:rounded-t-[3.5rem] space-y-8">
-                  <div className="space-y-4 opacity-80">
-                    <div className="flex justify-between items-center text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
+                <div className="p-6 lg:p-8 bg-slate-900 text-white space-y-6">
+                  <div className="space-y-3 opacity-80">
+                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-400">
                       <span>Subtotal</span>
                       <span className="text-white font-mono">{settings.currency}{subtotal.toLocaleString()}</span>
                     </div>
                     {globalDiscount > 0 && (
-                      <div className="flex justify-between items-center text-[11px] font-black uppercase tracking-[0.2em] text-orange-400">
+                      <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-orange-400">
                         <span>Discount ({globalDiscount}%)</span>
                         <span className="font-mono">-{settings.currency}{discountAmount.toLocaleString()}</span>
                       </div>
                     )}
-                    <div className="flex justify-between items-center text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
+                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-400">
                       <span>Tax ({settings.taxRate}%)</span>
                       <span className="text-white font-mono">{settings.currency}{tax.toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between items-center text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
-                      <span>Service ({settings.serviceCharge}%)</span>
-                      <span className="text-white font-mono">{settings.currency}{serviceCharge.toLocaleString()}</span>
-                    </div>
                   </div>
 
-                  <div className="pt-8 border-t border-white/10 flex justify-between items-end">
+                  <div className="pt-6 border-t border-white/10 flex justify-between items-end">
                     <div>
-                      <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] mb-2.5">Grand Total</p>
-                      <h2 className="text-5xl font-black tracking-tighter text-white leading-none">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Grand Total</p>
+                      <h2 className="text-3xl font-black tracking-tighter text-white leading-none">
                         {settings.currency}{total.toLocaleString()}
                       </h2>
                     </div>
-                    <div className="flex gap-2.5">
+                    <div className="flex gap-2">
                       {[
                         { id: "CASH", icon: Banknote },
                         { id: "CARD", icon: CreditCard },
@@ -897,12 +878,13 @@ export default function POSPage() {
                         <button
                           key={m.id}
                           onClick={() => setPaymentMethod(m.id as any)}
+                          aria-label={`Pay with ${m.id}`}
                           className={cn(
-                            "w-14 h-14 rounded-[1.25rem] flex items-center justify-center transition-all border-2",
-                            paymentMethod === m.id ? "bg-red-600 border-red-500 shadow-xl shadow-red-600/30 scale-110" : "bg-white/5 border-transparent text-slate-400"
+                            "w-11 h-11 rounded-xl flex items-center justify-center transition-all border-2",
+                            paymentMethod === m.id ? "bg-red-600 border-red-500 shadow-lg scale-110" : "bg-white/5 border-transparent text-slate-400"
                           )}
                         >
-                          <m.icon className="w-6 h-6" />
+                          <m.icon className="w-5 h-5" />
                         </button>
                       ))}
                     </div>
@@ -913,21 +895,21 @@ export default function POSPage() {
                     <motion.div 
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
-                      className="pt-6 flex gap-6"
+                      className="pt-4 flex gap-4"
                     >
                       <div className="flex-1">
-                        <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">Cash Received</p>
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Received</p>
                         <input 
                           type="number"
-                          className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-2xl font-black text-white outline-none focus:border-red-500 transition-all font-mono"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-lg font-black text-white outline-none focus:border-red-500 transition-all font-mono"
                           placeholder="0.00"
                           value={cashReceived}
                           onChange={(e) => setCashReceived(e.target.value)}
                         />
                       </div>
                       <div className="flex-1">
-                        <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">Change Due</p>
-                        <div className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-2xl font-black text-green-400 font-mono">
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Change</p>
+                        <div className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-lg font-black text-green-400 font-mono truncate">
                           {settings.currency}{change.toLocaleString()}
                         </div>
                       </div>
@@ -937,14 +919,12 @@ export default function POSPage() {
                   <button
                     disabled={isProcessing || cart.length === 0 || (paymentMethod === "CASH" && (!cashReceived || parseFloat(cashReceived) < total))}
                     onClick={handleCheckout}
-                    className="w-full py-7 bg-red-600 text-white rounded-[2.5rem] font-black text-2xl shadow-[0_20px_50px_rgba(220,38,38,0.3)] hover:bg-red-700 transition-all flex items-center justify-center gap-5 active:scale-95 disabled:opacity-30 disabled:grayscale disabled:scale-100"
+                    className="w-full py-5 bg-red-600 text-white rounded-2xl font-black text-xl shadow-xl hover:bg-red-700 transition-all flex items-center justify-center gap-4 active:scale-95 disabled:opacity-30 disabled:grayscale"
                   >
-                    {isProcessing ? <Loader2 className="w-10 h-10 animate-spin" /> : (
+                    {isProcessing ? <Loader2 className="w-8 h-8 animate-spin" /> : (
                       <>
                         Pay & Complete
-                        <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                          <ChevronRight className="w-6 h-6" />
-                        </div>
+                        <ChevronRight className="w-6 h-6" />
                       </>
                     )}
                   </button>
@@ -981,7 +961,7 @@ export default function POSPage() {
                   </div>
                   <h3 className="text-3xl font-black text-gray-900 tracking-tight">Select Customer</h3>
                 </div>
-                <button onClick={() => setShowCustomerModal(false)} className="p-4 bg-gray-50 text-gray-400 rounded-2xl hover:bg-gray-100 transition-colors">
+                <button onClick={() => setShowCustomerModal(false)} className="p-4 bg-gray-50 text-gray-400 rounded-2xl hover:bg-gray-100 transition-colors" aria-label="Close modal">
                   <X className="w-7 h-7" />
                 </button>
               </div>
