@@ -568,7 +568,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 lg:pl-[var(--sidebar-width)] h-screen overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 lg:pl-[260px] h-screen overflow-hidden">
         <header className="sticky top-0 z-40 bg-slate-900 border-b border-slate-800 px-4 md:px-6 h-[var(--header-height)] flex items-center justify-between lg:hidden shadow-xl shrink-0">
           <button 
             onClick={() => setIsSidebarOpen(true)}
