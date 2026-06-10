@@ -514,7 +514,7 @@ export default function POSPage() {
                 <input 
                 type="text"
                 placeholder="Search products..."
-                className="w-full pl-12 lg:pl-16 pr-10 lg:pr-14 py-3 lg:py-5 bg-slate-50 lg:bg-white border border-transparent lg:border-transparent rounded-xl lg:rounded-2xl shadow-sm lg:shadow-md focus:ring-4 focus:ring-red-500/5 outline-none font-bold transition-all text-sm lg:text-base"
+                className="w-full pl-14 lg:pl-20 pr-10 lg:pr-14 py-3 lg:py-5 bg-slate-50 lg:bg-white border border-transparent lg:border-transparent rounded-xl lg:rounded-2xl shadow-sm lg:shadow-md focus:ring-4 focus:ring-red-500/5 outline-none font-bold transition-all text-sm lg:text-base"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 />

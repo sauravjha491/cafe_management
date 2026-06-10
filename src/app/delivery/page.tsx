@@ -238,7 +238,7 @@ function DeliveryContent() {
             <input
               type="text"
               placeholder="Search for dishes, drinks..."
-              className="w-full pl-16 pr-6 py-6 bg-white border border-slate-100 rounded-[2.5rem] focus:outline-none focus:ring-8 focus:ring-red-500/5 font-bold text-lg shadow-sm transition-all"
+              className="w-full pl-24 pr-6 py-6 bg-white border border-slate-100 rounded-[2.5rem] focus:outline-none focus:ring-8 focus:ring-red-500/5 font-bold text-lg shadow-sm transition-all"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -438,7 +438,7 @@ function DeliveryContent() {
                               <input
                                 type="text"
                                 placeholder="Any special requests?"
-                                className="w-full bg-white border border-transparent rounded-2xl pl-10 pr-4 py-3 text-xs focus:ring-4 focus:ring-red-500/5 focus:border-red-100 outline-none font-bold shadow-sm transition-all"
+                                className="w-full bg-white border border-transparent rounded-2xl pl-14 pr-4 py-3 text-xs focus:ring-4 focus:ring-red-500/5 focus:border-red-100 outline-none font-bold shadow-sm transition-all"
                                 value={item.note || ""}
                                 onChange={(e) => {
                                   useCartStore.setState((state) => ({
@@ -468,7 +468,7 @@ function DeliveryContent() {
                         <input
                           type="text"
                           placeholder="Your Name"
-                          className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-red-100 focus:ring-4 focus:ring-red-500/5 outline-none font-bold transition-all"
+                          className="w-full pl-16 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-red-100 focus:ring-4 focus:ring-red-500/5 outline-none font-bold transition-all"
                           value={customerName}
                           onChange={(e) => setCustomerName(e.target.value)}
                         />
@@ -481,7 +481,7 @@ function DeliveryContent() {
                         <input
                           type="tel"
                           placeholder="Contact Number"
-                          className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-red-100 focus:ring-4 focus:ring-red-500/5 outline-none font-bold transition-all"
+                          className="w-full pl-16 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-red-100 focus:ring-4 focus:ring-red-500/5 outline-none font-bold transition-all"
                           value={phoneNumber}
                           onChange={(e) => setPhoneNumber(e.target.value)}
                         />
@@ -497,7 +497,7 @@ function DeliveryContent() {
                         <input
                           type="text"
                           placeholder="Flat, Street, Area"
-                          className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-red-100 focus:ring-4 focus:ring-red-500/5 outline-none font-bold transition-all"
+                          className="w-full pl-16 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-red-100 focus:ring-4 focus:ring-red-500/5 outline-none font-bold transition-all"
                           value={address}
                           onChange={(e) => setAddress(e.target.value)}
                         />

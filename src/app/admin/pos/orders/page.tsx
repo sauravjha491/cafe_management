@@ -86,7 +86,7 @@ export default function POSOrdersHistory() {
             <input 
               type="text"
               placeholder="Order # or Customer..."
-              className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-transparent rounded-2xl focus:bg-white focus:ring-4 focus:ring-red-500/5 outline-none font-bold transition-all"
+              className="w-full pl-14 pr-4 py-4 bg-slate-50 border border-transparent rounded-2xl focus:bg-white focus:ring-4 focus:ring-red-500/5 outline-none font-bold transition-all"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />

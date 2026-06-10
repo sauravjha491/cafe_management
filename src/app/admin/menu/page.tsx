@@ -247,7 +247,7 @@ export default function MenuManagement() {
             <input
               type="text"
               placeholder="Search products..."
-              className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl lg:rounded-2xl focus:outline-none focus:ring-2 focus:ring-red-500/20 font-medium text-sm md:text-base"
+              className="w-full pl-14 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl lg:rounded-2xl focus:outline-none focus:ring-2 focus:ring-red-500/20 font-medium text-sm md:text-base"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
