@@ -18,6 +18,8 @@ interface Product {
   price: number;
   image: string;
   featured: boolean;
+  available: boolean;
+  stock: number;
 }
 
 interface Category {
@@ -139,7 +141,7 @@ function OrderContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-gray-50 pb-40">
       <Toaster position="top-center" />
       
       {/* Header */}
@@ -184,33 +186,35 @@ function OrderContent() {
       </div>
 
       {/* Categories */}
-      <div className="overflow-x-auto no-scrollbar flex px-4 gap-2 pb-2">
-        <button
-          onClick={() => setSelectedCategory("favorites")}
-          className={cn(
-            "px-4 py-2 rounded-full whitespace-nowrap text-sm font-semibold transition-all flex items-center gap-2",
-            selectedCategory === "favorites" 
-              ? "bg-red-600 text-white shadow-lg shadow-red-200" 
-              : "bg-white text-gray-600 border border-gray-200"
-          )}
-        >
-          <Heart className={cn("w-4 h-4", selectedCategory === "favorites" ? "fill-white" : "")} />
-          Favorites
-        </button>
-        {categories.map((cat) => (
+      <div className="sticky top-[64px] z-20 bg-white/80 backdrop-blur-md py-4 border-b border-gray-100">
+        <div className="overflow-x-auto no-scrollbar flex px-4 gap-2">
           <button
-            key={cat.id}
-            onClick={() => setSelectedCategory(cat.id)}
+            onClick={() => setSelectedCategory("favorites")}
             className={cn(
-              "px-4 py-2 rounded-full whitespace-nowrap text-sm font-semibold transition-all",
-              selectedCategory === cat.id 
+              "px-4 py-2 rounded-full whitespace-nowrap text-sm font-semibold transition-all flex items-center gap-2",
+              selectedCategory === "favorites" 
                 ? "bg-red-600 text-white shadow-lg shadow-red-200" 
                 : "bg-white text-gray-600 border border-gray-200"
             )}
           >
-            {cat.name}
+            <Heart className={cn("w-4 h-4", selectedCategory === "favorites" ? "fill-white" : "")} />
+            Favorites
           </button>
-        ))}
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              className={cn(
+                "px-4 py-2 rounded-full whitespace-nowrap text-sm font-semibold transition-all",
+                selectedCategory === cat.id 
+                  ? "bg-red-600 text-white shadow-lg shadow-red-200" 
+                  : "bg-white text-gray-600 border border-gray-200"
+              )}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Featured Section */}
@@ -236,6 +240,7 @@ function OrderContent() {
                   </div>
                   <button 
                     onClick={() => {
+                      if (!product.available || product.stock === 0) return;
                       const wasFavorite = isFavorite(product.id);
                       toggleFavorite(product.id);
                       toast.success(wasFavorite ? "Removed from favorites" : "Added to favorites");
@@ -244,18 +249,26 @@ function OrderContent() {
                   >
                     <Heart className={cn("w-5 h-5 transition-colors", isFavorite(product.id) ? "fill-red-600 text-red-600" : "text-gray-400")} />
                   </button>
+                  {(!product.available || product.stock === 0) && (
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center">
+                      <span className="bg-white text-gray-900 px-3 py-1.5 rounded-lg font-black text-[10px] shadow-2xl uppercase tracking-widest">
+                        Sold Out
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="p-4 flex flex-col flex-1">
-                  <h3 className="font-bold text-gray-800 line-clamp-1 mb-1">{product.name}</h3>
+                  <h3 className="font-bold text-gray-800 line-clamp-2 mb-1 h-10">{product.name}</h3>
                   <p className="text-gray-500 text-xs line-clamp-2 mb-3 flex-1">{product.description}</p>
                   <div className="flex items-center justify-between mt-auto">
                     <span className="font-black text-red-600">{settings.currency} {product.price.toLocaleString()}</span>
                     <button 
+                      disabled={!product.available || product.stock === 0}
                       onClick={() => {
                         addItem(product);
                         toast.success(`Added ${product.name}`);
                       }}
-                      className="bg-red-600 text-white p-2 rounded-xl shadow-lg shadow-red-100 active:scale-90 transition-all"
+                      className="bg-red-600 text-white p-2 rounded-xl shadow-lg shadow-red-100 active:scale-90 transition-all disabled:bg-gray-200 disabled:shadow-none"
                     >
                       <Plus className="w-5 h-5" />
                     </button>
@@ -299,6 +312,7 @@ function OrderContent() {
                 )}
                 <button 
                   onClick={() => {
+                    if (!product.available || product.stock === 0) return;
                     const wasFavorite = isFavorite(product.id);
                     toggleFavorite(product.id);
                     toast.success(wasFavorite ? "Removed from favorites" : "Added to favorites");
@@ -307,6 +321,13 @@ function OrderContent() {
                 >
                   <Heart className={cn("w-5 h-5 transition-colors", isFavorite(product.id) ? "fill-red-600 text-red-600" : "text-gray-400")} />
                 </button>
+                {(!product.available || product.stock === 0) && (
+                  <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center">
+                    <span className="bg-white text-gray-900 px-4 py-2 rounded-xl font-black text-sm shadow-2xl uppercase tracking-widest">
+                      Sold Out
+                    </span>
+                  </div>
+                )}
               </div>
               <div className="p-4">
                 <div className="flex justify-between items-start mb-1">
@@ -315,14 +336,15 @@ function OrderContent() {
                 </div>
                 <p className="text-gray-500 text-xs line-clamp-2 mb-4">{product.description}</p>
                 <button
+                  disabled={!product.available || product.stock === 0}
                   onClick={() => {
                     addItem(product);
                     toast.success(`Added ${product.name}`);
                   }}
-                  className="w-full bg-red-600 text-white py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-red-700 transition-colors"
+                  className="w-full bg-red-600 text-white py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-red-700 transition-colors disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
                   <Plus className="w-4 h-4" />
-                  ADD TO CART
+                  {(!product.available || product.stock === 0) ? "OUT OF STOCK" : "ADD TO CART"}
                 </button>
               </div>
             </motion.div>

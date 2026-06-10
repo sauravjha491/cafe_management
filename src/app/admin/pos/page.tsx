@@ -92,9 +92,9 @@ const ProductCard = memo(({
         {/* Stock Badge */}
         <div className={cn(
           "absolute top-3 right-3 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg backdrop-blur-md",
-          product.stock > 0 ? (product.stock < 10 ? "bg-orange-500/90 text-white" : "bg-green-500/90 text-white") : "bg-red-500/90 text-white"
+          (product.stock > 0 || product.stock === -1) ? (product.stock > 0 && product.stock < 10 ? "bg-orange-500/90 text-white" : "bg-green-500/90 text-white") : "bg-red-500/90 text-white"
         )}>
-          {product.stock > 0 ? `${product.stock} In Stock` : "Out of Stock"}
+          {product.stock === -1 ? "In Stock" : (product.stock > 0 ? `${product.stock} In Stock` : "Out of Stock")}
         </div>
 
         {/* Category Badge */}
@@ -136,7 +136,7 @@ const ProductCard = memo(({
               </div>
               <button 
                 onClick={(e) => { e.stopPropagation(); onAdd(product); }}
-                disabled={product.stock <= quantityInCart}
+                disabled={product.stock !== -1 && product.stock <= quantityInCart}
                 className="w-11 h-11 rounded-xl bg-white text-gray-900 hover:text-red-600 shadow-sm flex items-center justify-center transition-all active:scale-90 disabled:opacity-30 border border-gray-100"
               >
                 <Plus className="w-4 h-4" />
@@ -145,7 +145,7 @@ const ProductCard = memo(({
           ) : (
             <button
               onClick={() => onAdd(product)}
-              disabled={product.stock <= 0}
+              disabled={product.stock === 0}
               className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-gray-200 hover:bg-red-600 hover:shadow-red-200 transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 disabled:grayscale group-hover:shadow-red-500/20"
             >
               <Plus className="w-4 h-4" />
@@ -504,36 +504,36 @@ export default function POSPage() {
       <Toaster position="top-right" />
       
       {/* --- LEFT SIDE: PRODUCTS AREA (70%) --- */}
-      <div className="flex-[0.7] flex flex-col min-w-0 overflow-hidden bg-white lg:bg-transparent rounded-[3rem]">
+      <div className="flex-[0.7] flex flex-col min-w-0 overflow-hidden bg-white lg:bg-transparent rounded-[2rem] lg:rounded-[3rem]">
         
         {/* Header: Search & Info */}
-        <div className="p-6 lg:p-0 flex flex-col gap-6 shrink-0 bg-white lg:bg-transparent sticky top-0 z-30">
-          <div className="flex items-center gap-4">
+        <div className="p-4 lg:p-0 flex flex-col gap-4 lg:gap-6 shrink-0 bg-white lg:bg-transparent sticky top-0 z-30">
+          <div className="flex items-center gap-3 lg:gap-4">
             <div className="flex-1 relative group">
-                <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 w-6 h-6 group-focus-within:text-red-600 transition-colors" />
+                <Search className="absolute left-4 lg:left-6 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 lg:w-6 h-6 group-focus-within:text-red-600 transition-colors" />
                 <input 
                 type="text"
                 placeholder="Search products..."
-                className="w-full pl-16 pr-14 py-6 bg-white border border-gray-100 lg:border-transparent rounded-[2.5rem] shadow-lg focus:ring-8 focus:ring-red-500/5 outline-none font-bold transition-all text-base"
+                className="w-full pl-12 lg:pl-16 pr-10 lg:pr-14 py-4 lg:py-6 bg-gray-50 lg:bg-white border border-transparent lg:border-transparent rounded-2xl lg:rounded-[2.5rem] shadow-sm lg:shadow-lg focus:ring-8 focus:ring-red-500/5 outline-none font-bold transition-all text-sm lg:text-base"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 {searchQuery && (
                     <button 
                         onClick={() => { setSearchQuery(""); if (selectedCategory === null) setSelectedCategory("all"); }}
-                        className="absolute right-6 top-1/2 -translate-y-1/2 p-2 bg-gray-100 hover:bg-red-50 hover:text-red-600 rounded-full transition-all"
+                        className="absolute right-4 lg:right-6 top-1/2 -translate-y-1/2 p-1.5 lg:p-2 bg-gray-200 hover:bg-red-50 hover:text-red-600 rounded-full transition-all"
                     >
-                        <X className="w-4 h-4" />
+                        <X className="w-3 h-3 lg:w-4 h-4" />
                     </button>
                 )}
             </div>
             <button 
                 onClick={() => setShowCartMobile(true)}
-                className="lg:hidden relative p-6 bg-red-600 text-white rounded-[2rem] shadow-2xl shadow-red-200 active:scale-95 transition-all"
+                className="lg:hidden relative p-4 bg-red-600 text-white rounded-2xl shadow-xl shadow-red-200 active:scale-95 transition-all"
             >
-                <ShoppingCart className="w-7 h-7" />
+                <ShoppingCart className="w-6 h-6" />
                 {cart.length > 0 && (
-                <span className="absolute -top-2 -right-2 w-8 h-8 bg-gray-900 border-4 border-white text-[12px] font-black rounded-full flex items-center justify-center">
+                <span className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-gray-900 border-2 border-white text-[10px] font-black rounded-full flex items-center justify-center">
                     {cart.length}
                 </span>
                 )}
@@ -541,23 +541,23 @@ export default function POSPage() {
           </div>
 
           {/* Categories Horizontal Scroll */}
-          <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 sticky top-0 z-10 bg-inherit">
+          <div className="flex gap-2 lg:gap-4 overflow-x-auto no-scrollbar pb-2 lg:pb-4 sticky top-0 z-10 bg-inherit">
             <button
                 onClick={() => setSelectedCategory("all")}
                 className={cn(
-                "px-10 py-4 rounded-[1.5rem] text-[11px] font-black whitespace-nowrap transition-all uppercase tracking-widest flex items-center gap-3 border-2",
+                "px-6 lg:px-10 py-3 lg:py-4 rounded-xl lg:rounded-[1.5rem] text-[10px] lg:text-[11px] font-black whitespace-nowrap transition-all uppercase tracking-widest flex items-center gap-2 lg:gap-3 border-2",
                 selectedCategory === "all" ? "bg-gray-900 border-gray-900 text-white shadow-2xl scale-105" : "bg-white text-gray-400 border-transparent hover:border-gray-100 hover:bg-gray-50 shadow-sm"
                 )}
             >
-                <Package className="w-5 h-5" />
-                All Items
+                <Package className="w-4 h-4 lg:w-5 h-5" />
+                All
             </button>
             {categories.map(cat => (
                 <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
                 className={cn(
-                    "px-10 py-4 rounded-[1.5rem] text-[11px] font-black whitespace-nowrap transition-all uppercase tracking-widest border-2",
+                    "px-6 lg:px-10 py-3 lg:py-4 rounded-xl lg:rounded-[1.5rem] text-[10px] lg:text-[11px] font-black whitespace-nowrap transition-all uppercase tracking-widest border-2",
                     selectedCategory === cat.id ? "bg-gray-900 border-gray-900 text-white shadow-2xl scale-105" : "bg-white text-gray-400 border-transparent hover:border-gray-100 hover:bg-gray-50 shadow-sm"
                 )}
                 >

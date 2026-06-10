@@ -32,6 +32,8 @@ interface Product {
   price: number;
   image: string;
   featured: boolean;
+  available: boolean;
+  stock: number;
 }
 
 interface Category {
@@ -201,7 +203,7 @@ function DeliveryContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] pb-24">
+    <div className="min-h-screen bg-[#fafafa] pb-40">
       <Toaster position="top-center" />
       
       {/* Header */}
@@ -302,6 +304,7 @@ function DeliveryContent() {
                 
                 <button 
                   onClick={() => {
+                    if (!product.available || product.stock === 0) return;
                     const wasFavorite = isFavorite(product.id);
                     toggleFavorite(product.id);
                     toast.success(wasFavorite ? "Removed from favorites" : "Added to favorites");
@@ -317,26 +320,35 @@ function DeliveryContent() {
                     CHEF'S PICK
                   </div>
                 )}
+
+                {(!product.available || product.stock === 0) && (
+                  <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center">
+                    <span className="bg-white text-gray-900 px-6 py-3 rounded-2xl font-black text-sm shadow-2xl uppercase tracking-widest">
+                      Sold Out
+                    </span>
+                  </div>
+                )}
               </div>
               
               <div className="p-6 space-y-4">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="font-black text-gray-900 text-xl tracking-tight mb-1">{product.name}</h3>
+                    <h3 className="font-black text-gray-900 text-xl tracking-tight mb-1 h-14 line-clamp-2">{product.name}</h3>
                     <p className="text-gray-500 text-xs font-medium line-clamp-2 leading-relaxed">{product.description}</p>
                   </div>
                   <span className="font-black text-red-600 text-lg whitespace-nowrap">{settings.currency} {product.price.toLocaleString()}</span>
                 </div>
                 
                 <button
+                  disabled={!product.available || product.stock === 0}
                   onClick={() => {
                     addItem(product);
                     toast.success(`Added ${product.name}`);
                   }}
-                  className="w-full bg-red-600 text-white py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 shadow-xl shadow-red-100 hover:bg-red-700 transition-all active:scale-95"
+                  className="w-full bg-red-600 text-white py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 shadow-xl shadow-red-100 hover:bg-red-700 transition-all active:scale-95 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed disabled:shadow-none"
                 >
                   <Plus className="w-5 h-5" />
-                  ADD TO BASKET
+                  {(!product.available || product.stock === 0) ? "OUT OF STOCK" : "ADD TO BASKET"}
                 </button>
               </div>
             </motion.div>

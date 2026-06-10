@@ -164,6 +164,13 @@ export default function Home() {
                     Start My Order
                     <ArrowRight className="w-6 h-6" />
                   </button>
+                  <button 
+                    type="button"
+                    onClick={() => router.push('/order?table=0')}
+                    className="w-full py-4 text-gray-400 font-black text-xs uppercase tracking-widest hover:text-red-600 transition-colors"
+                  >
+                    Just browse the menu
+                  </button>
                 </form>
               ) : (
                 <div className="space-y-4">
