@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { db } from "@/lib/firebase";
@@ -137,36 +137,44 @@ export default function TrackOrder() {
     }
   };
 
+  const prevStatusRef = useRef<string | null>(null);
+
   useEffect(() => {
     if (!orderId) return;
 
     fetch(`/api/orders?id=${orderId}`)
       .then((res) => res.json())
       .then((data) => {
-        setOrder(data);
+        if (data && !data.error) {
+          setOrder(data);
+          prevStatusRef.current = data.status;
+        }
         setLoading(false);
-      });
+      })
+      .catch(() => setLoading(false));
 
     if (!db) return;
 
-    const unsub = onSnapshot(doc(db, "orders", orderId as string), (doc) => {
-      if (doc.exists()) {
-        const firebaseData = doc.data();
-        
-        // Show confetti when status becomes READY
-        if (firebaseData.status === "READY" && order?.status !== "READY") {
+    const unsub = onSnapshot(doc(db, "orders", orderId as string), (docSnap) => {
+      if (docSnap.exists()) {
+        const firebaseData = docSnap.data();
+
+        if (firebaseData.status === "READY" && prevStatusRef.current !== "READY") {
           setShowConfetti(true);
           setTimeout(() => setShowConfetti(false), 5000);
           const audio = new Audio("/notification.mp3");
           audio.play().catch(() => {});
         }
 
-        setOrder((prev: any) => ({ ...prev, ...firebaseData }));
+        prevStatusRef.current = firebaseData.status;
+        setOrder((prev: any) => ({ ...(prev || {}), ...firebaseData }));
       }
+    }, (error) => {
+      console.error("Order tracking listener error:", error);
     });
 
     return () => unsub();
-  }, [orderId, order?.status]);
+  }, [orderId]);
 
   if (loading) {
     return (
@@ -459,7 +467,12 @@ export default function TrackOrder() {
                 <span className="text-3xl font-black text-red-600 tracking-tighter">{settings.currency} {order.total?.toLocaleString()}</span>
               </div>
               <div className="text-right">
-                <span className="text-[10px] font-black text-green-600 bg-green-50 px-3 py-1 rounded-full uppercase tracking-widest">Paid via QR</span>
+                <span className={cn(
+                  "text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest",
+                  order.paymentStatus === "PAID" ? "text-green-600 bg-green-50" : "text-orange-600 bg-orange-50"
+                )}>
+                  {order.paymentStatus === "PAID" ? `Paid via ${order.paymentMethod || "Cash"}` : "Pay at counter"}
+                </span>
               </div>
             </div>
           </div>

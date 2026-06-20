@@ -1,6 +1,27 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+async function resolveStaffId(staffId?: string, staffEmail?: string): Promise<string> {
+  if (staffEmail) {
+    const byEmail = await prisma.user.findUnique({ where: { email: staffEmail } });
+    if (byEmail) return byEmail.id;
+  }
+
+  if (staffId) {
+    const byId = await prisma.user.findUnique({ where: { id: staffId } });
+    if (byId) return byId.id;
+  }
+
+  const fallback = await prisma.user.findFirst({
+    where: { role: { in: ["OWNER", "ADMIN", "STAFF"] } },
+    orderBy: { createdAt: "asc" },
+  });
+
+  if (fallback) return fallback.id;
+
+  throw new Error("No staff member found. Add a staff user in the admin panel first.");
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -9,7 +30,8 @@ export async function POST(req: Request) {
       customerName,
       customerPhone,
       customerId,
-      staffId,
+      staffId: rawStaffId,
+      staffEmail,
       subtotal,
       tax,
       discount,
@@ -21,9 +43,11 @@ export async function POST(req: Request) {
       status // COMPLETED or HELD
     } = body;
 
-    if (!staffId) {
-      return NextResponse.json({ error: "Staff ID is required" }, { status: 400 });
+    if (!items?.length) {
+      return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
     }
+
+    const staffId = await resolveStaffId(rawStaffId, staffEmail);
 
     // 1. Generate unique numbers
     const timestamp = Date.now();

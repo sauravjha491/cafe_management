@@ -73,8 +73,8 @@ export default function TablesPage() {
   );
 
   const printQR = (tableNumber: number) => {
-    const canvas = document.getElementById(`qr-${tableNumber}`) as HTMLCanvasElement;
-    if (canvas) {
+    const svg = document.getElementById(`qr-${tableNumber}`);
+    if (svg) {
       const win = window.open("", "_blank");
       if (win) {
         win.document.write(`
@@ -86,18 +86,20 @@ export default function TablesPage() {
                 .card { padding: 40px; border: 4px solid #000; border-radius: 40px; text-align: center; }
                 h1 { font-size: 64px; margin-bottom: 30px; font-weight: 900; }
                 p { margin-top: 30px; font-size: 32px; color: #666; font-weight: bold; }
+                svg { width: 280px; height: 280px; }
               </style>
             </head>
             <body>
               <div class="card">
                 <h1>TABLE ${tableNumber}</h1>
-                ${canvas.outerHTML}
+                ${svg.outerHTML}
                 <p>Scan to Order</p>
               </div>
               <script>setTimeout(() => { window.print(); window.close(); }, 500);</script>
             </body>
           </html>
         `);
+        win.document.close();
       }
     }
   };

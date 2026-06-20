@@ -197,15 +197,25 @@ model PromoCode {
 }
 
 model Settings {
-  id               String  @id @default("default")
-  cafeName         String  @default("CafePro")
-  currency         String  @default("Rs.")
-  taxRate          Float   @default(5.0)
-  serviceCharge    Float   @default(2.0)
-  deliveryFeePerKm Float   @default(10.0)
-  logo             String?
-  address          String?
-  phone            String?
+  id                   String  @id @default("default")
+  cafeName             String  @default("CafePro")
+  currency             String  @default("Rs.")
+  taxRate              Float   @default(5.0)
+  serviceCharge        Float   @default(2.0)
+  deliveryFeePerKm     Float   @default(10.0)
+  logo                 String?
+  address              String?
+  phone                String?
+  email                String?
+  heroTagline          String?
+  aboutText            String?
+  footerText           String?
+  workingHoursWeekdays String? @default("08:00 - 22:00")
+  workingHoursWeekend  String? @default("09:00 - 23:00")
+  facebookUrl          String?
+  instagramUrl         String?
+  twitterUrl           String?
+  websiteUrl           String?
 }
 
 // --- POS Module Models ---

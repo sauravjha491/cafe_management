@@ -33,7 +33,10 @@ const navItems = [
       { name: "Menu Items", icon: UtensilsCrossed, href: "/admin/menu" },
       { name: "Categories", icon: Grid, href: "/admin/categories" },
       { name: "Table Orders", icon: ClipboardList, href: "/admin/orders" },
+      { name: "Table QR Codes", icon: TableIcon, href: "/admin/tables" },
       { name: "Delivery", icon: Truck, href: "/admin/delivery" },
+      { name: "Riders", icon: Bike, href: "/admin/riders" },
+      { name: "Analytics", icon: BarChart3, href: "/admin/analytics" },
       { name: "Customers", icon: Users, href: "/admin/customers" },
       { name: "Staff", icon: UserCog, href: "/admin/staff" },
     ]
@@ -170,7 +173,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     items: category.items.filter(item => {
       if (role === "OWNER" || role === "ADMIN") return true;
       if (role === "STAFF") {
-        return ["POS Dashboard", "Table Orders", "Menu Items", "Categories"].includes(item.name);
+        return ["POS Dashboard", "Table Orders", "Table QR Codes", "Menu Items", "Categories"].includes(item.name);
       }
       if (role === "RIDER") {
         return ["Delivery"].includes(item.name);

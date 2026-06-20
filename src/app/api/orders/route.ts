@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     console.log("Creating order in Prisma...");
     
     // Find or create customer if phone number is provided
-    let customerId = null;
+    let customerId: string | null = null;
     if (phoneNumber) {
       const customer = await prisma.customer.upsert({
         where: { phone: phoneNumber },
@@ -47,6 +47,16 @@ export async function POST(req: Request) {
         }
       });
       customerId = customer.id;
+    } else if (type === "DELIVERY") {
+      const guestCustomer = await prisma.customer.upsert({
+        where: { phone: "guest-delivery" },
+        update: {},
+        create: {
+          name: "Guest",
+          phone: "guest-delivery",
+        },
+      });
+      customerId = guestCustomer.id;
     }
 
     const order = await prisma.order.create({
@@ -78,7 +88,7 @@ export async function POST(req: Request) {
             create: {
               address: {
                 create: {
-                  customerId: customerId || "guest", // Fallback if no phone
+                  customerId: customerId!,
                   name: "Delivery Address",
                   addressLine: address,
                   city: "City",

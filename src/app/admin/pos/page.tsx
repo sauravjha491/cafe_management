@@ -341,7 +341,8 @@ export default function POSPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           status: "HELD",
-          staffId: user?.uid || "admin",
+          staffId: user?.uid,
+          staffEmail: user?.email,
           items: cart,
           customerName: selectedCustomer?.name,
           customerPhone: selectedCustomer?.phone,
@@ -403,7 +404,8 @@ export default function POSPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          staffId: user?.uid || "admin",
+          staffId: user?.uid,
+          staffEmail: user?.email,
           items: cart,
           customerName: selectedCustomer?.name || "Walk-in Customer",
           customerPhone: selectedCustomer?.phone,
